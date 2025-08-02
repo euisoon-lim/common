@@ -1,89 +1,43 @@
 
- .single-day-regular {
-  font-family: 'Single Day', cursive;
-  font-weight: 400;
-  font-style: normal;
-}
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Orbit&family=Single+Day&display=swap');
 
-.orbit-regular {
-  font-family: 'Orbit', sans-serif;
-  font-weight: 400;
-  font-style: normal;
-}
-  .gowun-batang-regular {
-  font-family: "Gowun Batang", serif;
-  font-style: normal;
-}
+[data-widget-name="메뉴/카테고리"] { display: none !important; }
 
-  /* 기본 스타일 (PC 기준) */
-  .title-sub {
-    font-size: 20px;
-    color: #070b1e;
-    letter-spacing: -0.5px;
-    line-height: 1;
-    text-align: left;
-  }
+.single-day-regular { font-family: 'Single Day', cursive; font-weight: 400; font-style: normal; }
+.orbit-regular { font-family: 'Orbit', sans-serif; font-weight: 400; font-style: normal; }
+.gowun-batang-regular { font-family: "Gowun Batang", serif; font-style: normal; }
+
+.title-sub {
+  font-size: 20px;
+  color: #070b1e;
+  letter-spacing: -0.5px;
+  line-height: 1;
+  text-align: left;
+}
 
 .title-main {
-       font-size: 60px;
-    font-weight: bold;
-    letter-spacing: -3px;
-    line-height: 1.2;
-    text-align: left;
-   font-weight: 400;
-    background:linear-gradient(180deg, #393939, #616161, #c4c4c4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+  font-size: 60px;
+  font-weight: 400;
+  letter-spacing: -3px;
+  line-height: 1.2;
+  text-align: left;
+  background: linear-gradient(180deg, #393939, #616161, #c4c4c4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-  /* ✅ 모바일 대응 (화면 너비 768px 이하일 때) */
-  @media screen and (max-width: 768px) {
-    .title-sub {
-      font-size: 16px;
-    }
-
-    .title-main {
-      font-size: 36px;
-    }
-  }
-</style>
-
-
-  <style>
-  
-   .layout-wrapper {
-  padding: 20px;
-}
+.layout-wrapper { padding: 20px; }
 
 .top-control-wrapper {
-   display: grid;
-  grid-template-columns: 2fr 1fr 1fr auto;
-  gap: 12px;
-}
-.select-box.full { width: 100%; }
-.select-box.half { width: 100%; }
-
-
-.select-box {
-  flex: 1 1 200px;
-}
-.search-wrapper {
-  width: 100%;
-  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 0.3fr 0.3fr 0.7fr;
+  gap: 13px;
+  margin-bottom: 20px;
 }
 
-.search-wrapper input {
-  width: 100%;
-  padding: 14px 40px 14px 20px;
-  border-radius: 12px;
-}
-
-.search-icon {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-}
+.select-box.full, .select-box.half { width: 100%; }
+.select-box { flex: 1 1 200px; }
 
 .custom-select {
   width: 100%;
@@ -97,8 +51,10 @@
 }
 
 .search-wrapper {
+  width: 100%;
   position: relative;
   flex: 2 1 300px;
+  margin-bottom: 0px;
 }
 
 .search-wrapper input {
@@ -128,23 +84,13 @@
 .list-scroll {
   flex: 0 0 40%;
   background: #f5f5f7;
-  height: 750px;
-  overflow-y: scroll; /* 항상 스크롤바 표시 */
+  height: 725px;
+  overflow-y: scroll;
 }
 
-/* ✅ 스크롤바 스타일 얇게 (웹킷 전용) */
-.list-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-
-.list-scroll::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0,0.2);
-  border-radius: 3px;
-}
-
-.list-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
+.list-scroll::-webkit-scrollbar { width: 6px; }
+.list-scroll::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 3px; }
+.list-scroll::-webkit-scrollbar-track { background: transparent; }
 
 .chart-panel {
   flex: 0 0 60%;
@@ -170,9 +116,7 @@
   transform: translateY(0);
 }
 
-}
-	
-	.item-box.sticky-selected {
+.item-box.sticky-selected {
   position: sticky;
   top: 0;
   z-index: 2;
@@ -180,18 +124,14 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* ✅ 선택된 항목 */
 .item-box.selected {
   position: relative;
   overflow: hidden;
   transform: scale(1.005);
   transition: all 0.3s ease;
-  box-shadow: none;
-  border: none;
   background-color: #f5f5f7;
 }
 
-/* ✅ 선택된 항목 - 애니메이션 배경 */
 .item-box.selected::before {
   content: "";
   position: absolute;
@@ -203,59 +143,32 @@
   animation: slideBgExpand 1.2s ease forwards;
 }
 
-/* ✅ 선택된 항목 내 텍스트는 항상 위에 위치 */
-.item-box.selected > * {
-  position: relative;
-  z-index: 1;
-}
+.item-box.selected > * { position: relative; z-index: 1; }
+.item-box.selected div > div:first-child { color: #3a5df4; font-size: 20px; font-weight: bold; }
+.item-box:hover div > div:first-child { color: #fd544f; }
+.item-box div > div:last-child { color: rgb(108, 108, 108); font-size: 12px; text-align: left; }
+.item-box small { font-size: 0.8rem; color: #999; }
 
-/* ✅ 선택된 항목의 텍스트 강조 */
-.item-box.selected div > div:first-child {
-  color: #3a5df4;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-/* ✅ hover 상태일 때 텍스트 색만 살짝 강조 (크기 X) */
-.item-box:hover div > div:first-child {
-  color: #fd544f;
-}
-
-/* ✅ 하단 소제목 (금액 등) */
-.item-box div > div:last-child {
-  color: rgb(108, 108, 108);
-  font-size: 12px;
-  text-align: left;
-}
-
-/* ✅ 기타 텍스트 */
-.item-box small {
-  font-size: 0.8rem;
-  color: #999;
-}
-
-/* ✅ 나타날 때 애니메이션 */
-.item-box.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ✅ 배경 애니메이션 키프레임 */
 @keyframes slideBgExpand {
   from { width: 0%; }
-  to   { width: 100%; }
+  to { width: 100%; }
 }
+
 #chart {
   max-height: 300px;
   width: 100% !important;
   height: auto !important;
 }
-  #chart-title {
-    color: #333;
-    font-size: 20px;
-    font-weight: bold;
-  }
+
+#chart-title {
+  color: #333;
+  font-size: 20px;
+  font-weight: bold;
+}
+
 #price-table {
+  margin-top: 15px;
+  margin-bottom: 15px;
   overflow-x: auto;
 }
 
@@ -265,8 +178,7 @@
   font-size: 14px;
 }
 
-#price-table td,
-#price-table th {
+#price-table td, #price-table th {
   border-bottom: 1px solid #ddd;
   padding: 6px;
   text-align: left;
@@ -277,65 +189,6 @@
   font-weight: bold;
 }
 
-	@media (max-width: 768px) {
-  .top-control-wrapper {
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-
-  .mobile-select {
-    display: block;
-    margin: 0px 0;  /* ✅ 상하 여백 조정 */
-    padding: 12px 20px;
-  }
-
-  .chart-panel {
-    width: 100%;
-    padding: 0 0 20px 0;  /* ✅ 그래프 하단 여백 */
-  }
-
-
-  #chart-title {
-    margin: 15px 0 8px 0;  /* ✅ 차트 제목 여백 */
-    font-size: 18px;
-  }
-
-  #chart {
-    max-height: 160px;
-  }
-
-  #price-table {
-    margin-top: 10px;
-  }
-
-  .search-wrapper {
-    margin-bottom: 0px;
-  }
-}
-	@media (max-width: 768px) {
-  .top-control-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .select-box.half {
-    flex: 1 1 calc(50% - 5px); /* ✅ 50% 분할 */
-  }
-
-  .select-box.full {
-    flex: 1 1 100%;
-  }
-
-  .search-wrapper {
-    flex: 1 1 100%;
-    margin-bottom: 8px;
-  }
-
-  .mobile-select {
-    margin: 0px 0;
-  }
-}
 .mobile-select {
   display: none;
   width: 100%;
@@ -349,38 +202,29 @@
 }
 
 @media (max-width: 768px) {
-  .main-layout {
-    flex-direction: column;
+  .title-sub { font-size: 16px; }
+  .title-main { font-size: 36px; }
+
+  .top-control-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
   }
 
-  .list-scroll {
-    display: none !important;
-    width: 100%;
-    height: auto;
-    max-height: 300px;
-    margin-top: 10px;
-  }
+  .select-box.half { flex: 1 1 calc(50% - 5px); }
+  .select-box.full { flex: 1 1 100%; }
+  .search-wrapper { flex: 1 1 100%; margin-bottom: 8px; }
+  .mobile-select { display: block; margin: 0px 0; }
 
-  .mobile-select {
-    display: block;
-  }
+  .main-layout { flex-direction: column; }
+  .list-scroll { display: none !important; width: 100%; height: auto; max-height: 300px; margin-top: 10px; }
 
-  .chart-panel {
-    width: 100%;
-    padding: 0px 0;
-  }
+  .chart-panel { width: 100%; padding: 0 0 20px 0; }
+  #chart-title { margin: 15px 0 8px 0; font-size: 18px; }
+  #chart { max-height: 160px; }
 
-  #chart {
-    max-height: 160px;
-  }
-
-  #price-table table {
-    font-size: 12px;
-  }
-
-  #price-table td,
-  #price-table th {
-    padding: 4px;
-  }
+  #price-table { margin-top: 10px; }
+  #price-table table { font-size: 12px; }
+  #price-table td, #price-table th { padding: 4px; }
 }
-  </style>
