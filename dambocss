@@ -1,0 +1,374 @@
+<!-- Google Fonts 링크 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Orbit&family=Single+Day&display=swap" rel="stylesheet">
+
+<style>
+  [data-widget-name="메뉴/카테고리"] { display: none !important; }
+
+ .single-day-regular {
+  font-family: 'Single Day', cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.orbit-regular {
+  font-family: 'Orbit', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+  .gowun-batang-regular {
+  font-family: "Gowun Batang", serif;
+  font-style: normal;
+}
+
+  /* 기본 스타일 (PC 기준) */
+  .title-sub {
+    font-size: 20px;
+    color: #070b1e;
+    letter-spacing: -0.5px;
+    line-height: 1;
+    text-align: left;
+  }
+
+.title-main {
+       font-size: 60px;
+    font-weight: bold;
+    letter-spacing: -3px;
+    line-height: 1.2;
+    text-align: left;
+   font-weight: 400;
+    background:linear-gradient(180deg, #393939, #616161, #c4c4c4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+  /* ✅ 모바일 대응 (화면 너비 768px 이하일 때) */
+  @media screen and (max-width: 768px) {
+    .title-sub {
+      font-size: 16px;
+    }
+
+    .title-main {
+      font-size: 36px;
+    }
+  }
+</style>
+
+
+  <style>
+  
+   .layout-wrapper {
+  padding: 20px;
+}
+
+.top-control-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.select-box {
+  flex: 1 1 200px;
+}
+
+.custom-select {
+  width: 100%;
+  height: 46px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  background: #f9f9f9 url("data:image/svg+xml,%3Csvg viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='20,50 70,100 120,50' stroke='%23666' stroke-width='15' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center;
+  background-size: 12px;
+  appearance: none;
+}
+
+.search-wrapper {
+  position: relative;
+  flex: 2 1 300px;
+}
+
+.search-wrapper input {
+  width: 100%;
+  height: 46px;
+  padding: 14px 40px 14px 20px;
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.search-icon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  color: #315aff;
+}
+
+.main-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.list-scroll {
+  flex: 0 0 40%;
+  background: #f5f5f7;
+  height: 750px;
+  overflow-y: scroll; /* 항상 스크롤바 표시 */
+}
+
+/* ✅ 스크롤바 스타일 얇게 (웹킷 전용) */
+.list-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.list-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 3px;
+}
+
+.list-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chart-panel {
+  flex: 0 0 60%;
+  display: flex;
+  flex-direction: column;
+}
+
+.item-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.item-box.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+}
+	
+	.item-box.sticky-selected {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ✅ 선택된 항목 */
+.item-box.selected {
+  position: relative;
+  overflow: hidden;
+  transform: scale(1.005);
+  transition: all 0.3s ease;
+  box-shadow: none;
+  border: none;
+  background-color: #f5f5f7;
+}
+
+/* ✅ 선택된 항목 - 애니메이션 배경 */
+.item-box.selected::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(to right, #ffffff 40%, #f5f5f7 100%);
+  z-index: 0;
+  animation: slideBgExpand 1.2s ease forwards;
+}
+
+/* ✅ 선택된 항목 내 텍스트는 항상 위에 위치 */
+.item-box.selected > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ✅ 선택된 항목의 텍스트 강조 */
+.item-box.selected div > div:first-child {
+  color: #3a5df4;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* ✅ hover 상태일 때 텍스트 색만 살짝 강조 (크기 X) */
+.item-box:hover div > div:first-child {
+  color: #fd544f;
+}
+
+/* ✅ 하단 소제목 (금액 등) */
+.item-box div > div:last-child {
+  color: rgb(108, 108, 108);
+  font-size: 12px;
+  text-align: left;
+}
+
+/* ✅ 기타 텍스트 */
+.item-box small {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+/* ✅ 나타날 때 애니메이션 */
+.item-box.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ✅ 배경 애니메이션 키프레임 */
+@keyframes slideBgExpand {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+#chart {
+  max-height: 300px;
+  width: 100% !important;
+  height: auto !important;
+}
+  #chart-title {
+    color: #333;
+    font-size: 20px;
+    font-weight: bold;
+  }
+#price-table {
+  overflow-x: auto;
+}
+
+#price-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+#price-table td,
+#price-table th {
+  border-bottom: 1px solid #ddd;
+  padding: 6px;
+  text-align: left;
+}
+
+#price-table tr:hover {
+  background-color: #f0f4ff;
+  font-weight: bold;
+}
+
+	@media (max-width: 768px) {
+  .top-control-wrapper {
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .mobile-select {
+    display: block;
+    margin: 0px 0;  /* ✅ 상하 여백 조정 */
+    padding: 12px 20px;
+  }
+
+  .chart-panel {
+    width: 100%;
+    padding: 0 0 20px 0;  /* ✅ 그래프 하단 여백 */
+  }
+
+
+  #chart-title {
+    margin: 15px 0 8px 0;  /* ✅ 차트 제목 여백 */
+    font-size: 18px;
+  }
+
+  #chart {
+    max-height: 160px;
+  }
+
+  #price-table {
+    margin-top: 10px;
+  }
+
+  .search-wrapper {
+    margin-bottom: 0px;
+  }
+}
+	@media (max-width: 768px) {
+  .top-control-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .select-box.half {
+    flex: 1 1 calc(50% - 5px); /* ✅ 50% 분할 */
+  }
+
+  .select-box.full {
+    flex: 1 1 100%;
+  }
+
+  .search-wrapper {
+    flex: 1 1 100%;
+    margin-bottom: 8px;
+  }
+
+  .mobile-select {
+    margin: 0px 0;
+  }
+}
+.mobile-select {
+  display: none;
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  background: #f9f9f9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23333' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center;
+  appearance: none;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    flex-direction: column;
+  }
+
+  .list-scroll {
+    display: none !important;
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    margin-top: 10px;
+  }
+
+  .mobile-select {
+    display: block;
+  }
+
+  .chart-panel {
+    width: 100%;
+    padding: 0px 0;
+  }
+
+  #chart {
+    max-height: 160px;
+  }
+
+  #price-table table {
+    font-size: 12px;
+  }
+
+  #price-table td,
+  #price-table th {
+    padding: 4px;
+  }
+}
+  </style>
