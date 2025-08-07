@@ -34,7 +34,7 @@
     line-height: 1.2;
     text-align: left;
    font-weight: 400;
-    background:linear-gradient(180deg, #393939, #616161, #c4c4c4);
+    background:linear-gradient(180deg, #ffffff, #000000, #000000);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
