@@ -1,152 +1,132 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>FP Value Index (FVI) 계산기</title>
-<style>
-  html, body { width:100%; height:100%; margin:0; padding:0; }
-  :root{
-    --primary-color:#0a7aff; --accent-warm:#c4552e;
-    --background-color:#f2f2f7; --card:#ffffff; --text:#111;
-    --muted:#4b5563; --border:#e5e7eb; --input:#f3f4f6; --shadow:0 22px 42px rgba(0,0,0,.12);
-  }
-  [data-theme="dark"]{
-    --background-color:#0b0d0f; --card:#15181b; --text:#f5f7fa; --muted:#d1d5db;
-    --border:#2c3136; --input:#1c2024; --shadow:0 22px 42px rgba(0,0,0,.38);
-  }
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>FP Value Index (FVI) 계산기</title>
 
-/* === 자격증 리스트 2열 가득 채우기 (최종 수정본) === */
-#cert-list {
-  /* 1. 부모 컨테이너를 2열 그리드로 설정합니다. */
-  display: grid !important;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
+  <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" crossorigin="anonymous"></script>
+  <script>
+    // 실제 자바스크립트 키로 초기화
+    const KAKAO_JAVASCRIPT_KEY = "2a2e79669ea6bbbf07f5d68ffa1cc67b";
+    Kakao.init(KAKAO_JAVASCRIPT_KEY);
+    console.log("Kakao initialized:", Kakao.isInitialized());
+  </script>
 
-#cert-list > .card-check {
-  /* 2. 각 항목(label)을 flex 컨테이너로 만들어 자식(span)이 늘어날 수 있게 합니다. */
-  /* 기존의 display: block !important 규칙을 덮어씁니다. */
-  display: flex !important;
-  margin: 0; /* 불필요한 여백 제거 */
-}
-
-#cert-list > .card-check > span {
-  /* 3. 실제 보이는 버튼(span)이 너비를 100%로 꽉 채우도록 합니다. */
-  width: 100%;
-}
-
-/* 모바일에서는 1열로 표시 */
+  <style>
+    /* --- 기존 스타일 그대로 --- */
+    html, body { width:100%; height:100%; margin:0; padding:0; }
+    :root{ --primary-color:#0a7aff; --accent-warm:#c4552e; --background-color:#f2f2f7; --card:#ffffff; --text:#111; --muted:#4b5563; --border:#e5e7eb; --input:#f3f4f6; --shadow:0 22px 42px rgba(0,0,0,.12); }
+    [data-theme="dark"]{ --background-color:#0b0d0f; --card:#15181b; --text:#f5f7fa; --muted:#d1d5db; --border:#2c3136; --input:#1c2024; --shadow:0 22px 42px rgba(0,0,0,.38); }
+    #gaw-calc-root #gstep-6 .input-group{ display:block!important; width:100%!important; max-width:none!important; flex:1 1 100%!important; margin:0!important; padding:0!important; }
+    #gaw-calc-root #gstep-6 #cert-list{ display:flex!important; flex-direction:column!important; gap:12px!important; align-items:stretch!important; width:100%!important; }
+    #gaw-calc-root #gstep-6 #cert-list > label.card-check > span{ width:100%!important; max-width:none!important; }
+    #bg-fill{position:fixed; inset:0; z-index:-1;}
+    .bg-gradient{background-size:400% 400%; animation:gradientBG 22s ease infinite;}
+    .bg-gradient--light{background:linear-gradient(135deg,#ffe6e6,#fde2f3,#e5e9ff,#dff6ff,#e6ffe6,#fff6e0,#ffe6cc,#ffd9e6);}
+    .bg-gradient--dark{background:linear-gradient(135deg,#2b3133,#272a35,#222a36,#1d2a31,#202f26,#2a2922,#2e2623,#2c252c);}
+    @keyframes gradientBG{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    #gaw-calc-root{display:flex; justify-content:center; align-items:center; min-height:100svh; width:100%; padding:28px 12px; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Apple SD Gothic Neo","Noto Sans KR","Segoe UI",Roboto,Helvetica,Arial,sans-serif; letter-spacing:-.01em;}
+    #gaw-calc-root *, #gaw-calc-root *::before, #gaw-calc-root *::after{ box-sizing:border-box; }
+    #calculator-container{width:100%; max-width:760px; background:var(--card); color:var(--text); border-radius:24px; border:1px solid var(--border); box-shadow:var(--shadow); padding:46px 48px; position:relative;}
+    .theme-switch{position:absolute; top:16px; right:16px; z-index:10; display:inline-flex; flex-direction:column; align-items:flex-end; gap:6px;}
+    .theme-switch input{display:none;}
+    .theme-switch .track{width:96px; height:36px; border-radius:999px; background:var(--input); border:1px solid var(--border); position:relative; box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 2px rgba(0,0,0,.06);}
+    .theme-switch .thumb{position:absolute; top:4px; left:4px; width:28px; height:28px; border-radius:50%; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.25); transition:left .25s ease, background .25s ease;}
+    [data-theme="dark"] .theme-switch .thumb{background:#2b2f33;}
+    .theme-switch input:checked + .track .thumb{left:64px}
+    .theme-switch .switch-caption{font-size:12px; font-weight:700; color:var(--muted); display:flex; gap:10px; margin-right:4px; align-items:center;}
+    .switch-caption .separator{opacity:.35;} .switch-caption .light,.switch-caption .dark{opacity:.45;}
+    .theme-switch input:not(:checked) ~ .switch-caption .light{opacity:1; color:var(--text);}
+    .theme-switch input:checked ~ .switch-caption .dark{opacity:1; color:var(--text);}
+    #calculator-container h1{text-align:center; font-size:32px; line-height:1.2; font-weight:800; margin:0 0 8px; letter-spacing:-.02em;}
+    #subtitle{text-align:center; color:var(--muted); margin-bottom:18px;}
+    #progress-bar-container{ height:12px; border-radius:999px; overflow:hidden; background:#2f343a; margin:8px 0 28px; }
+    #progress-bar{ height:100%; width:0%; background:var(--primary-color); transition:width .35s ease; }
+    .gstep{ display:none; animation:fade .22s; } .gstep.active{ display:block; }
+    .gstep h2{ font-size:22px; line-height:1.35; font-weight:800; margin:6px 0 18px; }
+    .input-group{ margin-bottom:16px; }
+    .input-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    @media (max-width:680px){ .input-row{ grid-template-columns:1fr; } }
+    label{ display:block; color:var(--muted); font-weight:800; margin-bottom:8px; }
+    input[type="number"], input[type="text"]{ width:100%; height:56px; border-radius:14px; border:1px solid var(--border); background:var(--input); color:var(--text); -webkit-text-fill-color:var(--text); font-size:18px; font-weight:800; padding:0 16px; outline:none; }
+    input::placeholder{ color:#9aa3ad; } [data-theme="dark"] input::placeholder{ color:#e5e7eb; }
+    .gaw-select{ width:100%; height:56px; border-radius:14px; border:1px solid var(--border); background:var(--input); color:var(--text); font-size:16px; font-weight:800; padding:0 16px; outline:none; appearance:none; -webkit-appearance:none; background-image:url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22292.4%22 height=%22292.4%22%3E%3Cpath fill=%22%234b5563%22 d=%22M287 69.4a17.6 17.6 0 0 0-13-5.4H18.4c-5 0-9.3 1.8-12.9 5.4A17.6 17.6 0 0 0 0 82.2c0 5 1.8 9.3 5.4 12.9l128 127.9c3.6 3.6 7.8 5.4 12.8 5.4s9.2-1.8 12.8-5.4L287 95c3.5-3.5 5.4-7.8 5.4-12.8 0-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 16px top 50%; background-size:12px auto;}
+    [data-theme="dark"] .gaw-select{ background-image:url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22292.4%22 height=%22292.4%22%3E%3Cpath fill=%22%23d1d5db%22 d=%22M287 69.4a17.6 17.6 0 0 0-13-5.4H18.4c-5 0-9.3 1.8-12.9 5.4A17.6 17.6 0 0 0 0 82.2c0 5 1.8 9.3 5.4 12.9l128 127.9c3.6 3.6 7.8 5.4 12.8 5.4s9.2-1.8 12.8-5.4L287 95c3.5-3.5 5.4-7.8 5.4-12.8 0-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');}
+    .slider{ width:100%; } input[type="range"]{ width:100%; height:12px; border-radius:999px; -webkit-appearance:none; appearance:none; outline:none; background:#2f343a; }
+    input[type="range"]::-webkit-slider-thumb{ -webkit-appearance:none; width:26px; height:26px; border-radius:50%; background:var(--accent-warm); border:3px solid #ffffff22; margin-top:-7px; }
+    input[type="range"]::-moz-range-thumb{ width:26px; height:26px; border-radius:50%; background:var(--accent-warm); border:3px solid #ffffff22; }
+    .val-pill{ display:inline-block; min-width:56px; padding:4px 10px; border-radius:999px; font-weight:900; background:#e7f0ff; color:#0a58ca; font-size:12px; margin-left:6px; }
+    .checks{ display:flex; flex-direction:column; gap:12px; }
+    .card-check input{ display:none; }
+    .card-check span{ display:flex; align-items:center; gap:12px; min-height:56px; border-radius:12px; background:#eef2f7; border:1px solid var(--border); color:#1f2937; padding:10px 16px; font-size:15px; font-weight:800; }
+    [data-theme="dark"] .card-check span{ color:#f2f6fb; background:#21262c; }
+    .card-check input:checked + span{ border-color:var(--primary-color); box-shadow:0 0 0 2px rgba(10,122,255,.25); }
+    .card-check span i{ width:22px; height:22px; border-radius:6px; border:2px solid #8a9096; background:#15181a; position:relative; }
+    .card-check input:checked + span i::after{ content:""; position:absolute; left:6px; top:2px; width:8px; height:14px; border:3px solid #fff; border-top:none; border-left:none; transform:rotate(45deg); }
+    .checks.compact .card-check span{ min-height:48px; padding:8px 14px; font-size:14px; }
+    #navigation-buttons{ margin-top:24px; display:flex; gap:10px; }
+    button{ height:56px; border-radius:12px; border:none; background:var(--primary-color); color:#fff; font-size:18px; font-weight:900; letter-spacing:-.01em; cursor:pointer; transition:transform .08s, filter .2s; flex:1; }
+    button:active{ transform:translateY(1px); }
+    #prev-btn{ background:transparent; color:var(--primary-color); border:1px solid var(--primary-color); }
+    #result-display{ text-align:center; }
+    #badge{ display:inline-block; padding:6px 10px; border-radius:999px; font-size:12px; font-weight:900; margin-bottom:6px; background:#e5f0ff; color:#0a58ca; }
+    #fvi-score{ font-size:40px; font-weight:900; margin:0 0 8px; }
+    .final-value{ font-size:28px; font-weight:900; color:var(--text); margin:10px 0 4px; }
+    .value-unit{ font-size:16px; color:#7fb1ff; }
+    .result-description{ color:var(--muted); margin:6px 0 16px; }
+    .insights{ text-align:left; background:var(--input); border:1px solid var(--border); border-radius:12px; padding:14px; margin-top:14px; color:var(--muted); white-space:pre-line; }
+    .loader{ width:24px; height:24px; border:3px solid var(--border); border-bottom-color: var(--primary-color); border-radius:50%; animation: rotation 1s linear infinite; }
+    @keyframes rotation{ 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
+    #ai-result-container{ margin-top:20px }
+    .ai-sections{ display:grid; gap:21px; padding:20px 6px; }
+    .ai-card{ padding:6px 16px; text-align:left; }
+    .ai-card h4{ margin:0 0 10px; font-size:20px; font-weight:900; color:var(--text); }
+    @keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+  
+  /* 모바일 화면에서 테마 스위치 스타일 조정 */
 @media (max-width: 680px) {
-  #cert-list {
-    grid-template-columns: 1fr;
+  .theme-switch {
+    /* 스위치를 조금 더 보기 좋은 위치로 조정합니다. */
+    top: 20px;
+    right: 20px;
+    gap: 0; /* 캡션이 사라지므로 간격 제거 */
+  }
+  .theme-switch .switch-caption {
+    /* 모바일에서는 텍스트 캡션을 숨깁니다. */
+    display: none;
+  }
+  .theme-switch .track {
+    /* 트랙 너비를 줄여 더 작고 심플하게 만듭니다. */
+    width: 52px;
+    height: 30px;
+	margin-top: -8px;
+
+  }
+  .theme-switch .thumb {
+    /* 엄지 버튼 크기를 트랙에 맞게 조정합니다. */
+    width: 22px;
+    height: 22px;
+  }
+  .theme-switch input:checked + .track .thumb {
+    /* 다크 모드일 때 엄지 버튼의 이동 위치를 재계산합니다. */
+    left: 26px;
   }
 }
-
-
-  #bg-fill{position:fixed; inset:0; z-index:-1;}
-  .bg-gradient{background-size:400% 400%; animation:gradientBG 22s ease infinite;}
-  .bg-gradient--light{background:linear-gradient(135deg,#ffe6e6,#fde2f3,#e5e9ff,#dff6ff,#e6ffe6,#fff6e0,#ffe6cc,#ffd9e6);}
-  .bg-gradient--dark{background:linear-gradient(135deg,#2b3133,#272a35,#222a36,#1d2a31,#202f26,#2a2922,#2e2623,#2c252c);}
-  @keyframes gradientBG{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-
-  #gaw-calc-root{display:flex; justify-content:center; align-items:center; min-height:100svh; width:100%; padding:28px 12px;
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Apple SD Gothic Neo","Noto Sans KR","Segoe UI",Roboto,Helvetica,Arial,sans-serif; letter-spacing:-.01em;}
-  #gaw-calc-root *, #gaw-calc-root *::before, #gaw-calc-root *::after{ box-sizing:border-box; }
-
-  #calculator-container{width:100%; max-width:760px; background:var(--card); color:var(--text); border-radius:24px; border:1px solid var(--border);
-    box-shadow:var(--shadow); padding:46px 48px; position:relative;}
-
-  /* theme switch */
-  .theme-switch{position:absolute; top:16px; right:16px; z-index:10; display:inline-flex; flex-direction:column; align-items:flex-end; gap:6px;}
-  .theme-switch input{display:none;}
-  .theme-switch .track{width:96px; height:36px; border-radius:999px; background:var(--input); border:1px solid var(--border); position:relative;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 2px rgba(0,0,0,.06);}
-  .theme-switch .thumb{position:absolute; top:4px; left:4px; width:28px; height:28px; border-radius:50%; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.25);
-    transition:left .25s ease, background .25s ease;}
-  [data-theme="dark"] .theme-switch .thumb{background:#2b2f33;}
-  .theme-switch input:checked + .track .thumb{left:64px}
-  .theme-switch .switch-caption{font-size:12px; font-weight:700; color:var(--muted); display:flex; gap:10px; margin-right:4px; align-items:center;}
-  .switch-caption .separator{opacity:.35;} .switch-caption .light,.switch-caption .dark{opacity:.45;}
-  .theme-switch input:not(:checked) ~ .switch-caption .light{opacity:1; color:var(--text);}
-  .theme-switch input:checked ~ .switch-caption .dark{opacity:1; color:var(--text);}
-
-  /* headings */
-  #calculator-container h1{ text-align:center; font-size:32px; line-height:1.2; font-weight:800; margin:0 0 8px; letter-spacing:-.02em; }
-  #subtitle{ text-align:center; color:var(--muted); margin-bottom:18px; }
-  #progress-bar-container{ height:12px; border-radius:999px; overflow:hidden; background:#2f343a; margin:8px 0 28px; }
-  #progress-bar{ height:100%; width:0%; background:var(--primary-color); transition:width .35s ease; }
-
-  .gstep{ display:none; animation:fade .22s; } .gstep.active{ display:block; }
-  .gstep h2{ font-size:22px; line-height:1.35; font-weight:800; margin:6px 0 18px; }
-
-  .input-group{ margin-bottom:16px; }
-  .input-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  @media (max-width:680px){ .input-row{ grid-template-columns:1fr; } }
-
-  label{ display:block; color:var(--muted); font-weight:800; margin-bottom:8px; }
-  input[type="number"], input[type="text"]{ width:100%; height:56px; border-radius:14px; border:1px solid var(--border); background:var(--input);
-    color:var(--text); -webkit-text-fill-color:var(--text); font-size:18px; font-weight:800; padding:0 16px; outline:none; }
-  input::placeholder{ color:#9aa3ad; } [data-theme="dark"] input::placeholder{ color:#e5e7eb; }
-
-  /* sliders */
-  .slider{ width:100%; } input[type="range"]{ width:100%; height:12px; border-radius:999px; -webkit-appearance:none; appearance:none; outline:none; background:#2f343a; }
-  input[type="range"]::-webkit-slider-thumb{ -webkit-appearance:none; width:26px; height:26px; border-radius:50%; background:var(--accent-warm); border:3px solid #ffffff22; margin-top:-7px; }
-  input[type="range"]::-moz-range-thumb{ width:26px; height:26px; border-radius:50%; background:var(--accent-warm); border:3px solid #ffffff22; }
-  .val-pill{ display:inline-block; min-width:56px; padding:4px 10px; border-radius:999px; font-weight:900; background:#e7f0ff; color:#0a58ca; font-size:12px; margin-left:6px; }
-
-  /* checkbox cards (compact for certs) */
-  .checks{ display:flex; flex-direction:column; gap:12px; }
-  .card-check input{ display:none; }
-  .card-check span{ display:flex; align-items:center; gap:12px; min-height:56px; border-radius:12px; background:#eef2f7; border:1px solid var(--border);
-    color:#1f2937; padding:10px 16px; font-size:15px; font-weight:800; }
-  [data-theme="dark"] .card-check span{ color:#f2f6fb; background:#21262c; }
-  .card-check input:checked + span{ border-color:var(--primary-color); box-shadow:0 0 0 2px rgba(10,122,255,.25); }
-  .card-check span i{ width:22px; height:22px; border-radius:6px; border:2px solid #8a9096; background:#15181a; position:relative; }
-  .card-check input:checked + span i{ border-color:var(--primary-color); background:var(--primary-color); }
-  .card-check input:checked + span i::after{ content:""; position:absolute; left:6px; top:2px; width:8px; height:14px; border:3px solid #fff; border-top:none; border-left:none; transform:rotate(45deg); }
-  /* compact */
-  .checks.compact .card-check span{ min-height:48px; padding:8px 14px; font-size:14px; }
-
-  /* segmented 5 */
-  .seg5{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
-  .seg5 input{ display:none; }
-  .seg5 label{ user-select:none; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:900;
-    border:1px solid var(--border); background:var(--card); }
-  .seg5 input:checked + label{ border-color:var(--primary-color); box-shadow:0 0 0 2px rgba(10,122,255,.20); }
-
-  /* nav buttons */
-  #navigation-buttons{ margin-top:24px; display:flex; gap:10px; }
-  button{ height:56px; border-radius:12px; border:none; background:var(--primary-color); color:#fff; font-size:18px; font-weight:900; letter-spacing:-.01em;
-    cursor:pointer; transition:transform .08s, filter .2s; flex:1; } button:active{ transform:translateY(1px); }
-  #prev-btn{ background:transparent; color:var(--primary-color); border:1px solid var(--primary-color); }
-
-  /* result */
-  #result-display{ text-align:center; }
-  #badge{ display:inline-block; padding:6px 10px; border-radius:999px; font-size:12px; font-weight:900; margin-bottom:6px; background:#e5f0ff; color:#0a58ca; }
-  #fvi-score{ font-size:40px; font-weight:900; margin:0 0 8px; }
-  .final-value{ font-size:28px; font-weight:900; color:var(--text); margin:10px 0 4px; }
-  .value-unit{ font-size:16px; color:#7fb1ff; }
-  .result-description{ color:var(--muted); margin:6px 0 16px; }
-  .insights{ text-align:left; background:var(--input); border:1px solid var(--border); border-radius:12px; padding:14px; margin-top:14px; color:var(--muted); white-space:pre-line; }
-
-  /* AI */
-  .loader{ width:24px; height:24px; border:3px solid var(--border); border-bottom-color: var(--primary-color); border-radius:50%; animation: rotation 1s linear infinite; }
-  @keyframes rotation{ 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
-  #ai-result-container{ margin-top:20px }
-  .ai-sections{ display:grid; gap:21px; padding:20px 6px; }
-  .ai-card{ padding:6px 16px; text-align:left; }
-  .ai-card h4{ margin:0 0 10px; font-size:20px; font-weight:900; color:var(--text); }
-
-  @keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
-</style>
+	/* 모바일 화면에서 컨테이너 좌우 여백 조정 */
+@media (max-width: 680px) {
+  #calculator-container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+  
+  </style>
 </head>
 <body>
 <div id="bg-fill" class="bg-gradient bg-gradient--light"></div>
-
 <div id="gaw-calc-root" data-theme="light">
   <div id="calculator-container">
-
     <div class="theme-switch" id="theme-switch">
       <input type="checkbox" id="theme-checkbox" aria-label="Theme switch" />
       <span class="track"><span class="thumb"></span></span>
@@ -160,18 +140,52 @@
     <div id="progress-bar-container"><div id="progress-bar"></div></div>
 
     <form id="calculator-form" onsubmit="return false;">
-      <!-- 1 기본 -->
+      
       <div class="gstep active" id="gstep-1">
         <h2>기본 정보를 입력해 주세요</h2>
+        
         <div class="input-row">
-          <div class="input-group"><label for="birth-year">출생 연도 (YYYY)</label>
-            <input type="number" id="birth-year" placeholder="예: 1987" min="1940" max="2015" inputmode="numeric"/></div>
-          <div class="input-group"><label for="career-length">총 경력 (년)</label>
-            <input type="number" id="career-length" placeholder="예: 7" min="0" inputmode="numeric"/></div>
+          <div class="input-group">
+            <label for="user-name">이름 / 별칭</label>
+            <input type="text" id="user-name" placeholder="예: 홍길동" />
+          </div>
+          <div class="input-group">
+            <label for="activity-region">주요 활동 지역</label>
+            <select id="activity-region" class="gaw-select">
+              <option>서울특별시</option>
+              <option>부산광역시</option>
+              <option>대구광역시</option>
+              <option>인천광역시</option>
+              <option>광주광역시</option>
+              <option>대전광역시</option>
+              <option>울산광역시</option>
+              <option>세종특별자치시</option>
+              <option>경기도</option>
+              <option>강원특별자치도</option>
+              <option>충청북도</option>
+              <option>충청남도</option>
+              <option>전북특별자치도</option>
+              <option>전라남도</option>
+              <option>경상북도</option>
+              <option>경상남도</option>
+              <option>제주특별자치도</option>
+              <option>전국</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-row">
+          <div class="input-group">
+            <label for="birth-year">출생 연도 (YYYY)</label>
+            <input type="number" id="birth-year" placeholder="예: 1987" min="1940" max="2015" inputmode="numeric"/>
+          </div>
+          <div class="input-group">
+            <label for="career-length">총 경력 (년)</label>
+            <input type="number" id="career-length" placeholder="예: 7" min="0" inputmode="numeric"/>
+          </div>
         </div>
       </div>
 
-      <!-- 2 소득 -->
       <div class="gstep" id="gstep-2">
         <h2>직전년도 소득을 입력해 주세요</h2>
         <div class="input-group">
@@ -181,7 +195,6 @@
         </div>
       </div>
 
-      <!-- 3 월 성과 -->
       <div class="gstep" id="gstep-3">
         <h2>월간 성과를 알려주세요</h2>
         <div class="input-row">
@@ -196,7 +209,6 @@
         </div>
       </div>
 
-      <!-- 4 포트폴리오/품질 -->
       <div class="gstep" id="gstep-4">
         <h2>포트폴리오와 품질 지표</h2>
         <div class="input-row">
@@ -211,7 +223,6 @@
         </div>
       </div>
 
-      <!-- 5 채널 -->
       <div class="gstep" id="gstep-5">
         <h2>영업 방식(해당 모두 선택)</h2>
         <div class="checks">
@@ -221,51 +232,45 @@
           <label class="card-check"><input type="checkbox" name="sales-method" value="seminar"><span><i></i>세미나 영업</span></label>
           <label class="card-check"><input type="checkbox" name="sales-method" value="inhouse"><span><i></i>인하우스/유입</span></label>
           <label class="card-check"><input type="checkbox" name="sales-method" value="niche"><span><i></i>특화 시장</span></label>
+          <label class="card-check"><input type="checkbox" name="sales-method" value="corporate"><span><i></i>법인 영업</span></label>
         </div>
       </div>
 
-      <!-- 6 자격/성장 : 컴팩트 -->
       <div class="gstep" id="gstep-6">
         <h2>전문성과 성장성</h2>
         <div class="input-group">
           <label>자격증/교육 이수 (해당 모두 체크)</label>
-<div class="compact" id="cert-list">
-<label class="card-check"><input type="checkbox" value="life"><span><i></i>생명보험설계사</span></label>
-  <label class="card-check"><input type="checkbox" value="nonlife"><span><i></i>손해보험설계사</span></label>
-  <label class="card-check"><input type="checkbox" value="third"><span><i></i>제3보험설계사</span></label>
-  <label class="card-check"><input type="checkbox" value="variable"><span><i></i>변액보험판매관리사</span></label>
-  <label class="card-check"><input type="checkbox" value="afpk"><span><i></i>AFPK®</span></label>
-  <label class="card-check"><input type="checkbox" value="cfp"><span><i></i>CFP®</span></label>
-  <label class="card-check"><input type="checkbox" value="lossadj"><span><i></i>손해사정사</span></label>
-  <label class="card-check"><input type="checkbox" value="fund"><span><i></i>펀드투자권유대행인</span></label>
-  <label class="card-check"><input type="checkbox" value="securities"><span><i></i>증권투자권유대행인</span></label>
-</div>
+          <div class="compact" id="cert-list">
+            <label class="card-check"><input type="checkbox" value="life"><span><i></i>생명보험설계사</span></label>
+            <label class="card-check"><input type="checkbox" value="nonlife"><span><i></i>손해보험설계사</span></label>
+            <label class="card-check"><input type="checkbox" value="third"><span><i></i>제3보험설계사</span></label>
+            <label class="card-check"><input type="checkbox" value="variable"><span><i></i>변액보험판매관리사</span></label>
+            <label class="card-check"><input type="checkbox" value="afpk"><span><i></i>AFPK®</span></label>
+            <label class="card-check"><input type="checkbox" value="cfp"><span><i></i>CFP®</span></label>
+            <label class="card-check"><input type="checkbox" value="lossadj"><span><i></i>손해사정사</span></label>
+            <label class="card-check"><input type="checkbox" value="fund"><span><i></i>펀드투자권유대행인</span></label>
+            <label class="card-check"><input type="checkbox" value="securities"><span><i></i>증권투자권유대행인</span></label>
+          </div>
           <div class="hint">전문점수 총합 최대 +10, 금액 가산 최대 +1,000만원</div>
         </div>
       </div>
 
-      <!-- 7+ 추가 문항: 2문항씩 페이지 생성 (제목 없음) -->
-      <!-- 동적으로 삽입됨 -->
-
-      <!-- 결과 -->
       <div class="gstep" id="gstep-result">
         <div id="result-display">
           <div id="badge">Result</div>
-          <h2>당신의 FVI와 예상 금액</h2>
+          <h2 id="result-title">당신의 FVI와 예상 금액</h2>
           <div id="fvi-score">FVI 0</div>
           <div class="result-description" id="grade-text">등급 산정 중…</div>
           <p class="final-value"><span id="final-value-text">0원</span> <span class="value-unit">/ 예상 금액</span></p>
           <div class="insights" id="insights-box"></div>
-
           <div style="margin-top:14px; display:flex; gap:10px;">
             <button type="button" id="restart-btn">다시 계산</button>
             <button type="button" id="ai-consulting-btn">AI 컨설팅 받기</button>
+            <button type="button" id="send-kakao-btn" style="background:#fae100;color:#111;">카카오톡으로 공유</button>
           </div>
-
           <div id="ai-result-container" style="display:none;">
             <h3 style="margin:14px 0 10px;font-size:16px;">GA WORLD AI의 분석 및 조언</h3>
-            <div id="ai-result-content"
-                 style="border:1px solid var(--border);background:var(--input);padding:14px;border-radius:12px;color:var(--muted);min-height:44px;"></div>
+            <div id="ai-result-content" style="border:1px solid var(--border);background:var(--input);padding:14px;border-radius:12px;color:var(--muted);min-height:44px;"></div>
           </div>
         </div>
       </div>
@@ -285,10 +290,8 @@
 
   /* ==== Theme ==== */
   const bgFill=document.getElementById("bg-fill"); const themeCheckbox=document.getElementById("theme-checkbox");
-  function applyBg(theme){ bgFill.classList.add("bg-gradient"); bgFill.classList.remove("bg-gradient--light","bg-gradient--dark");
-    bgFill.classList.add(theme==="dark"?"bg-gradient--dark":"bg-gradient--light"); }
-  function applyTheme(theme){ root.setAttribute("data-theme",theme); localStorage.setItem("fvi-theme",theme);
-    themeCheckbox.checked=(theme==="dark"); applyBg(theme); }
+  function applyBg(theme){ bgFill.classList.add("bg-gradient"); bgFill.classList.remove("bg-gradient--light","bg-gradient--dark"); bgFill.classList.add(theme==="dark"?"bg-gradient--dark":"bg-gradient--light"); }
+  function applyTheme(theme){ root.setAttribute("data-theme",theme); localStorage.setItem("fvi-theme",theme); themeCheckbox.checked=(theme==="dark"); applyBg(theme); }
   const prefersDark=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;
   applyTheme(localStorage.getItem("fvi-theme")||(prefersDark?"dark":"light"));
   document.querySelector(".theme-switch .track")?.addEventListener("click",()=>{ themeCheckbox.checked=!themeCheckbox.checked; themeCheckbox.dispatchEvent(new Event("change")); });
@@ -309,33 +312,42 @@
   const EXTRA_QUESTIONS = [
     { id:"q-daily-consults", label:"하루 평균 상담 건수는 몇 건입니까?", type:"number", placeholder:"예: 4",
       bonusCalc:(v)=>{const n=+v||0; if(n>=5) return "q5"; if(n===4) return "q4"; if(n===3) return "q3"; return "q2"; }},
-    { id:"q-managed-clients", label:"현재 유지 관리 중인 고객 수는 몇 명입니까?", type:"number", placeholder:"예: 220",
-      bonusCalc:(v)=>{const n=+v||0; if(n>=300) return "m300"; if(n>=200) return "m200"; if(n>=100) return "m100"; return "m0"; }},
+    { id:"q-managed-clients", label:"현재 유지 관리 중인 고객 수는 대략 몇 명입니까?", type:"scale5",
+      scaleLabels:["50명 이하", "50~100명", "100~200명", "200~300명", "300명 이상"],
+      map:["m_lt50", "m_50_100", "m_100_200", "m_200_300", "m_300p"] },
     { id:"q-referral-rate", label:"기존 고객 소개로 유입되는 비율(%)", type:"range", min:0, max:100, step:1,
       bonusCalc:(v)=>{const n=+v||0; if(n>=40) return "r40"; if(n>=20) return "r20"; if(n>=10) return "r10"; return "r0"; }},
     { id:"q-household-share", label:"가구(세대) 전체를 관리하는 고객 비중(%)", type:"range", min:0, max:100, step:1,
       bonusCalc:(v)=>{const n=+v||0; if(n>=30) return "h30"; if(n>=20) return "h20"; if(n>=10) return "h10"; return "h0"; }},
-    { id:"q-digital", label:"온라인/디지털 채널 운영 수준", type:"scale5", scaleLabels:["없음","기초","보통","적극","체계적"], map:["dig-l1","dig-l2","dig-l3","dig-l4","dig-l5"] },
-    { id:"q-esign", label:"비대면 상담/전자서명 프로세스 숙련도", type:"scale5", scaleLabels:["미숙","보통-","보통","능숙","매우 능숙"], map:["es-l1","es-l2","es-l3","es-l4","es-l5"] },
+    { id:"q-digital-marketing", label:"자체 마케팅 역량 (해당 모두 선택)", type:"checkbox_group",
+      options: [
+        { label: "카톡으로 고객관리 정도", value: "dm_kakao" },
+        { label: "SNS 시작 단계", value: "dm_sns_start" },
+        { label: "주 1회 이상 블로그 포스팅", value: "dm_blog" },
+        { label: "1천명 이상의 SNS 팔로우 보유", value: "dm_1k" },
+        { label: "1만명 이상의 팔로우 보유", value: "dm_10k" },
+        { label: "자체 홈페이지 or 어플리케이션 운영", value: "dm_app" }
+      ]},
+    { id:"q-esign", label:"비대면 상담/전자서명 프로세스 숙련도", type:"scale5",
+      scaleLabels:["매우 어려움", "어려움", "보통", "능숙", "매우 능숙"],
+      map:["es-l1","es-l2","es-l3","es-l4","es-l5"] },
     { id:"q-recruit-num", label:"리쿠르팅 경험(최근 성공/정착 인원 수)", type:"number", placeholder:"예: 3",
       bonusCalc:(v)=>{const n=+v||0; return (n>=3)?"rec-3plus":"none"; }},
     { id:"q-position", label:"소속 조직 내 직급", type:"scale5", scaleLabels:["FP","부지점장","지점장","지사장","본부장 이상"], map:["pos-fp","pos-sub","pos-branch","pos-area","pos-hq"] },
     { id:"q-mentoring", label:"정기적인 멘토링/교육 또는 사례 공유를 진행합니까?", type:"scale5", scaleLabels:["없음","가끔","월1회","월2회","주1회+"], map:["ment-l1","ment-l2","ment-l3","ment-l4","ment-l5"] },
-    { id:"q-system", label:"영업 노하우를 매뉴얼/시스템으로 만들어 동료가 활용합니까?", type:"scale5", scaleLabels:["없음","초안","부분공유","팀공유","조직표준"], map:["sys-l1","sys-l2","sys-l3","sys-l4","sys-l5"] },
+    { id:"q-system", label:"영업 노하우를 매뉴얼로 만들어 동료가 활용합니까?", type:"scale5", scaleLabels:["없음","초안","부분공유","팀공유","조직표준"], map:["sys-l1","sys-l2","sys-l3","sys-l4","sys-l5"] },
     { id:"q-seminar", label:"업계 세미나/스터디 정기 참여", type:"scale5", scaleLabels:["없음","분기1회","월1회","월2회","주1회+"], map:["sem-l1","sem-l2","sem-l3","sem-l4","sem-l5"] },
-    { id:"q-termination", label:"최근 1년 내 해촉 이력", type:"scale5", scaleLabels:["예","—","—","—","아니오"], map:["pen-terminate","none","none","none","none"] },
+    { id:"q-termination", label:"3년 이내 해촉 이력", type:"scale5",
+      scaleLabels:["예", "아니오"], map:["pen-terminate","none"] },
   ];
-  // 2개씩 쪼갠 페이지
   const EXTRA_PAGES=[]; for(let i=0;i<EXTRA_QUESTIONS.length;i+=2){ EXTRA_PAGES.push(EXTRA_QUESTIONS.slice(i,i+2)); }
 
-  // 보정 규칙
-  const BONUS_RULES={
-    "q5":{fvi:5,amount:0},"q4":{fvi:4,amount:0},"q3":{fvi:3,amount:0},"q2":{fvi:2,amount:0},
-    "m300":{fvi:5,amount:0},"m200":{fvi:4,amount:0},"m100":{fvi:3,amount:0},"m0":{fvi:2,amount:0},
+  const BONUS_RULES={ "q5":{fvi:5,amount:0},"q4":{fvi:4,amount:0},"q3":{fvi:3,amount:0},"q2":{fvi:2,amount:0},
+    "m_lt50":{fvi:1,amount:0},"m_50_100":{fvi:2,amount:0},"m_100_200":{fvi:3,amount:0},"m_200_300":{fvi:4,amount:0},"m_300p":{fvi:5,amount:0},
     "r40":{fvi:5,amount:0},"r20":{fvi:4,amount:0},"r10":{fvi:3,amount:0},"r0":{fvi:2,amount:0},
     "h30":{fvi:5,amount:0},"h20":{fvi:4,amount:0},"h10":{fvi:3,amount:0},"h0":{fvi:2,amount:0},
-    "dig-l1":{fvi:2,amount:0},"dig-l2":{fvi:3,amount:0},"dig-l3":{fvi:4,amount:0},"dig-l4":{fvi:5,amount:0},"dig-l5":{fvi:5,amount:0},
-    "es-l1":{fvi:2,amount:0},"es-l2":{fvi:3,amount:0},"es-l3":{fvi:4,amount:0},"es-l4":{fvi:5,amount:0},"es-l5":{fvi:5,amount:0},
+    "dm_kakao":{fvi:1},"dm_sns_start":{fvi:1},"dm_blog":{fvi:2},"dm_1k":{fvi:2},"dm_10k":{fvi:3},"dm_app":{fvi:3},
+    "es-l1":{fvi:1,amount:0},"es-l2":{fvi:2,amount:0},"es-l3":{fvi:3,amount:0},"es-l4":{fvi:4,amount:0},"es-l5":{fvi:5,amount:0},
     "rec-3plus":{fvi:5,amount:0},
     "pos-fp":{fvi:0,amount:0},"pos-sub":{fvi:2,amount:0},"pos-branch":{fvi:3,amount:0},"pos-area":{fvi:4,amount:0},"pos-hq":{fvi:5,amount:0},
     "ment-l1":{fvi:0,amount:0},"ment-l2":{fvi:1,amount:0},"ment-l3":{fvi:3,amount:0},"ment-l4":{fvi:4,amount:0},"ment-l5":{fvi:5,amount:0},
@@ -349,18 +361,16 @@
   function renderExtraPages(){
     const form=root.querySelector("#calculator-form");
     const resultStep=document.getElementById("gstep-result");
-    // 기존에 생성된 페이지 제거
     Array.from(form.querySelectorAll('[data-extra="1"]')).forEach(n=>n.remove());
-
     EXTRA_PAGES.forEach((page,idx)=>{
       const step=document.createElement("div");
       step.className="gstep"; step.id=`gstep-extra-${idx+1}`; step.setAttribute("data-extra","1");
-      // 제목 없음(요청사항)
       const grid=document.createElement("div"); grid.className="input-row";
       page.forEach(q=>{
         const wrap=document.createElement("div"); wrap.className="input-group";
         const hasPill=(q.type==="range");
-        const label=document.createElement("label"); label.innerHTML=q.label + (hasPill?` <span class="val-pill" id="${q.id}-pill">0%</span>`:"");
+        const label=document.createElement("label"); label.htmlFor = q.id;
+        label.innerHTML=q.label + (hasPill?` <span class="val-pill" id="${q.id}-pill">0%</span>`:"");
         wrap.appendChild(label);
 
         if(q.type==="number"||q.type==="text"){
@@ -373,15 +383,33 @@
           setTimeout(()=>{ const pill=document.getElementById(`${q.id}-pill`); if(pill) pill.textContent=`${(+inp.value||0)}%`; },0);
           inp.addEventListener("input",()=>{ const pill=document.getElementById(`${q.id}-pill`); if(pill) pill.textContent=`${(+inp.value||0)}%`; });
         }else if(q.type==="scale5"){
-          const box=document.createElement("div"); box.className="seg5";
-          (q.scaleLabels||["1","2","3","4","5"]).forEach((lab,i)=>{
+          const select = document.createElement("select");
+          select.id = q.id;
+          select.className = "gaw-select";
+          (q.scaleLabels||[]).forEach((lab,i)=>{
             const val=(q.map&&q.map[i])||String(i+1);
-            const id=`${q.id}__${i+1}`;
-            const input=document.createElement("input"); input.type="radio"; input.name=q.id; input.id=id; input.value=val; if(i===2) input.checked=true;
-            const lbl=document.createElement("label"); lbl.setAttribute("for",id); lbl.textContent=lab;
-            box.appendChild(input); box.appendChild(lbl);
+            const option = document.createElement("option");
+            option.value = val;
+            option.textContent = lab;
+            if (q.id === 'q-termination') {
+                if (i === 1) option.selected = true;
+            } else {
+                if (i === Math.floor((q.scaleLabels.length -1) / 2)) option.selected = true;
+            }
+            select.appendChild(option);
           });
-          wrap.appendChild(box);
+          wrap.appendChild(select);
+        } else if (q.type === "checkbox_group") {
+            const checksDiv = document.createElement("div");
+            checksDiv.className = "checks compact";
+            checksDiv.id = q.id;
+            (q.options || []).forEach(opt => {
+                const checkLabel = document.createElement("label");
+                checkLabel.className = "card-check";
+                checkLabel.innerHTML = `<input type="checkbox" name="${q.id}" value="${opt.value}"><span><i></i>${opt.label}</span>`;
+                checksDiv.appendChild(checkLabel);
+            });
+            wrap.appendChild(checksDiv);
         }
         grid.appendChild(wrap);
       });
@@ -393,35 +421,44 @@
 
   /* ==== Step control ==== */
   const allSteps=()=>Array.from(root.querySelectorAll(".gstep"));
-  function indexOfStep(id){ return allSteps().findIndex(n=>n.id===id)+1; }
-
   let currentStep=1;
-  function LAST_INPUT_STEP(){ // 1~6 기본 + extra pages
-    return 6 + EXTRA_PAGES.length;
-  }
-  function RESULT_INDEX(){ return LAST_INPUT_STEP()+1; }
+  const LAST_INPUT_STEP=()=> 6 + EXTRA_PAGES.length;
+  const RESULT_INDEX=()=> LAST_INPUT_STEP()+1;
 
   function showStep(n){
-    const steps=allSteps();
-    steps.forEach(s=>s.classList.remove("active"));
+    const steps=allSteps(); steps.forEach(s=>s.classList.remove("active"));
     const t=steps[n-1]; if(t){t.classList.add("active");}
     const pct=n>LAST_INPUT_STEP()?100:Math.max(0,((n-1)/LAST_INPUT_STEP())*100);
     if(progressBar) progressBar.style.width=pct+"%";
-    prevBtn.style.display=n>1?"block":"none";
+    prevBtn.style.display=(n > 1 && n < RESULT_INDEX()) ? "block" : "none";
     nextBtn.style.display=n<LAST_INPUT_STEP()?"block":"none";
     submitBtn.style.display=n===LAST_INPUT_STEP()?"block":"none";
+    const first = t?.querySelector('input, select, textarea');
+    if(first){ setTimeout(()=>{ try{ first.focus(); if(first.select) first.select(); }catch(_){} }, 0); }
   }
 
   /* ==== helpers ==== */
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxa1qCtdH43R1Hf4qG7ht_UXzFNyifaL0QAgD1CP3GUk1saL-hYmr0IprjnQb6H9dn/exec";
+  async function sendDataToGoogleSheet(resultData) {
+    if (!GOOGLE_SCRIPT_URL.startsWith("https://script.google.com/")) {
+      console.log("Google Apps Script URL이 올바르지 않습니다."); return;
+    }
+    const payload = { fvi: resultData.FVI, amount: resultData.amount, grade: resultData.grade, formData: formData };
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+      console.log("데이터가 Google Sheet로 전송 요청되었습니다.");
+    } catch (error) { console.error("Google Sheet 전송 중 오류 발생:", error); }
+  }
+
   const onlyDigits=s=>(s||"").replace(/[^\d]/g,"");
   const readNumber=(sel,f=0)=>{const el=root.querySelector(sel); if(!el) return f; const v=parseFloat(String(el.value).replace(/,/g,"")); return isNaN(v)?f:v;};
   const formatKoreanWon=(won)=>{won=Math.max(0,Math.round(won||0)); const eok=Math.floor(won/100000000); const man=Math.floor((won%100000000)/10000);
     if(eok>0&&man>0)return`${eok}억 ${man.toLocaleString("ko-KR")}만원`; if(eok>0)return`${eok}억`; if(man>0)return`${man.toLocaleString("ko-KR")}만원`; return"0원";};
-  const setText=(el,txt)=>{ if(el) el.textContent=txt; };
-  function readScale5(name){ const n=document.querySelector(`input[name="${name}"]:checked`); return n ? n.value : "none"; }
-
   const formData={};
+
   function saveBase(){
+    formData["user-name"] = root.querySelector("#user-name").value.trim() || '신청자';
+    formData["activity-region"] = root.querySelector("#activity-region").value;
     formData["birth-year"]=readNumber("#birth-year",1987);
     formData["career-length"]=readNumber("#career-length",0);
     const won=parseInt(onlyDigits(prevIncomeKRWInput.value)||"0",10);
@@ -430,18 +467,27 @@
     formData["prev-income-man"]=Math.round(won/10000);
     formData["monthly-contracts"]=readNumber("#monthly-contracts",0);
     formData["monthly-premium"]=readNumber("#monthly-premium",0);
-    formData["non-life-ratio"]=+rangePNC.value; formData["persistency"]=+rangePR.value;
+    formData["non-life-ratio"]=+rangePNC.value;
+    formData["persistency"]=+rangePR.value;
     const checked=root.querySelectorAll('#gstep-5 input[name="sales-method"]:checked');
     formData.salesMethods=Array.from(checked).map(cb=>cb.value);
     const certChecked=root.querySelectorAll('#cert-list input[type="checkbox"]:checked');
     formData.certList=Array.from(certChecked).map(cb=>cb.value);
   }
+
   function saveExtras(){
     EXTRA_QUESTIONS.forEach(q=>{
-      if(q.type==="scale5"){ formData[q.id]=readScale5(q.id); }
-      else{ const el=document.getElementById(q.id); formData[q.id]= el ? (q.type==="range"? +el.value : el.value) : ""; }
+      if (q.type === "checkbox_group") {
+        const checked = root.querySelectorAll(`#${q.id} input:checked`);
+        formData[q.id] = Array.from(checked).map(cb => cb.value);
+      } else {
+        const el = document.getElementById(q.id);
+        if(el){ formData[q.id] = (q.type === "range") ? +el.value : el.value; }
+        else { formData[q.id] = ""; }
+      }
     });
   }
+
   function softValidate(){
     if(currentStep===1){
       const by=readNumber("#birth-year",NaN), cl=readNumber("#career-length",NaN);
@@ -464,14 +510,26 @@
     const push=(k)=>{const r=BONUS_RULES[k||"none"]||BONUS_RULES["none"]; fvi+=r.fvi||0; amt+=r.amount||0;};
     EXTRA_QUESTIONS.forEach(q=>{
       const v=formData[q.id];
-      if(q.type==="scale5"){ push(v); }
-      else if(typeof q.bonusCalc==="function"){ push(q.bonusCalc(v)); }
-      else{ push("none"); }
+      if (q.type === "checkbox_group") {
+        const values = formData[q.id] || [];
+        let marketingFVI = 0;
+        values.forEach(val => {
+            const rule = BONUS_RULES[val];
+            if (rule) marketingFVI += (rule.fvi || 0);
+        });
+        fvi += Math.min(marketingFVI, 5);
+      } else if(q.type==="scale5"){
+        push(v);
+      } else if(typeof q.bonusCalc==="function"){
+        push(q.bonusCalc(v));
+      } else {
+        push("none");
+      }
     });
     return { extraFVI:Math.min(fvi,EXTRA_CAP.fvi), extraAmount:Math.min(amt,EXTRA_CAP.amount) };
   }
 
-  /* ==== 원 점수 계산 ==== */
+  /* ==== 원 점수 계산 & 결과 ==== */
   function scoreIncome(man){ const w=man*10000;
     if (w < 30000000) return 3; if (w < 50000000) return 7; if (w < 100000000) return 11; if (w <= 400000000) return 13; return 15; }
   function scoreContracts(n){ if (n < 5) return 2; if (n <= 10) return 5; if (n <= 20) return 8; return 10; }
@@ -484,7 +542,6 @@
   function scoreChannels(cnt){ return Math.min(cnt*2, 10); }
   const CERT_FVI_WEIGHTS={ life:1, nonlife:1, third:1, fund:1, securities:1, variable:2, cklu:2, afpk:3, ifp:3, cfp:5, actuary:5, lossadj:4 };
   function scoreCerts(list){ const s=(list||[]).reduce((a,k)=>a+(CERT_FVI_WEIGHTS[k]||0),0); return Math.min(s,10); }
-
   function baseAmountByCareer(y){ if(y<1)return 20000000; if(y<3)return 50000000; if(y<5)return 70000000; if(y<10)return 100000000; return 100000000+Math.floor(y-10)*10000000; }
   function pctByAge(a){ if(a>=40&&a<60)return .10; if(a>=20&&a<30)return -.10; if(a>=60)return -.10; return 0; }
   function pctByIncome(w){ if(w<30000000)return .15; if(w<50000000)return .30; if(w<100000000)return .40; if(w<=400000000)return .50; return .60; }
@@ -497,23 +554,20 @@
     const birthYear=formData["birth-year"]??1987, careerYears=formData["career-length"]??0, age=(new Date()).getFullYear()-birthYear;
     const incomeMan=formData["prev-income-man"]??0, incomeWon=incomeMan*10000, monthlyCnt=formData["monthly-contracts"]??0, monthlyAP=formData["monthly-premium"]??0;
     const pnc=formData["non-life-ratio"]??50, persistency=formData["persistency"]??0, channels=(formData.salesMethods||[]).length, certList=formData.certList||[];
-
     const currentValue=scoreIncome(incomeMan)+scoreContracts(monthlyCnt)+scoreAP(monthlyAP)+scorePNC(pnc)+scorePersistency(persistency);
     const growthPotential=scoreTenure(careerYears)+scoreAge(age)+scoreChannels(channels)+scoreCerts(certList);
-
     const extras=calcExtraBonuses();
     const FVI=Math.min(currentValue,60)+Math.min(growthPotential,35)+(extras.extraFVI||0);
-
     const base=baseAmountByCareer(careerYears);
     const pct=pctByAge(age)+pctByIncome(incomeWon)+pctByContracts(monthlyCnt)+pctByAP(monthlyAP)+pctByPNC(pnc)+pctByChannels(channels);
     const amount=Math.max(0, Math.round(base*(1+pct)+plusByCerts(certList)+(extras.extraAmount||0)));
-
     let grade="Rising FP", badgeColor="#ffe7e7", badgeText="#b91c1c";
     if(FVI>=90){grade="Top FP"; badgeColor="#e6fbe9"; badgeText="#166534";}
     else if(FVI>=75){grade="Growth FP"; badgeColor="#e7f0ff"; badgeText="#0a58ca";}
     else if(FVI>=60){grade="Stable FP"; badgeColor="#fff7e6"; badgeText="#92400e";}
     return {FVI:Math.round(FVI), amount, grade, badgeColor, badgeText};
   }
+
   function buildInsights(FVI){
     const p=formData, tips=[];
     if((p["persistency"]||0)<85) tips.push("유지율을 85% 이상으로 끌어올리면 FVI가 크게 향상됩니다.");
@@ -533,14 +587,22 @@
 
   /* ==== Navigation ==== */
   function goPrev(){ if(currentStep<=1) return; currentStep--; showStep(currentStep); }
-  function goNext(){ softValidate();
+  function goNext(){
+    softValidate();
     if(currentStep<=6) saveBase(); else saveExtras();
     if(currentStep<LAST_INPUT_STEP()){ currentStep++; showStep(currentStep); }
-    else if(currentStep===LAST_INPUT_STEP()){ // compute and show result
+    else if(currentStep===LAST_INPUT_STEP()){
       const {FVI,amount,grade,badgeColor,badgeText}=calcFVIandAmount();
+      
+      const resultTitle = root.querySelector("#result-title");
+      const userName = formData["user-name"] || '신청자';
+      if(resultTitle) resultTitle.textContent = `${userName}님의 FVI와 예상 금액`;
+
       fviScoreEl.textContent=`FVI ${FVI}`; finalValueText.textContent=formatKoreanWon(amount);
       const badge=document.getElementById("badge"); badge.style.background=badgeColor; badge.style.color=badgeText;
       gradeText.textContent=`등급: ${grade}`; insightsBox.textContent=buildInsights(FVI);
+      window.__FVI__ = { FVI, grade, amountKRW: amount };
+      sendDataToGoogleSheet({ FVI, amount, grade });
       currentStep=RESULT_INDEX(); showStep(currentStep);
     }
   }
@@ -554,8 +616,8 @@
     if(currentStep<LAST_INPUT_STEP()) nextBtn.click(); else if(currentStep===LAST_INPUT_STEP()) submitBtn.click();
   });
 
-  rangePNC?.addEventListener("input",()=>{ setText(rangePNCText, `${(+rangePNC.value||0)}%`); });
-  rangePR ?.addEventListener("input",()=>{ setText(rangePRText , `${(+rangePR.value||0)}%`); });
+  rangePNC?.addEventListener("input",()=>{ if(rangePNCText) rangePNCText.textContent=`${(+rangePNC.value||0)}%`; });
+  rangePR ?.addEventListener("input",()=>{ if(rangePRText ) rangePRText .textContent=`${(+rangePR .value||0)}%`; });
 
   function formatWithCommasKeepCursor(input){
     const start=input.selectionStart, before=input.value, digits=before.replace(/[^\d]/g,'');
@@ -568,17 +630,20 @@
 
   document.getElementById("restart-btn")?.addEventListener("click",()=>{
     root.querySelector("#calculator-form").reset(); for(const k in formData) delete formData[k];
-    rangePNC.value=50; setText(rangePNCText,"50%"); rangePR.value=85; setText(rangePRText,"85%");
+    rangePNC.value=50; if(rangePNCText) rangePNCText.textContent="50%";
+    rangePR.value=85;  if(rangePRText ) rangePRText .textContent="85%";
     prevIncomeHint && (prevIncomeHint.textContent="예: 100,000,000원 = 1억 0만원");
+    const resultTitle = root.querySelector("#result-title");
+    if(resultTitle) resultTitle.textContent = "당신의 FVI와 예상 금액";
     currentStep=1; showStep(currentStep); document.getElementById("calculator-container")?.scrollTo({top:0, behavior:"smooth"});
   });
 
-  // ===== AI 컨설팅 복귀 =====
+  /* ==== AI 컨설팅 ==== */
   const aiBtn=document.getElementById("ai-consulting-btn");
   const aiBox=document.getElementById("ai-result-container");
   const aiContent=document.getElementById("ai-result-content");
   const GEMINI_API_KEY="AIzaSyBO1RdvcdQP4rXm1EtRAiOY0EE86seTF9Y";
-  const GEMINI_MODEL="gemini-2.5-flash-preview-05-20";
+  const GEMINI_MODEL="gemini-1.5-flash-latest";
   const GEMINI_URL=`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
 
   async function runGemini(){
@@ -586,8 +651,9 @@
     aiBox.style.display="block";
     aiContent.innerHTML='<div class="loader" style="margin:10px auto"></div>';
     aiBtn.disabled=true; aiBtn.style.opacity=".5";
-
     const profile = `
+- 이름: ${formData['user-name'] ?? ""}
+- 지역: ${formData['activity-region'] ?? ""}
 - 출생연도: ${formData['birth-year'] ?? ""}
 - 총 경력(년): ${formData['career-length'] ?? 0}
 - 직전년도 소득(만원): ${formData['prev-income-man'] ?? 0}
@@ -597,7 +663,6 @@
 - 유지율 13회차(%): ${formData['persistency'] ?? 0}
 - 영업 방식: ${(formData.salesMethods || []).join(', ')}
 `.trim();
-
     const prompt = `
 당신은 대한민국 보험업계 "시니어 지점장"입니다.
 아래 설계사 프로필을 보고, 반드시 JSON으로만 응답하세요. 다른 텍스트/설명/코드펜스 금지.
@@ -615,37 +680,21 @@
 프로필:
 ${profile}
 `.trim();
-
     const renderFromJSON=(obj)=>{
       const esc = (s)=>String(s ?? "").replace(/[&<>]/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m]));
       const toLI=(arr)=> (arr||[]).map(t=>`<li>${esc(t)}</li>`).join("") || "<li>내용 없음</li>";
       const tips=(obj.tips||[]).map((t,i)=>`<li><strong>${esc(t.title||`팁 ${i+1}`)}</strong> — ${esc(t.detail||"")}</li>`).join("") || "<li>내용 없음</li>";
       return `
         <div class="ai-sections">
-          <div class="ai-card">
-            <h4>요약</h4>
-            <p style="margin:0;color:var(--muted);line-height:1.7">${esc(obj.intro || "프로필을 바탕으로 핵심 요약을 제공합니다.")}</p>
-          </div>
-          <div class="ai-card">
-            <h4>강점 분석</h4>
-            <ul>${toLI(obj.strengths)}</ul>
-          </div>
-          <div class="ai-card">
-            <h4>보완점 분석</h4>
-            <ul>${toLI(obj.weaknesses)}</ul>
-          </div>
-          <div class="ai-card ai-tips">
-            <h4>가치 상승을 위한 3가지 팁</h4>
-            <ol>${tips}</ol>
-          </div>
-        </div>
-      `;
+          <div class="ai-card"><h4>요약</h4><p style="margin:0;color:var(--muted);line-height:1.7">${esc(obj.intro || "프로필을 바탕으로 핵심 요약을 제공합니다.")}</p></div>
+          <div class="ai-card"><h4>강점 분석</h4><ul style="margin:0;padding-left:20px;line-height:1.8;">${toLI(obj.strengths)}</ul></div>
+          <div class="ai-card"><h4>보완점 분석</h4><ul style="margin:0;padding-left:20px;line-height:1.8;">${toLI(obj.weaknesses)}</ul></div>
+          <div class="ai-card ai-tips"><h4>가치 상승을 위한 3가지 팁</h4><ol style="margin:0;padding-left:20px;line-height:1.8;">${tips}</ol></div>
+        </div>`;
     };
-
     try{
-      if(!GEMINI_API_KEY){ aiContent.textContent="API 키가 비어 있습니다. 키를 입력해 주세요."; return; }
-      const res = await fetch(GEMINI_URL, { method:"POST", headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ contents:[{ parts:[{ text: prompt }]}] }) });
+      if(!GEMINI_API_KEY || GEMINI_API_KEY.includes("YOUR_API_KEY")){ aiContent.textContent="API 키가 비어 있습니다. 코드에서 키를 입력해 주세요."; return; }
+      const res = await fetch(GEMINI_URL, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ contents:[{ parts:[{ text: prompt }]}] }) });
       if(!res.ok) throw new Error(`Gemini API 오류: ${res.status} ${res.statusText}`);
       const data=await res.json();
       let text=data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
@@ -669,11 +718,96 @@ ${profile}
       aiBtn.disabled=false; aiBtn.style.opacity="1";
     }
   }
-  aiBtn?.addEventListener("click", runGemini);
+  document.getElementById("ai-consulting-btn")?.addEventListener("click", runGemini);
 
-  /* ==== init ==== */
-  function setTextInit(){ if(rangePNCText) rangePNCText.textContent=`${(+rangePNC.value||0)}%`; if(rangePRText) rangePRText.textContent=`${(+rangePR.value||0)}%`; }
-  setTextInit(); showStep(currentStep);
+/* ==== 카카오 공유 ==== */
+function buildPayloadForShare(){
+  return { ...formData };
+}
+
+function makeShareUrl(FVI, grade, amountKRW){
+  const url = new URL(window.location.href);
+  url.searchParams.set("fvi", String(FVI));
+  url.searchParams.set("grade", grade);
+  url.searchParams.set("amount", String(amountKRW));
+  try{
+    const payload = buildPayloadForShare();
+    const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+    url.searchParams.set("p", b64);
+  }catch(_){}
+  return url.toString();
+}
+
+document.getElementById("send-kakao-btn")?.addEventListener("click", ()=>{
+  if(!(window.Kakao && Kakao.isInitialized && Kakao.isInitialized())){
+    alert("카카오 SDK 초기화 실패: 도메인/키 설정을 확인하세요."); return;
+  }
+  const d = window.__FVI__; if(!d){ alert("먼저 결과를 계산해 주세요."); return; }
+  const shareUrl = makeShareUrl(d.FVI, d.grade, d.amountKRW);
+
+  // formData에서 이름 가져오기
+  const userName = formData["user-name"] || '신청자'; 
+
+  Kakao.Share.sendDefault({
+    objectType: "feed",
+    content: {
+      title: `${userName}님의 FP 가치(FVI) 결과 확인`, // '나' 대신 변수 사용
+      description: `FVI ${d.FVI}점 | 예상 금액: ${formatKoreanWon(d.amountKRW)} | 등급: ${d.grade}`,
+      imageUrl: "https://cdn.imweb.me/upload/S2016083157c63a62163fa/0f6f7efb6a83a.png",
+      link: {
+        mobileWebUrl: shareUrl,
+        webUrl: shareUrl,
+      },
+    },
+    buttons: [
+      {
+        title: "자세히 결과보기",
+        link: {
+          mobileWebUrl: shareUrl,
+          webUrl: shareUrl,
+        },
+      },
+    ],
+  });
+});
+
+  (function hydrateFromQuery(){
+    const p = new URLSearchParams(location.search);
+    const fvi = p.get("fvi"), grade = p.get("grade"), amount = p.get("amount");
+    const payloadB64 = p.get("p");
+
+    if(payloadB64){
+      try{
+        const jsonStr = decodeURIComponent(escape(atob(payloadB64)));
+        const obj = JSON.parse(jsonStr);
+        Object.assign(formData, obj);
+      }catch(e){ console.warn("payload decode failed", e); }
+    }
+
+    if(!fvi || !grade || !amount) {
+      if(rangePNCText) rangePNCText.textContent=`${(+rangePNC.value||0)}%`;
+      if(rangePRText ) rangePRText .textContent=`${(+rangePR .value||0)}%`;
+      showStep(1);
+      return;
+    }
+
+    const resultTitle = document.getElementById("result-title");
+    const userName = formData['user-name'] || '신청자';
+    if(resultTitle) resultTitle.textContent = `${userName}님의 FVI와 예상 금액`;
+
+    document.getElementById("fvi-score").textContent = `FVI ${Number(fvi)}`;
+    document.getElementById("grade-text").textContent = `등급: ${grade}`;
+    const amt = Number(amount);
+    document.getElementById("final-value-text").textContent = formatKoreanWon(amt);
+    document.getElementById("insights-box").textContent = buildInsights(Number(fvi));
+
+    const aiBtn = document.getElementById("ai-consulting-btn");
+    const kakaoBtn = document.getElementById("send-kakao-btn");
+    if(kakaoBtn) kakaoBtn.style.display = 'none';
+
+    window.__FVI__ = { FVI: Number(fvi), grade, amountKRW: amt };
+    currentStep = RESULT_INDEX(); showStep(currentStep);
+  })();
 })();
 </script>
 </body>
