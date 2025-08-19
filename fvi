@@ -82,35 +82,19 @@
     .ai-card h4{ margin:0 0 10px; font-size:20px; font-weight:900; color:var(--text); }
     @keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
 
-    /* --- 추가/수정된 스타일 시작 --- */
-    #grade-text strong {
-      font-size: 1.1em;
-      color: var(--primary-color);
-    }
-    #additional-results-container {
-      margin-top: 24px; padding: 20px; border-radius: 16px; background-color: var(--input); border: 1px solid var(--border); text-align: left;
-    }
-    #additional-results-container h3 {
-      font-size: 20px; font-weight: 800; margin-top: 0; margin-bottom: 16px; color: var(--text);
-    }
-    .result-breakdown p {
-      margin: 8px 0; font-size: 15px; display: flex; justify-content: space-between; align-items: center; color: var(--muted);
-    }
+    #grade-text strong { font-size: 1.1em; color: var(--primary-color); }
+    #additional-results-container { margin-top: 24px; padding: 20px; border-radius: 16px; background-color: var(--input); border: 1px solid var(--border); text-align: left; }
+    #additional-results-container h3 { font-size: 20px; font-weight: 800; margin-top: 0; margin-bottom: 16px; color: var(--text); }
+    .result-breakdown p { margin: 8px 0; font-size: 15px; display: flex; justify-content: space-between; align-items: center; color: var(--muted); }
     .result-breakdown p > span:first-child { font-weight: 700; }
     .result-breakdown p > span:last-child { font-weight: 800; font-size: 16px; color: var(--text); }
-    .result-breakdown .total {
-      margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);
-    }
+    .result-breakdown .total { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
     .result-breakdown .total > span:last-child { color: var(--primary-color); font-size: 18px; }
     .growth-indicators { margin-top: 16px; }
-    .growth-indicators .badge {
-      display: inline-block; padding: 5px 10px; border-radius: 8px; background-color: #e0e7ff; color: #3730a3;
-      font-size: 12px; font-weight: 700; margin-right: 8px; margin-bottom: 8px;
-    }
+    .growth-indicators .badge { display: inline-block; padding: 5px 10px; border-radius: 8px; background-color: #e0e7ff; color: #3730a3; font-size: 12px; font-weight: 700; margin-right: 8px; margin-bottom: 8px; }
     [data-theme="dark"] .growth-indicators .badge { background-color: #312e81; color: #e0e7ff; }
     .info-line { font-size: 13px; color: var(--muted); text-align: center; margin-top: 12px; opacity: 0.8; }
     .disclaimer { font-size: 12px; color: var(--muted); opacity: 0.8; margin-top: 16px; text-align: center; }
-    /* --- 추가/수정된 스타일 끝 --- */
 
     @media (max-width: 680px) {
       .theme-switch { top: 20px; right: 20px; gap: 0; }
@@ -470,7 +454,7 @@
     return { extraFVI:Math.min(fvi,EXTRA_CAP.fvi), extraAmount:Math.min(amt,EXTRA_CAP.amount) };
   }
 
-  /* ==== 점수 계산 핵심 함수 모음 (누락된 부분) ==== */
+  /* ==== 점수 계산 핵심 함수 모음 ==== */
   function scoreIncome(man){ const w=man*10000; if (w < 30000000) return 3; if (w < 50000000) return 7; if (w < 100000000) return 11; if (w <= 400000000) return 13; return 15; }
   function scoreContracts(n){ if (n < 5) return 2; if (n <= 10) return 5; if (n <= 20) return 8; return 10; }
   function scoreAP(man){ const w=man*10000; if (w < 500000) return 2; if (w < 1000000) return 4; if (w < 2000000) return 6; if (w < 3000000) return 8; if (w < 5000000) return 9; return 10; }
@@ -589,8 +573,23 @@
     currentStep=1; showStep(currentStep); document.getElementById("calculator-container")?.scrollTo({top:0, behavior:"smooth"});
   });
 
-  async function runGemini(){
-    if(!aiBox||!aiContent) return;
+ async function runGemini(){
+    // --- 이 부분이 수정되었습니다 ---
+    const aiBtn = document.getElementById("ai-consulting-btn");
+    const aiBox = document.getElementById("ai-result-container");
+    const aiContent = document.getElementById("ai-result-content");
+    
+    // 누락되었던 API 키 관련 상수들을 다시 선언합니다.
+    const GEMINI_API_KEY="AIzaSyBO1RdvcdQP4rXm1EtRAiOY0EE86seTF9Y";
+    const GEMINI_MODEL="gemini-1.5-flash-latest";
+    const GEMINI_URL=`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
+
+    if(!aiBtn || !aiBox || !aiContent) {
+        console.error("AI 컨설팅에 필요한 DOM 요소를 찾을 수 없습니다.");
+        return;
+    }
+    // --- 여기까지 ---
+
     aiBox.style.display="block"; aiContent.innerHTML='<div class="loader" style="margin:10px auto"></div>';
     aiBtn.disabled=true; aiBtn.style.opacity=".5";
     const profile = Object.entries(formData).map(([key, value]) => `- ${key}: ${Array.isArray(value) ? value.join(', ') : value}`).join('\n');
@@ -635,7 +634,7 @@
       content: {
         title: `${userName}님의 FP 가치(FVI) 결과 확인`,
         description: `FVI ${d.FVI}점 | 내년 시장가치: ${formatKoreanWon(d.amountKRW)} | 등급: ${d.grade}`,
-        imageUrl: "https://cdn.imweb.me/upload/S2016083157c63a62163fa/f29963369f45e.png",
+        imageUrl: "https://cdn.imweb.me/upload/S2016083157c63a62163fa/0f6f7efb6a83a.png",
         link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
       },
       buttons: [ { title: "설계사지수(FVI) 보기", link: { mobileWebUrl: shareUrl, webUrl: shareUrl } } ],
