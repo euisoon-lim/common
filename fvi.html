@@ -479,26 +479,30 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxbts4VXigU05
     return { FVI: Math.round(FVI) };
   }
 
-  function buildInsights(FVI, grade5, financialData) {
-    const p = formData;
-    const strength = (p.persistency||0)>=90?"높은 유지율":(p["monthly-contracts"]||0)>=20?"꾸준한 계약량":"성장 잠재력";
-    let tips = [];
-    if((p.persistency||0)<85) tips.push("유지율 85% 이상 달성");
-    if((p["monthly-contracts"]||0)<15) tips.push("월 15건 계약 목표");
-    if((p["monthly-premium"]||0)<200) tips.push("월 AP 200만 이상 목표");
-    const certScore=(p.certList||[]).reduce((a,k)=>a+(CERT_FVI_WEIGHTS[k]||0),0);
-    if(certScore<6) tips.push("AFPK/CFP 등 고급 자격 취득");
-    
-    let sentences = [
-      `FVI 종합점수는 ${FVI}점으로, 이에 따라 '${grade5.label}' 등급으로 평가되었습니다.`,
-      `산출된 시장가치는 내년 예상 총소득 ${formatKoreanWon(financialData.totalNextYearIncome)}에 이직 시 받을 수 있는 정착지원금 최대치 ${formatKoreanWon(financialData.relocationBonusMax)}를 더한 추정치입니다.`,
-      `현재 강점으로는 ${strength}이(가) 꼽힙니다.`
-    ];
-    if (tips.length > 0) {
-      sentences.push(`앞으로 ${tips.join(', ')} 등을 통해 더 높은 성장이 기대됩니다.`);
-    }
-    return sentences.join(' ');
+ function buildInsights(FVI, grade5, financialData) {
+  const p = formData;
+  const strength = (p.persistency||0)>=90?"높은 유지율":(p["monthly-contracts"]||0)>=20?"꾸준한 계약량":"성장 잠재력";
+  let tips = [];
+
+  // 사용자 입력값에 따라 동적으로 조언을 생성합니다.
+  if ((p["q-daily-consults"] || 0) < 3) {
+      tips.push("하루 상담 횟수를 늘려 더 많은 고객을 만나는 노력");
   }
+  if ((p["q-digital-marketing"] || []).length < 2) {
+      tips.push("SNS나 블로그를 활용한 마케팅 및 교육자료 제작 능력 향상");
+  }
+  tips.push("기존 고객들에게 안부 인사나 유용한 정보가 담긴 카드뉴스를 보내는 등 꾸준한 관계 관리");
+
+  let sentences = [
+    `FVI 종합점수는 ${FVI}점으로, 이에 따라 '${grade5.label}' 등급으로 평가되었습니다.`,
+    `산출된 시장가치는 내년 예상 총소득 ${formatKoreanWon(financialData.totalNextYearIncome)}에 이직 시 받을 수 있는 정착지원금 최대치 ${formatKoreanWon(financialData.relocationBonusMax)}를 더한 추정치입니다.`,
+    `현재 강점으로는 ${strength}이(가) 꼽힙니다.`
+  ];
+  if (tips.length > 0) {
+    sentences.push(`앞으로 ${tips.join(', ')} 등을 통해 더 높은 성장이 기대됩니다.`);
+  }
+  return sentences.join(' ');
+}
 
   function renderAdditionalResults(fviScore) {
     let container = document.getElementById("additional-results-container");
@@ -569,15 +573,10 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxbts4VXigU05
   prevIncomeKRWInput?.addEventListener("input",()=>formatWithCommasKeepCursor(prevIncomeKRWInput));
 
   document.getElementById("restart-btn")?.addEventListener("click",()=>{
-    root.querySelector("#calculator-form").reset(); for(const k in formData) delete formData[k];
-    rangePNC.value=50; if(rangePNCText) rangePNCText.textContent="50%";
-    rangePR.value=85;  if(rangePRText) rangePRText.textContent="85%";
-    prevIncomeHint.textContent="예: 100,000,000원 = 1억 0만원";
-    if(root.querySelector("#result-title")) root.querySelector("#result-title").textContent = "당신의 FVI와 예상 금액";
-    const additionalContainer = document.getElementById("additional-results-container");
-    if(additionalContainer) additionalContainer.remove();
-    currentStep=1; showStep(currentStep); document.getElementById("calculator-container")?.scrollTo({top:0, behavior:"smooth"});
-  });
+  // 현재 주소에서 쿼리스트링(?fvi=...)을 제외한 기본 주소로 새 창을 엽니다.
+  const baseUrl = window.location.origin + window.location.pathname;
+  window.open(baseUrl, '_blank');
+});
 
   async function runGemini(){
     const aiBtn = document.getElementById("ai-consulting-btn");
