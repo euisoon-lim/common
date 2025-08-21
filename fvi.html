@@ -125,8 +125,11 @@
     <form id="calculator-form" onsubmit="return false;">
       
       <div class="gstep active" id="gstep-1">
+        
         <h2>기본 정보를 입력해 주세요</h2>
-        <div class="input-row">
+  
+  <input type="hidden" id="access-url" />
+                <div class="input-row">
           <div class="input-group">
             <label for="user-name">이름 / 별칭</label>
             <input type="text" id="user-name" placeholder="예: 홍길동" />
@@ -252,7 +255,7 @@
 <script>
 (function(){
   const root=document.getElementById("gaw-calc-root"); if(!root) return;
-
+document.getElementById('access-url').value = window.location.href;
   const TOTAL_PAYOUT_MULT = 18.0;
   const FIRST_YEAR_MULT   = 12.0;
 
@@ -359,7 +362,7 @@
     if(first){ setTimeout(()=>{ try{ first.focus(); if(first.select) first.select(); }catch(_){} }, 0); }
   }
 
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxa1qCtdH43R1Hf4qG7ht_UXzFNyifaL0QAgD1CP3GUk1saL-hYmr0IprjnQb6H9dn/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxbts4VXigU05RV2uXFh82-qj01rqhRKuk6CzbXiqxmaPFBsI-H7ZLoKd1k-Mc2AcM/exec";
   const onlyDigits=s=>(s||"").replace(/[^\d]/g,"");
   const readNumber=(sel,f=0)=>{const el=root.querySelector(sel); if(!el) return f; const v=parseFloat(String(el.value).replace(/,/g,"")); return isNaN(v)?f:v;};
   const formatKoreanWon=(won)=>{won=Math.max(0,Math.round(won||0)); const eok=Math.floor(won/100000000); const man=Math.floor((won%100000000)/10000); if(eok>0&&man>0)return`${eok}억 ${man.toLocaleString("ko-KR")}만원`; if(eok>0)return`${eok}억`; if(man>0)return`${man.toLocaleString("ko-KR")}만원`; return"0원";};
@@ -400,6 +403,7 @@
   }
 
   function saveBase(){
+      formData["access-url"] = root.querySelector("#access-url").value;
     formData["user-name"] = root.querySelector("#user-name").value.trim() || '신청자';
     formData["activity-region"] = root.querySelector("#activity-region").value;
     formData["birth-year"]=readNumber("#birth-year",1987);
