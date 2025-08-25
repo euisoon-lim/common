@@ -1,4 +1,3 @@
-
 <html lang="ko">
 <head>
   <meta charset="utf-8"/>
@@ -234,7 +233,7 @@ label{ display:block; color:var(--muted); font-weight:800; margin-bottom:8px; wh
         <h2>1. 안녕하세요! 성함이나 별칭을 알려주세요.</h2>
         <div class="input-group">
           <label for="user-name" style="display:none;">이름 / 별칭</label>
-          <input type="text" id="user-name" placeholder="예: 홍길동,홍팀장,보험왕.." />
+          <input type="text" id="user-name" placeholder="예: 홍길동,이팀장.." />
         </div>
       </div>
  
@@ -252,7 +251,7 @@ label{ display:block; color:var(--muted); font-weight:800; margin-bottom:8px; wh
         <h2>3. 태어난 해를 알려주실 수 있나요? (YYYY 형식)</h2>
         <div class="input-group">
           <label for="birth-year" style="display:none;">출생 연도 (YYYY)</label>
-          <input type="number" id="birth-year" placeholder="예: 1987" min="1940" max="2015" inputmode="numeric"/>
+          <input type="number" id="birth-year" placeholder="예: 1987 (년)" min="1940" max="2015" inputmode="numeric"/>
         </div>
       </div>
  
@@ -260,7 +259,7 @@ label{ display:block; color:var(--muted); font-weight:800; margin-bottom:8px; wh
         <h2>4. 지금까지 보험·GA 업계에서 쌓아오신 경력은 몇 년 정도 되시나요?</h2>
         <div class="input-group">
           <label for="career-length" style="display:none;">총 경력 (년)</label>
-          <input type="number" id="career-length" placeholder="예: 7" min="0" inputmode="numeric"/>
+          <input type="number" id="career-length" placeholder="예: 7 (년)" min="0" inputmode="numeric"/>
         </div>
       </div>
  
@@ -268,7 +267,7 @@ label{ display:block; color:var(--muted); font-weight:800; margin-bottom:8px; wh
         <h2>5. 작년 한 해 동안의 총 소득은 어느 정도였나요?</h2>
         <div class="input-group">
           <label for="prev-income-krw" style="display:none;">직전년도 연 소득 (원)</label>
-          <input type="text" id="prev-income-krw" placeholder="예: 68,000,000" inputmode="numeric" />
+          <input type="text" id="prev-income-krw" placeholder="예: 68,000,000 (원)" inputmode="numeric" />
         </div>
       </div>
  
@@ -284,7 +283,7 @@ label{ display:block; color:var(--muted); font-weight:800; margin-bottom:8px; wh
         <h2>7. 월평균 업적 규모는 얼마 정도 되시나요?</h2>
         <div class="input-group">
           <label for="monthly-premium" style="display:none;">월 평균 업적 (만원)</label>
-          <input type="number" id="monthly-premium" placeholder="예: 400" min="0" inputmode="numeric" />
+          <input type="number" id="monthly-premium" placeholder="예: 400 (만원)" min="0" inputmode="numeric" />
         </div>
       </div>
  
@@ -719,10 +718,11 @@ function formatKoreanWon(amount) {
    
     let premiumScore = 0;
     const premium = p["monthly-premium"] || 0;
-    if (premium >= 1000) premiumScore = 4;
-    else if (premium >= 600) premiumScore = 3;
-    else if (premium >= 400) premiumScore = 2;
-    else if (premium >= 200) premiumScore = 1;
+    if (premium >= 100) premiumScore = 4;
+    else if (premium >= 70) premiumScore = 3;
+    else if (premium >= 50) premiumScore = 2;
+    else if (premium >= 30) premiumScore = 1;
+    else if (premium < 10) premiumScore = 0;
    
     let clientScore = 0;
     const clients = p["managed-clients"] || 1;
@@ -772,10 +772,10 @@ function formatKoreanWon(amount) {
     // C: 성장성 (20점)
     let methodScore = 0;
     const salesMethodCount = (p.salesMethods || []).length;
-    if (salesMethodCount >= 4) methodScore = 5;
-    else if (salesMethodCount === 3) methodScore = 4;
-    else if (salesMethodCount === 2) methodScore = 3;
+    if (salesMethodCount >= 3) methodScore = 5;
+    else if (salesMethodCount === 2) methodScore = 4;
     else if (salesMethodCount === 1) methodScore = 2;
+    else if (salesMethodCount === 0) methodScore = 1;
    
     let consultScore = 0;
     const dailyConsults = p["daily-consults"] || 0;
@@ -805,7 +805,7 @@ function formatKoreanWon(amount) {
     // D: 전문성 (20점)
     let certScore = 0;
     const certCount = (p.certList || []).length;
-    if (certCount >= 5) certScore = 10;
+    if (certCount >= 4) certScore = 10;
     else if (certCount >= 3) certScore = 8;
     else if (certCount >= 2) certScore = 6;
     else if (certCount >= 1) certScore = 4;
@@ -1286,8 +1286,41 @@ ${Object.entries(readableProfile).map(([key, value]) => `${key}: ${value}`).join
     });
   });
  
-  // 초기 화면 설정
-  showStep(1);
+  // 초기 화면 설정 및 공유 URL 처리
+  function initFromShare() {
+    const params = new URLSearchParams(window.location.search);
+    const fvi = params.get("fvi");
+    const grade = params.get("grade");
+    const p = params.get("p");
+    if (fvi && grade && p) {
+      try {
+        formData = JSON.parse(decodeURIComponent(escape(atob(p))));
+        const { FVI, scores } = calcFVIandScores();
+        const grade5 = { label: grade, code: grade.charAt(0), hint: grade === "우수" ? "업계 상위권" : grade === "보통" ? "평균 수준" : "역량 강화 필요" };
+        const analysis = buildAnalysis(formData, scores);
+        const insights = buildInsights(FVI, grade5, scores, analysis);
+ 
+        if(root.querySelector("#result-title")) {
+          root.querySelector("#result-title").textContent = `${formData["user-name"]||'신청자'}님의 FVI 분석 결과`;
+        }
+        fviScoreEl.textContent = `FVI ${FVI}`;
+        gradeText.innerHTML = `등급: <strong>${grade5.label} (${grade5.code}급)</strong> - ${grade5.hint}`;
+ 
+        renderRadarChart(scores);
+        renderAnalysisTable(scores, analysis);
+        renderReport(insights);
+ 
+        currentStep = RESULT_INDEX;
+        showStep(currentStep);
+      } catch (e) {
+        console.error("공유 데이터 로드 실패:", e);
+        showStep(1);
+      }
+    } else {
+      showStep(1);
+    }
+  }
+  initFromShare();
 })();
 </script>
 </body>
