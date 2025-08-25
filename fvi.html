@@ -16,7 +16,7 @@
   <style>
     /* --- 기존 스타일 유지 --- */
     html, body { width:100%; height:100%; margin:0; padding:0; }
-    :root{ --primary-color:#0a7aff; --accent-warm:#c4552e; --background-color:#f2f2f7; --card:#ffffff; --text:#111; --muted:#4b5563; --border:#e5e7eb; --input:#f3f4f6; --shadow:0 22px 42px rgba(0,0,0,.12); }
+    :root{ --primary-color:#315aff; --accent-warm:#c4552e; --background-color:#f2f2f7; --card:#ffffff; --text:#111; --muted:#4b5563; --border:#e5e7eb; --input:#f3f4f6; --shadow:0 22px 42px rgba(0,0,0,.12); }
     [data-theme="dark"]{ --background-color:#0b0d0f; --card:#15181b; --text:#f5f7fa; --muted:#d1d5db; --border:#2c3136; --input:#1c2024; --shadow:0 22px 42px rgba(0,0,0,.38); }
     #gaw-calc-root #gstep-6 .input-group{ display:block!important; width:100%!important; max-width:none!important; flex:1 1 100%!important; margin:0!important; padding:0!important; }
     #gaw-calc-root #gstep-6 #cert-list{ display:flex!important; flex-direction:column!important; gap:12px!important; align-items:stretch!important; width:100%!important; }
@@ -86,7 +86,7 @@
     font-size: 35px;
     font-weight: 700;
     text-align: center;
-    background: linear-gradient(90deg, #000000, #acacac, #000000);
+    background: linear-gradient(90deg, #000000, #000000, #b5b5b5, #000000, #000000);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin: 20px 0 5px;
@@ -1077,9 +1077,15 @@ function formatKoreanWon(amount) {
  
   // 다시 시작 버튼
   document.getElementById("restart-btn")?.addEventListener("click",()=>{
+    // 폼 리셋
     root.querySelector("#calculator-form")?.reset();
+    
+    // formData 완전 초기화
     for(const k in formData) delete formData[k];
-   
+    
+    // 전역 변수 초기화
+    if (window.__FVI__) delete window.__FVI__;
+    
     // 모든 셀렉트 박스 초기값 복원
     const selectors = [
       { id: "#non-life-ratio", value: "60" },
@@ -1103,10 +1109,34 @@ function formatKoreanWon(amount) {
       const element = root.querySelector(id);
       if (element) element.value = value;
     });
+    
+    // AI 결과 컨테이너 숨기기
+    const aiResultContainer = document.getElementById("ai-result-container");
+    if (aiResultContainer) {
+      aiResultContainer.style.display = "none";
+    }
+    
+    // 차트 캔버스 초기화
+    const canvas = document.getElementById('radar-chart');
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+    
+    // URL에서 쿼리 파라미터 제거하고 페이지 새로고침 없이 깨끗한 URL로 변경
+    const cleanUrl = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, cleanUrl);
    
-    currentStep=1;
+    // 첫 번째 스텝으로 이동
+    currentStep = 1;
     showStep(currentStep);
+    
+    // 컨테이너를 맨 위로 스크롤
     document.getElementById("calculator-container")?.scrollTo({top:0, behavior:"smooth"});
+    
+    console.log("모든 데이터 초기화 완료, 첫 화면으로 이동");
   });
  
   // AI 컨설팅 기능
@@ -1292,11 +1322,23 @@ ${Object.entries(readableProfile).map(([key, value]) => `${key}: ${value}`).join
     const fvi = params.get("fvi");
     const grade = params.get("grade");
     const p = params.get("p");
+    
+    console.log("공유 URL 파라미터:", { fvi, grade, p });
+    
     if (fvi && grade && p) {
       try {
-        formData = JSON.parse(decodeURIComponent(escape(atob(p))));
+        // formData를 전역 변수로 재할당하는 대신 Object.assign 사용
+        const sharedData = JSON.parse(decodeURIComponent(escape(atob(p))));
+        Object.assign(formData, sharedData);
+        
+        console.log("복원된 formData:", formData);
+        
         const { FVI, scores } = calcFVIandScores();
-        const grade5 = { label: grade, code: grade.charAt(0), hint: grade === "우수" ? "업계 상위권" : grade === "보통" ? "평균 수준" : "역량 강화 필요" };
+        const grade5 = { 
+          label: grade, 
+          code: grade.charAt(0), 
+          hint: grade === "우수" ? "업계 상위권" : grade === "보통" ? "평균 수준" : "역량 강화 필요" 
+        };
         const analysis = buildAnalysis(formData, scores);
         const insights = buildInsights(FVI, grade5, scores, analysis);
  
@@ -1306,21 +1348,38 @@ ${Object.entries(readableProfile).map(([key, value]) => `${key}: ${value}`).join
         fviScoreEl.textContent = `FVI ${FVI}`;
         gradeText.innerHTML = `등급: <strong>${grade5.label} (${grade5.code}급)</strong> - ${grade5.hint}`;
  
-        renderRadarChart(scores);
+        // Chart.js가 로드되기를 기다린 후 차트 렌더링
+        setTimeout(() => {
+          renderRadarChart(scores);
+        }, 100);
+        
         renderAnalysisTable(scores, analysis);
         renderReport(insights);
+        
+        // 전역 변수 설정
+        window.__FVI__ = { FVI, grade: grade5.label };
  
         currentStep = RESULT_INDEX;
         showStep(currentStep);
+        
+        console.log("공유 결과 화면 표시 완료");
       } catch (e) {
         console.error("공유 데이터 로드 실패:", e);
+        console.error("파라미터 p 내용:", p);
         showStep(1);
       }
     } else {
+      console.log("공유 파라미터 없음, 첫 화면 표시");
       showStep(1);
     }
   }
-  initFromShare();
+  
+  // DOM이 완전히 로드된 후 초기화
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFromShare);
+  } else {
+    initFromShare();
+  }
 })();
 </script>
 </body>
