@@ -1,18 +1,20 @@
-<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>FP Value Index (FVI) 계산기</title>
-
+  
   <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" crossorigin="anonymous"></script>
   <script>
     const KAKAO_JAVASCRIPT_KEY = "2a2e79669ea6bbbf07f5d68ffa1cc67b";
     Kakao.init(KAKAO_JAVASCRIPT_KEY);
   </script>
-
+  
+  <!-- Chart.js 추가 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
   <style>
-    /* --- 기존 스타일 + 수정/추가된 스타일 --- */
+    /* --- 기존 스타일 유지 --- */
     html, body { width:100%; height:100%; margin:0; padding:0; }
     :root{ --primary-color:#0a7aff; --accent-warm:#c4552e; --background-color:#f2f2f7; --card:#ffffff; --text:#111; --muted:#4b5563; --border:#e5e7eb; --input:#f3f4f6; --shadow:0 22px 42px rgba(0,0,0,.12); }
     [data-theme="dark"]{ --background-color:#0b0d0f; --card:#15181b; --text:#f5f7fa; --muted:#d1d5db; --border:#2c3136; --input:#1c2024; --shadow:0 22px 42px rgba(0,0,0,.38); }
@@ -21,8 +23,60 @@
     #gaw-calc-root #gstep-6 #cert-list > label.card-check > span{ width:100%!important; max-width:none!important; }
     #bg-fill{position:fixed; inset:0; z-index:-1;}
     .bg-gradient{background-size:400% 400%; animation:gradientBG 22s ease infinite;}
-    .bg-gradient--light{background:linear-gradient(135deg,#ffe6e6,#fde2f3,#e5e9ff,#dff6ff,#e6ffe6,#fff6e0,#ffe6cc,#ffd9e6);}
-    .bg-gradient--dark{background:linear-gradient(135deg,#2b3133,#272a35,#222a36,#1d2a31,#202f26,#2a2922,#2e2623,#2c252c);}
+
+/* 1) #bg-fill 에서는 위치/공통 속성만 유지 */
+#bg-fill{
+  position:fixed; inset:0; z-index:-1;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 1;
+}
+
+/* 2) 라이트 배경을 .bg-gradient--light 로 이전 */
+.bg-gradient--light{
+  /* pastel peach → pink → lavender → sky blue → aqua 흐름 */
+  background-image:
+    /* 좌측 하단 피치 */
+    radial-gradient(1000px 800px at 18% 62%,
+      rgba(255, 205, 173, 0.45) 0%,
+      rgba(255, 205, 173, 0.00) 56%),
+
+    /* 중앙 좌측 핑크 */
+    radial-gradient(950px 780px at 36% 40%,
+      rgba(249, 182, 201, 0.42) 0%,
+      rgba(249, 182, 201, 0.00) 60%),
+
+    /* 중앙 라벤더 */
+    radial-gradient(1000px 820px at 55% 38%,
+      rgba(212, 198, 243, 0.40) 0%,
+      rgba(212, 198, 243, 0.00) 62%),
+
+    /* 우측 상단 스카이블루 */
+    radial-gradient(1200px 900px at 86% 20%,
+      rgba(194, 233, 240, 0.46) 0%,
+      rgba(194, 233, 240, 0.00) 64%),
+
+    /* 우측 하단 아쿠아 */
+    radial-gradient(1150px 880px at 78% 84%,
+      rgba(192, 238, 242, 0.40) 0%,
+      rgba(192, 238, 242, 0.00) 68%);
+}
+
+/* 라이트 그라데이션 */
+.bg-gradient--light{
+  background-image:
+    radial-gradient(1000px 800px at 18% 62%, rgba(255,205,173,0.45) 0%, rgba(255,205,173,0) 56%),
+    radial-gradient(950px 780px at 36% 40%, rgba(249,182,201,0.42) 0%, rgba(249,182,201,0) 60%),
+    radial-gradient(1000px 820px at 55% 38%, rgba(212,198,243,0.40) 0%, rgba(212,198,243,0) 62%),
+    radial-gradient(1200px 900px at 86% 20%, rgba(194,233,240,0.46) 0%, rgba(194,233,240,0) 64%),
+    radial-gradient(1150px 880px at 78% 84%, rgba(192,238,242,0.40) 0%, rgba(192,238,242,0) 68%);
+}
+
+.bg-gradient--dark {
+  background: #171a1d;
+}
+
     @keyframes gradientBG{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
     #gaw-calc-root{display:flex; justify-content:center; align-items:center; min-height:100svh; width:100%; padding:28px 12px; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Apple SD Gothic Neo","Noto Sans KR","Segoe UI",Roboto,Helvetica,Arial,sans-serif; letter-spacing:-.01em;}
     #gaw-calc-root *, #gaw-calc-root *::before, #gaw-calc-root *::after{ box-sizing:border-box; }
@@ -37,36 +91,88 @@
     .switch-caption .separator{opacity:.35;} .switch-caption .light,.switch-caption .dark{opacity:.45;}
     .theme-switch input:not(:checked) ~ .switch-caption .light{opacity:1; color:var(--text);}
     .theme-switch input:checked ~ .switch-caption .dark{opacity:1; color:var(--text);}
-    #calculator-container h1{text-align:center; font-size:32px; line-height:1.2; font-weight:800; margin:0 0 8px; letter-spacing:-.02em;}
-    #subtitle{text-align:center; color:var(--muted); margin-bottom:18px;}
+
+#calculator-container h1 {
+    font-size: 35px;
+    font-weight: 700;
+    text-align: center;
+    background: linear-gradient(90deg, #000000, #acacac, #000000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 20px 0 5px;
+    letter-spacing: -0.02em;
+}
+    
+    #subtitle{text-align:center; color:var(--muted); margin-bottom:30px;}
     #progress-bar-container{ height:12px; border-radius:999px; overflow:hidden; background:#2f343a; margin:8px 0 28px; }
     #progress-bar{ height:100%; width:0%; background:var(--primary-color); transition:width .35s ease; }
-    .gstep{ display:none; animation:fade .22s; } .gstep.active{ display:block; }
-    .gstep h2{ font-size:22px; line-height:1.35; font-weight:800; margin:6px 0 18px; }
-    .input-group{ margin-bottom:16px; }
-    .input-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .gstep{ display:none; animation:fade .52s; } .gstep.active { display: block; padding: 20px 0px 20px 0px; }
+    .gstep h2{ font-size:22px; line-height:1.5; font-weight:500; margin:6px 0 32px; }
+    .input-group{ margin-bottom:16px; width:100% !important; }
+    .input-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100% !important; }
     @media (max-width:680px){ .input-row{ grid-template-columns:1fr; } }
-    label{ display:block; color:var(--muted); font-weight:800; margin-bottom:8px; }
-    input[type="number"], input[type="text"]{ width:100%; height:56px; border-radius:14px; border:1px solid var(--border); background:var(--input); color:var(--text); -webkit-text-fill-color:var(--text); font-size:18px; font-weight:800; padding:0 16px; outline:none; }
+label{ display:block; color:var(--muted); font-weight:800; margin-bottom:8px; white-space:nowrap; width:100% !important; }
+    input[type="number"], input[type="text"]{ width:100% !important; height:56px; border-radius:14px; border:1px solid var(--border); background:var(--input); color:var(--text); -webkit-text-fill-color:var(--text); font-size:18px; font-weight:800; padding:0 16px; outline:none; box-sizing:border-box !important; }
     input::placeholder{ color:#9aa3ad; } [data-theme="dark"] input::placeholder{ color:#e5e7eb; }
-    .gaw-select{ width:100%; height:56px; border-radius:14px; border:1px solid var(--border); background:var(--input); color:var(--text); font-size:16px; font-weight:800; padding:0 16px; outline:none; appearance:none; -webkit-appearance:none; background-image:url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22292.4%22 height=%22292.4%22%3E%3Cpath fill=%22%234b5563%22 d=%22M287 69.4a17.6 17.6 0 0 0-13-5.4H18.4c-5 0-9.3 1.8-12.9 5.4A17.6 17.6 0 0 0 0 82.2c0 5 1.8 9.3 5.4 12.9l128 127.9c3.6 3.6 7.8 5.4 12.8 5.4s9.2-1.8 12.8-5.4L287 95c3.5-3.5 5.4-7.8 5.4-12.8 0-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 16px top 50%; background-size:12px auto;}
+    .gaw-select{ width:100% !important; height:56px; border-radius:14px; border:1px solid var(--border); background:var(--input); color:var(--text); font-size:16px; font-weight:800; padding:0 16px; outline:none; appearance:none; -webkit-appearance:none; background-image:url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22292.4%22 height=%22292.4%22%3E%3Cpath fill=%22%234b5563%22 d=%22M287 69.4a17.6 17.6 0 0 0-13-5.4H18.4c-5 0-9.3 1.8-12.9 5.4A17.6 17.6 0 0 0 0 82.2c0 5 1.8 9.3 5.4 12.9l128 127.9c3.6 3.6 7.8 5.4 12.8 5.4s9.2-1.8 12.8-5.4L287 95c3.5-3.5 5.4-7.8 5.4-12.8 0-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 16px top 50%; background-size:12px auto; box-sizing:border-box !important; }
     [data-theme="dark"] .gaw-select{ background-image:url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22292.4%22 height=%22292.4%22%3E%3Cpath fill=%22%23d1d5db%22 d=%22M287 69.4a17.6 17.6 0 0 0-13-5.4H18.4c-5 0-9.3 1.8-12.9 5.4A17.6 17.6 0 0 0 0 82.2c0 5 1.8 9.3 5.4 12.9l128 127.9c3.6 3.6 7.8 5.4 12.8 5.4s9.2-1.8 12.8-5.4L287 95c3.5-3.5 5.4-7.8 5.4-12.8 0-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');}
-    .slider{ width:100%; } input[type="range"]{ width:100%; height:12px; border-radius:999px; -webkit-appearance:none; appearance:none; outline:none; background:#2f343a; }
+    .slider{ width:100% !important; } input[type="range"]{ width:100% !important; height:12px; border-radius:999px; -webkit-appearance:none; appearance:none; outline:none; background:#2f343a; box-sizing:border-box !important; }
     input[type="range"]::-webkit-slider-thumb{ -webkit-appearance:none; width:26px; height:26px; border-radius:50%; background:var(--accent-warm); border:3px solid #ffffff22; margin-top:-7px; }
     input[type="range"]::-moz-range-thumb{ width:26px; height:26px; border-radius:50%; background:var(--accent-warm); border:3px solid #ffffff22; }
     .val-pill{ display:inline-block; min-width:56px; padding:4px 10px; border-radius:999px; font-weight:900; background:#e7f0ff; color:#0a58ca; font-size:12px; margin-left:6px; }
-    .checks{ display:flex; flex-direction:column; gap:12px; }
+    .checks{ display:flex; flex-direction:column; gap:12px; width:100% !important; }
+    .card-check{ width:100% !important; }
     .card-check input{ display:none; }
-    .card-check span{ display:flex; align-items:center; gap:12px; min-height:56px; border-radius:12px; background:#eef2f7; border:1px solid var(--border); color:#1f2937; padding:10px 16px; font-size:15px; font-weight:800; }
+    .card-check span{ display:flex; align-items:center; gap:12px; min-height:56px; border-radius:12px; background:#eef2f7; border:1px solid var(--border); color:#1f2937; padding:10px 16px; font-size:15px; font-weight:800; width:100% !important; box-sizing:border-box !important; }
     [data-theme="dark"] .card-check span{ color:#f2f6fb; background:#21262c; }
     .card-check input:checked + span{ border-color:var(--primary-color); box-shadow:0 0 0 2px rgba(10,122,255,.25); }
-    .card-check span i{ width:22px; height:22px; border-radius:6px; border:2px solid #8a9096; background:#15181a; position:relative; }
+    .card-check span i{ width:22px; height:22px; border-radius:6px; border:2px solid #8a9096; background:#15181a; position:relative; flex-shrink:0; }
     .card-check input:checked + span i::after{ content:""; position:absolute; left:6px; top:2px; width:8px; height:14px; border:3px solid #fff; border-top:none; border-left:none; transform:rotate(45deg); }
     .checks.compact .card-check span{ min-height:48px; padding:8px 14px; font-size:14px; }
-    #navigation-buttons{ margin-top:24px; display:flex; gap:10px; }
-    button{ height:56px; border-radius:12px; border:none; background:var(--primary-color); color:#fff; font-size:18px; font-weight:900; letter-spacing:-.01em; cursor:pointer; transition:transform .08s, filter .2s; flex:1; }
+    /* 강제 너비 설정을 위한 추가 CSS */
+    #gaw-calc-root .input-group,
+    #gaw-calc-root .input-row,
+    #gaw-calc-root .gaw-select,
+    #gaw-calc-root input[type="number"],
+    #gaw-calc-root input[type="text"],
+    #gaw-calc-root input[type="range"],
+    #gaw-calc-root .checks,
+    #gaw-calc-root .card-check,
+    #gaw-calc-root .card-check span,
+    #gaw-calc-root #navigation-buttons,
+    #gaw-calc-root button {
+      width: 100% !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+    }
+    
+    #gaw-calc-root .card-check span i {
+      flex-shrink: 0 !important;
+    }
+    
+    #gaw-calc-root #navigation-buttons {
+      display: flex !important;
+      gap: 10px !important;
+    }
+    
+    #gaw-calc-root #navigation-buttons button {
+      flex: 1 !important;
+      min-width: 0 !important;
+    }
+    
+    /* 아임웹 환경에서 발생할 수 있는 스타일 충돌 방지 */
+    #gaw-calc-root * {
+      box-sizing: border-box !important;
+    }
+    
+    #gaw-calc-root .input-row > .input-group {
+      min-width: 0 !important;
+      flex: 1 !important;
+    }
+    #navigation-buttons{ margin-top:24px; display:flex; gap:10px; width:100% !important; }
+    button{ height:56px; border-radius:12px; border:none; background:var(--primary-color); color:#fff; font-size:18px; font-weight:900; letter-spacing:-.01em; cursor:pointer; transition:transform .08s, filter .2s; flex:1; width:100% !important; min-width:0 !important; box-sizing:border-box !important; }
     button:active{ transform:translateY(1px); }
-    #prev-btn{ background:transparent; color:var(--primary-color); border:1px solid var(--primary-color); }
+    #prev-btn{ background:transparent; color:var(--primary-color); border:1px solid var(--primary-color); flex:1; width:100% !important; }
     #result-display{ text-align:center; }
     #badge{ display:inline-block; padding:6px 10px; border-radius:999px; font-size:12px; font-weight:900; margin-bottom:6px; background:#e5f0ff; color:#0a58ca; }
     #fvi-score{ font-size:40px; font-weight:900; margin:0 0 8px; }
@@ -79,9 +185,9 @@
     #ai-result-container{ margin-top:20px }
     .ai-sections{ display:grid; gap:21px; padding:20px 6px; }
     .ai-card{ padding:6px 16px; text-align:left; }
-   .ai-card h4{ margin:0 0 10px; font-size:17px; font-weight:800; color:var(--text); }
+    .ai-card h4{ margin:0 0 10px; font-size:20px; font-weight:900; color:var(--text); }
     @keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
-
+  
     #grade-text strong { font-size: 1.1em; color: var(--primary-color); }
     #additional-results-container { margin-top: 24px; padding: 20px; border-radius: 16px; background-color: var(--input); border: 1px solid var(--border); text-align: left; }
     #additional-results-container h3 { font-size: 20px; font-weight: 800; margin-top: 0; margin-bottom: 16px; color: var(--text); }
@@ -95,7 +201,7 @@
     [data-theme="dark"] .growth-indicators .badge { background-color: #312e81; color: #e0e7ff; }
     .info-line { font-size: 13px; color: var(--muted); text-align: center; margin-top: 12px; opacity: 0.8; }
     .disclaimer { font-size: 12px; color: var(--muted); opacity: 0.8; margin-top: 16px; text-align: center; }
-
+  
     @media (max-width: 680px) {
       .theme-switch { top: 20px; right: 20px; gap: 0; }
       .theme-switch .switch-caption { display: none; }
@@ -104,6 +210,16 @@
       .theme-switch input:checked + .track .thumb { left: 26px; }
       #calculator-container { padding-left: 20px; padding-right: 20px; }
     }
+ 
+    /* 추가 스타일: 레이다 차트와 보고서 */
+    #radar-chart-container { margin: 20px auto; max-width: 400px; }
+    .report-section { margin-top: 20px; }
+    .report-section h3 { font-size: 18px; font-weight: 800; margin-bottom: 10px; }
+    .report-section ul { list-style-type: disc; padding-left: 20px; line-height: 1.6; }
+    .report-section li { margin-bottom: 8px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    th, td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+    th { background: var(--input); font-weight: 800; }
   </style>
 </head>
 <body>
@@ -117,97 +233,170 @@
         <span class="light">Light</span><span class="separator">•</span><span class="dark">Dark</span>
       </div>
     </div>
-
+  
     <h1>FP Value Index (FVI)</h1>
-    <p id="subtitle">현재 가치와 성장 잠재력을 함께 보는 설계사 평가 지수</p>
+    <p id="subtitle">보험설계사의 종합 역량 평가 지수</p>
     <div id="progress-bar-container"><div id="progress-bar"></div></div>
-
+  
     <form id="calculator-form" onsubmit="return false;">
       
       <div class="gstep active" id="gstep-1">
-        
-        <h2>기본 정보를 입력해 주세요</h2>
+        <h2>1. 안녕하세요! 성함이나 별칭을 알려주세요.</h2>
+        <div class="input-group">
+          <label for="user-name" style="display:none;">이름 / 별칭</label>
+          <input type="text" id="user-name" placeholder="예: 홍길동,홍팀장,보험왕.." />
+        </div>
+      </div>
   
-  <input type="hidden" id="access-url" />
-                <div class="input-row">
-          <div class="input-group">
-            <label for="user-name">이름 / 별칭</label>
-            <input type="text" id="user-name" placeholder="예: 홍길동" />
-          </div>
-          <div class="input-group">
-            <label for="activity-region">주요 활동 지역</label>
-            <select id="activity-region" class="gaw-select">
-              <option>서울특별시</option> <option>부산광역시</option> <option>대구광역시</option> <option>인천광역시</option> <option>광주광역시</option> <option>대전광역시</option> <option>울산광역시</option> <option>세종특별자치시</option> <option>경기도</option> <option>강원특별자치도</option> <option>충청북도</option> <option>충청남도</option> <option>전북특별자치도</option> <option>전라남도</option> <option>경상북도</option> <option>경상남도</option> <option>제주특별자치도</option> <option>전국</option>
-            </select>
-          </div>
-        </div>
-        <div class="input-row">
-          <div class="input-group">
-            <label for="birth-year">출생 연도 (YYYY)</label>
-            <input type="number" id="birth-year" placeholder="예: 1987" min="1940" max="2015" inputmode="numeric"/>
-          </div>
-          <div class="input-group">
-            <label for="career-length">총 경력 (년)</label>
-            <input type="number" id="career-length" placeholder="예: 7" min="0" inputmode="numeric"/>
-          </div>
-        </div>
-      </div>
-
       <div class="gstep" id="gstep-2">
-        <h2>직전년도 소득을 입력해 주세요</h2>
+        <h2>2. 주로 활동하시는 지역은 어디인가요?</h2>
         <div class="input-group">
-          <label for="prev-income-krw">연 소득 (원)</label>
-          <input type="text" id="prev-income-krw" placeholder="예: 100,000,000" inputmode="numeric" />
-          <div class="hint" id="prev-income-hint">예: 100,000,000원 = 1억 0만원</div>
+          <label for="activity-region" style="display:none;">주요 활동 지역</label>
+          <select id="activity-region" class="gaw-select">
+            <option>서울특별시</option> <option>부산광역시</option> <option>대구광역시</option> <option>인천광역시</option> <option>광주광역시</option> <option>대전광역시</option> <option>울산광역시</option> <option>세종특별자치시</option> <option>경기도</option> <option>강원특별자치도</option> <option>충청북도</option> <option>충청남도</option> <option>전북특별자치도</option> <option>전라남도</option> <option>경상북도</option> <option>경상남도</option> <option>제주특별자치도</option> <option>전국</option>
+          </select>
         </div>
       </div>
-
+  
       <div class="gstep" id="gstep-3">
-        <h2>월간 성과를 알려주세요</h2>
-        <div class="input-row">
-          <div class="input-group">
-            <label for="monthly-contracts">월 평균 계약 건수 (건)</label>
-            <input type="number" id="monthly-contracts" placeholder="예: 15" min="0" inputmode="numeric" />
-          </div>
-          <div class="input-group">
-            <label for="monthly-premium">월 평균 업적 (만원)</label>
-            <input type="number" id="monthly-premium" placeholder="예: 200" min="0" inputmode="numeric" />
-          </div>
-        </div>
-      </div>
-
-      <div class="gstep" id="gstep-4">
-        <h2>포트폴리오와 품질 지표</h2>
-        <div class="input-row">
-          <div class="input-group">
-            <label for="non-life-ratio">손해보험 비중: <span id="non-life-ratio-value" class="val-pill">50%</span></label>
-            <input class="slider" type="range" id="non-life-ratio" min="0" max="100" value="50" />
-          </div>
-          <div class="input-group">
-            <label for="persistency-range">유지율(13회차): <span id="persistency-value" class="val-pill">85%</span></label>
-            <input class="slider" type="range" id="persistency-range" min="0" max="100" value="85" />
-          </div>
-        </div>
-      </div>
-
-      <div class="gstep" id="gstep-5">
-        <h2>영업 방식(해당 모두 선택)</h2>
-        <div class="checks">
-          <label class="card-check"><input type="checkbox" name="sales-method" value="pioneering"><span><i></i>개척 영업</span></label>
-          <label class="card-check"><input type="checkbox" name="sales-method" value="referral"><span><i></i>소개 영업</span></label>
-          <label class="card-check"><input type="checkbox" name="sales-method" value="db"><span><i></i>DB 영업(인/아웃바운드)</span></label>
-          <label class="card-check"><input type="checkbox" name="sales-method" value="seminar"><span><i></i>세미나 영업</span></label>
-          <label class="card-check"><input type="checkbox" name="sales-method" value="inhouse"><span><i></i>인하우스/유입</span></label>
-          <label class="card-check"><input type="checkbox" name="sales-method" value="niche"><span><i></i>특화 시장</span></label>
-          <label class="card-check"><input type="checkbox" name="sales-method" value="corporate"><span><i></i>법인 영업</span></label>
-        </div>
-      </div>
-
-      <div class="gstep" id="gstep-6">
-        <h2>전문성과 성장성</h2>
+        <h2>3. 태어난 해를 알려주실 수 있나요? (YYYY 형식)</h2>
         <div class="input-group">
-          <label>자격증/교육 이수 (해당 모두 체크)</label>
-          <div class="compact" id="cert-list">
+          <label for="birth-year" style="display:none;">출생 연도 (YYYY)</label>
+          <input type="number" id="birth-year" placeholder="예: 1987" min="1940" max="2015" inputmode="numeric"/>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-4">
+        <h2>4. 지금까지 보험·GA 업계에서 쌓아오신 경력은 몇 년 정도 되시나요?</h2>
+        <div class="input-group">
+          <label for="career-length" style="display:none;">총 경력 (년)</label>
+          <input type="number" id="career-length" placeholder="예: 7" min="0" inputmode="numeric"/>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-5">
+        <h2>5. 작년 한 해 동안의 총 소득은 어느 정도였나요?</h2>
+        <div class="input-group">
+          <label for="prev-income-krw" style="display:none;">직전년도 연 소득 (원)</label>
+          <input type="text" id="prev-income-krw" placeholder="예: 68,000,000" inputmode="numeric" />
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-6">
+        <h2>6. 한 달에 평균적으로 몇 건 정도의 계약을 체결하시나요?</h2>
+        <div class="input-group">
+          <label for="monthly-contracts" style="display:none;">월 평균 계약 건수 (건)</label>
+          <input type="number" id="monthly-contracts" placeholder="예: 5" min="0" inputmode="numeric" />
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-7">
+        <h2>7. 월평균 업적 규모는 얼마 정도 되시나요?</h2>
+        <div class="input-group">
+          <label for="monthly-premium" style="display:none;">월 평균 업적 (만원)</label>
+          <input type="number" id="monthly-premium" placeholder="예: 400" min="0" inputmode="numeric" />
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-8">
+        <h2>8. 활동 중 손해보험이 차지하는 비중은 어느 정도인가요?</h2>
+        <div class="input-group">
+          <label for="non-life-ratio" style="display:none;">손해보험 비중</label>
+          <select id="non-life-ratio" class="gaw-select">
+            <option value="5">10% 미만</option>
+            <option value="20">10%~30%</option>
+            <option value="40">30%~50%</option>
+            <option value="60" selected>50%~70%</option>
+            <option value="80">70% 이상</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-9">
+        <h2>9. 계약 유지율(13회차 기준)은 몇 퍼센트 수준인가요?</h2>
+        <div class="input-group">
+          <label for="persistency-range" style="display:none;">유지율(13회차)</label>
+          <select id="persistency-range" class="gaw-select">
+            <option value="75">80% 미만</option>
+            <option value="82.5">80%~85%</option>
+            <option value="87.5">85%~90%</option>
+            <option value="92.5" selected>90%~95%</option>
+            <option value="97.5">95% 이상</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-10">
+        <h2>10. 현재 관리하고 계신 고객 수는 몇 명 정도인가요?</h2>
+        <div class="input-group">
+          <label for="managed-clients" style="display:none;">현재 유지 관리 중인 고객 수</label>
+          <select id="managed-clients" class="gaw-select">
+            <option value="1">50명 미만</option>
+            <option value="2">50~150명</option>
+            <option value="3" selected>150~300명</option>
+            <option value="4">300~500명</option>
+            <option value="5">500명 이상</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-11">
+        <h2>11. 신규 고객 중 기존 고객 소개로 들어오는 비율은 어느 정도인가요?</h2>
+        <div class="input-group">
+          <label for="referral-rate" style="display:none;">기존 고객 소개로 유입되는 비율</label>
+          <select id="referral-rate" class="gaw-select">
+            <option value="5">10% 미만</option>
+            <option value="20">10%~30%</option>
+            <option value="40" selected>30%~50%</option>
+            <option value="60">50%~70%</option>
+            <option value="80">70% 이상</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-12">
+        <h2>12. 고객 한 가구(세대) 전체를 관리하고 계신 비중은 얼마나 되나요?</h2>
+        <div class="input-group">
+          <label for="household-share" style="display:none;">가구(세대) 전체를 관리하는 고객 비중</label>
+          <select id="household-share" class="gaw-select">
+            <option value="5">10% 미만</option>
+            <option value="20">10%~30%</option>
+            <option value="40" selected>30%~50%</option>
+            <option value="60">50%~70%</option>
+            <option value="80">70% 이상</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-13">
+        <h2>13. 영업은 주로 어떤 방식을 활용하시나요? (해당되는 방식을 모두 골라주세요)</h2>
+        <div class="input-group">
+          <label style="display:none;">주요 영업 방식 (해당 모두 선택)</label>
+          <div class="checks">
+            <label class="card-check"><input type="checkbox" name="sales-method" value="pioneering"><span><i></i>개척 영업</span></label>
+            <label class="card-check"><input type="checkbox" name="sales-method" value="referral"><span><i></i>소개 영업</span></label>
+            <label class="card-check"><input type="checkbox" name="sales-method" value="db"><span><i></i>DB 영업</span></label>
+            <label class="card-check"><input type="checkbox" name="sales-method" value="seminar"><span><i></i>세미나 영업</span></label>
+            <label class="card-check"><input type="checkbox" name="sales-method" value="inhouse"><span><i></i>인하우스</span></label>
+            <label class="card-check"><input type="checkbox" name="sales-method" value="niche"><span><i></i>특화 시장</span></label>
+            <label class="card-check"><input type="checkbox" name="sales-method" value="corporate"><span><i></i>법인 영업</span></label>
+          </div>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-14">
+        <h2>14. 하루 평균 몇 건 정도의 상담(전화 포함)을 진행하시나요?</h2>
+        <div class="input-group">
+          <label for="daily-consults" style="display:none;">하루 평균 상담 건수 (전화상담 포함)</label>
+          <input type="number" id="daily-consults" placeholder="예: 2" min="0" inputmode="numeric" />
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-15">
+        <h2>15. 보유하고 계신 자격증이나 이수한 교육 과정이 있다면 알려주세요.</h2>
+        <div class="input-group">
+          <label style="display:none;">자격증/교육 이수 (해당 모두 체크)</label>
+          <div class="checks compact" id="cert-list">
             <label class="card-check"><input type="checkbox" value="life"><span><i></i>생명보험설계사</span></label>
             <label class="card-check"><input type="checkbox" value="nonlife"><span><i></i>손해보험설계사</span></label>
             <label class="card-check"><input type="checkbox" value="third"><span><i></i>제3보험설계사</span></label>
@@ -218,19 +407,181 @@
             <label class="card-check"><input type="checkbox" value="fund"><span><i></i>펀드투자권유대행인</span></label>
             <label class="card-check"><input type="checkbox" value="securities"><span><i></i>증권투자권유대행인</span></label>
           </div>
-          <div class="hint">전문점수 총합 최대 +10, 금액 가산 최대 +1,000만원</div>
         </div>
       </div>
-
+  
+      <div class="gstep" id="gstep-16">
+        <h2>16. 일주일에 교육(온라인, 지점, 본사 포함)을 받는 시간은 대략 몇 시간 정도인가요?</h2>
+        <div class="input-group">
+          <label for="study-hours" style="display:none;">주간 평균 교육 받는 시간 (온라인,지점,본사 교육 포함)</label>
+          <select id="study-hours" class="gaw-select">
+            <option value="1">2시간 이하</option>
+            <option value="3">2~4시간</option>
+            <option value="5" selected>4~6시간</option>
+            <option value="7">6~8시간</option>
+            <option value="9">8시간 이상</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-17">
+        <h2>17. 업계 세미나나 스터디 모임에는 정기적으로 참여하고 계신가요?</h2>
+        <div class="input-group">
+          <label for="seminar-participation" style="display:none;">업계 세미나/스터디 정기 참여</label>
+          <select id="seminar-participation" class="gaw-select">
+            <option value="1">참여 안 함</option>
+            <option value="2">연 1-2회</option>
+            <option value="3" selected>월 1회</option>
+            <option value="4">월 2회</option>
+            <option value="5">주 1회 이상</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-18">
+        <h2>18. 본인만의 마케팅 역량이나 활용 방법이 있다면 어떤 것들을 하고 계신가요?</h2>
+        <div class="input-group">
+          <label style="display:none;">자체 마케팅 역량 (해당 모두 선택)</label>
+          <div class="checks compact">
+            <label class="card-check"><input type="checkbox" value="kakao"><span><i></i>카톡으로 고객관리 (ex.카드뉴스전달)</span></label>
+            <label class="card-check"><input type="checkbox" value="sns_start"><span><i></i>SNS 시작 단계</span></label>
+            <label class="card-check"><input type="checkbox" value="blog"><span><i></i>주 1회 이상 블로그 포스팅</span></label>
+            <label class="card-check"><input type="checkbox" value="followers_1k"><span><i></i>1천명 이상 팔로워</span></label>
+            <label class="card-check"><input type="checkbox" value="followers_10k"><span><i></i>1만명 이상 팔로워</span></label>
+            <label class="card-check"><input type="checkbox" value="homepage"><span><i></i>자체 홈페이지/앱 운영</span></label>
+          </div>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-19">
+        <h2>19. 비대면 상담이나 전자서명에는 어느 정도 익숙하신가요?</h2>
+        <div class="input-group">
+          <label for="digital-proficiency" style="display:none;">비대면 상담/전자서명 숙련도</label>
+          <select id="digital-proficiency" class="gaw-select">
+            <option value="1">매우 미숙</option>
+            <option value="2">미숙</option>
+            <option value="3" selected>보통</option>
+            <option value="4">능숙</option>
+            <option value="5">매우 능숙</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-20">
+        <h2>20. 스마트폰이나 태블릿으로 업무를 처리하는 수준은 어느 정도인가요?</h2>
+        <div class="input-group">
+          <label for="mobile-work" style="display:none;">스마트폰/태블릿 업무 처리 정도</label>
+          <select id="mobile-work" class="gaw-select">
+            <option value="1">전혀 안함</option>
+            <option value="2">가끔</option>
+            <option value="3" selected>절반 정도</option>
+            <option value="4">대부분</option>
+            <option value="5">모든 업무 디지털화</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-21">
+        <h2>21. 최근 3년 동안 리쿠르팅에 성공하신 인원은 몇 명 정도인가요?</h2>
+        <div class="input-group">
+          <label for="recruiting-count" style="display:none;">리쿠르팅 성공 인원 (최근 3년)</label>
+          <input type="number" id="recruiting-count" placeholder="예: 2" min="0" inputmode="numeric" />
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-22">
+        <h2>22. 현재 소속된 조직에서의 직급은 어떻게 되시나요?</h2>
+        <div class="input-group">
+          <label for="organization-position" style="display:none;">소속 조직 내 직급</label>
+          <select id="organization-position" class="gaw-select">
+            <option value="1" selected>일반 설계사</option>
+            <option value="2">팀장급</option>
+            <option value="3">부지점장</option>
+            <option value="4">지점장</option>
+            <option value="5">본부장 이상</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-23">
+        <h2>23. 다른 동료들에게 멘토링이나 교육 활동을 해보신 경험이 있으신가요?</h2>
+        <div class="input-group">
+          <label for="mentoring-activity" style="display:none;">멘토링/교육 활동</label>
+          <select id="mentoring-activity" class="gaw-select">
+            <option value="1" selected>하지 않음</option>
+            <option value="2">가끔</option>
+            <option value="3">월 1회</option>
+            <option value="4">월 2-3회</option>
+            <option value="5">정기적 (주 1회+)</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-24">
+        <h2>24. 본인만의 영업 노하우를 체계화하거나 매뉴얼로 만들어서 활용하고 계신가요?</h2>
+        <div class="input-group">
+          <label for="system-development" style="display:none;">영업 시스템화 정도</label>
+          <select id="system-development" class="gaw-select">
+            <option value="1" selected>주먹구구식</option>
+            <option value="2">부분적 체계화</option>
+            <option value="3">개인 매뉴얼 보유</option>
+            <option value="4">팀 공유</option>
+            <option value="5">조직 표준화</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-25">
+        <h2>25. 최근 3년 이내에 회사에서 해촉당한 경험이 있으신가요?</h2>
+        <div class="input-group">
+          <label for="termination-history" style="display:none;">3년 이내 해촉 이력</label>
+          <select id="termination-history" class="gaw-select">
+            <option value="no" selected>없음</option>
+            <option value="yes">있음</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-26">
+        <h2>26. 고객에게 상품을 추천하실 때 가장 중요하게 생각하시는 기준은 무엇인가요?</h2>
+        <div class="input-group">
+          <label for="product-selection" style="display:none;">상품 제안 기준</label>
+          <select id="product-selection" class="gaw-select">
+            <option value="1">수수료 우선</option>
+            <option value="2">수수료+고객 고려</option>
+            <option value="3" selected>균형</option>
+            <option value="4">고객 우선</option>
+            <option value="5">철저히 고객 우선</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="gstep" id="gstep-27">
+        <h2>27. 보험 설계를 하실 때 다른 분의 도움 없이 독립적으로 진행하실 수 있나요?</h2>
+        <div class="input-group">
+          <label for="design-independence" style="display:none;">설계 독립성</label>
+          <select id="design-independence" class="gaw-select">
+            <option value="1">타인 의존</option>
+            <option value="2">부분적 의존</option>
+            <option value="3" selected>보통</option>
+            <option value="4">대부분 독립</option>
+            <option value="5">완전 독립</option>
+          </select>
+        </div>
+      </div>
+  
       <div class="gstep" id="gstep-result">
         <div id="result-display">
           <div id="badge">Result</div>
-          <h2 id="result-title">당신의 FVI와 예상 금액</h2>
+          <h2 id="result-title">당신의 FVI와 분석 결과</h2>
           <div id="fvi-score">FVI 0</div>
           <div class="result-description" id="grade-text">등급 산정 중…</div>
-          <p class="final-value"><span id="final-value-text">0원</span> <span class="value-unit">/ 내년도 나의 시장가치(₩)</span></p>
+          <div id="radar-chart-container">
+            <canvas id="radar-chart"></canvas>
+          </div>
+          <div id="analysis-table"></div>
           <div class="insights" id="insights-box"></div>
-          
+         
           <div style="margin-top:14px; display:flex; gap:10px;">
             <button type="button" id="restart-btn">다시 계산</button>
             <button type="button" id="ai-consulting-btn">AI 컨설팅 받기</button>
@@ -243,7 +594,7 @@
         </div>
       </div>
     </form>
-
+  
     <div id="navigation-buttons">
       <button type="button" id="prev-btn" style="display:none;">이전</button>
       <button type="button" id="next-btn">다음</button>
@@ -251,14 +602,30 @@
     </div>
   </div>
 </div>
-
+  
 <script>
+function formatKoreanWon(amount) {
+  if (amount === 0) return "0원";
+  
+  const units = ["", "만", "억", "조"];
+  let result = "";
+  let unitIndex = 0;
+  
+  while (amount > 0 && unitIndex < units.length) {
+    const remainder = amount % 10000;
+    if (remainder > 0) {
+      result = remainder + units[unitIndex] + result;
+    }
+    amount = Math.floor(amount / 10000);
+    unitIndex++;
+  }
+  
+  return result + "원";
+}
+
 (function(){
   const root=document.getElementById("gaw-calc-root"); if(!root) return;
-document.getElementById('access-url').value = window.location.href;
-  const TOTAL_PAYOUT_MULT = 18.0;
-  const FIRST_YEAR_MULT   = 12.0;
-
+  
   const bgFill=document.getElementById("bg-fill"); const themeCheckbox=document.getElementById("theme-checkbox");
   function applyBg(theme){ bgFill.classList.add("bg-gradient"); bgFill.classList.remove("bg-gradient--light","bg-gradient--dark"); bgFill.classList.add(theme==="dark"?"bg-gradient--dark":"bg-gradient--light"); }
   function applyTheme(theme){ root.setAttribute("data-theme",theme); localStorage.setItem("fvi-theme",theme); themeCheckbox.checked=(theme==="dark"); applyBg(theme); }
@@ -266,457 +633,678 @@ document.getElementById('access-url').value = window.location.href;
   applyTheme(localStorage.getItem("fvi-theme")||(prefersDark?"dark":"light"));
   document.querySelector(".theme-switch .track")?.addEventListener("click",()=>{ themeCheckbox.checked=!themeCheckbox.checked; themeCheckbox.dispatchEvent(new Event("change")); });
   themeCheckbox?.addEventListener("change",()=>applyTheme(themeCheckbox.checked?"dark":"light"));
-
+  
   const progressBar=root.querySelector("#progress-bar"), prevBtn=root.querySelector("#prev-btn"), nextBtn=root.querySelector("#next-btn"), submitBtn=root.querySelector("#submit-btn");
-  const prevIncomeKRWInput=root.querySelector("#prev-income-krw"), prevIncomeHint=root.querySelector("#prev-income-hint");
-  const rangePNC=root.querySelector("#non-life-ratio"), rangePR=root.querySelector("#persistency-range");
-  const rangePNCText=root.querySelector("#non-life-ratio-value"), rangePRText=root.querySelector("#persistency-value");
-  const fviScoreEl=root.querySelector("#fvi-score"), finalValueText=root.querySelector("#final-value-text"), gradeText=root.querySelector("#grade-text"), insightsBox=root.querySelector("#insights-box");
+  const prevIncomeKRWInput=root.querySelector("#prev-income-krw");
+  const fviScoreEl=root.querySelector("#fvi-score"), gradeText=root.querySelector("#grade-text"), insightsBox=root.querySelector("#insights-box");
+  
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxa1qCtdH43R1Hf4qG7ht_UXzFNyifaL0QAgD1CP3GUk1saL-hYmr0IprjnQb6H9dn/exec";
+  const onlyDigits=s=>(s||"").replace(/[^\d]/g,"");
+  const readNumber=(sel,f=0)=>{const el=root.querySelector(sel); if(!el) return f; const v=parseFloat(String(el.value).replace(/,/g,"")); return isNaN(v)?f:v;};
+  const formData={};
 
-  const EXTRA_QUESTIONS = [
-    { id:"q-daily-consults", label:"하루 평균 상담 건수는 몇 건입니까?", type:"number", placeholder:"예: 4",
-      bonusCalc:(v)=>{const n=+v||0; if(n>=5) return "q5"; if(n===4) return "q4"; if(n===3) return "q3"; return "q2"; }},
-    { id:"q-managed-clients", label:"현재 유지 관리 중인 고객 수는 대략 몇 명입니까?", type:"scale5",
-      scaleLabels:["50명 이하", "50~100명", "100~200명", "200~300명", "300명 이상"],
-      map:["m_lt50", "m_50_100", "m_100_200", "m_200_300", "m_300p"] },
-    { id:"q-referral-rate", label:"기존 고객 소개로 유입되는 비율(%)", type:"range", min:0, max:100, step:1,
-      bonusCalc:(v)=>{const n=+v||0; if(n>=40) return "r40"; if(n>=20) return "r20"; if(n>=10) return "r10"; return "r0"; }},
-    { id:"q-household-share", label:"가구(세대) 전체를 관리하는 고객 비중(%)", type:"range", min:0, max:100, step:1,
-      bonusCalc:(v)=>{const n=+v||0; if(n>=30) return "h30"; if(n>=20) return "h20"; if(n>=10) return "h10"; return "h0"; }},
-    { id:"q-digital-marketing", label:"자체 마케팅 역량 (해당 모두 선택)", type:"checkbox_group",
-      options: [
-        { label: "카톡으로 고객관리 정도", value: "dm_kakao" }, { label: "SNS 시작 단계", value: "dm_sns_start" }, { label: "주 1회 이상 블로그 포스팅", value: "dm_blog" }, { label: "1천명 이상의 SNS 팔로우 보유", value: "dm_1k" }, { label: "1만명 이상의 팔로우 보유", value: "dm_10k" }, { label: "자체 홈페이지 or 어플리케이션 운영", value: "dm_app" }
-      ]},
-    { id:"q-esign", label:"비대면 상담/전자서명 프로세스 숙련도", type:"scale5",
-      scaleLabels:["매우 어려움", "어려움", "보통", "능숙", "매우 능숙"],
-      map:["es-l1","es-l2","es-l3","es-l4","es-l5"] },
-    { id:"q-recruit-num", label:"리쿠르팅 경험(최근 성공/정착 인원 수)", type:"number", placeholder:"예: 3",
-      bonusCalc:(v)=>{const n=+v||0; return (n>=3)?"rec-3plus":"none"; }},
-    { id:"q-position", label:"소속 조직 내 직급", type:"scale5", scaleLabels:["FP","부지점장","지점장","지사장","본부장 이상"], map:["pos-fp","pos-sub","pos-branch","pos-area","pos-hq"] },
-    { id:"q-mentoring", label:"정기적인 멘토링/교육 또는 사례 공유를 진행합니까?", type:"scale5", scaleLabels:["없음","가끔","월1회","월2회","주1회+"], map:["ment-l1","ment-l2","ment-l3","ment-l4","ment-l5"] },
-    { id:"q-system", label:"영업 노하우를 매뉴얼로 만들어 동료가 활용합니까?", type:"scale5", scaleLabels:["없음","초안","부분공유","팀공유","조직표준"], map:["sys-l1","sys-l2","sys-l3","sys-l4","sys-l5"] },
-    { id:"q-seminar", label:"업계 세미나/스터디 정기 참여", type:"scale5", scaleLabels:["없음","분기1회","월1회","월2회","주1회+"], map:["sem-l1","sem-l2","sem-l3","sem-l4","sem-l5"] },
-    { id:"q-termination", label:"3년 이내 해촉 이력", type:"scale5",
-      scaleLabels:["예", "아니오"], map:["pen3y-yes","pen3y-no"] },
-  ];
-  const EXTRA_PAGES=[]; for(let i=0;i<EXTRA_QUESTIONS.length;i+=2){ EXTRA_PAGES.push(EXTRA_QUESTIONS.slice(i,i+2)); }
-  const BONUS_RULES={ "q5":{fvi:5,amount:0},"q4":{fvi:4,amount:0},"q3":{fvi:3,amount:0},"q2":{fvi:2,amount:0},"m_lt50":{fvi:1,amount:0},"m_50_100":{fvi:2,amount:0},"m_100_200":{fvi:3,amount:0},"m_200_300":{fvi:4,amount:0},"m_300p":{fvi:5,amount:0},"r40":{fvi:5,amount:0},"r20":{fvi:4,amount:0},"r10":{fvi:3,amount:0},"r0":{fvi:2,amount:0},"h30":{fvi:5,amount:0},"h20":{fvi:4,amount:0},"h10":{fvi:3,amount:0},"h0":{fvi:2,amount:0},"dm_kakao":{fvi:1},"dm_sns_start":{fvi:1},"dm_blog":{fvi:2},"dm_1k":{fvi:2},"dm_10k":{fvi:3},"dm_app":{fvi:3},"es-l1":{fvi:1,amount:0},"es-l2":{fvi:2,amount:0},"es-l3":{fvi:3,amount:0},"es-l4":{fvi:4,amount:0},"es-l5":{fvi:5,amount:0},"rec-3plus":{fvi:5,amount:0},"pos-fp":{fvi:0,amount:0},"pos-sub":{fvi:2,amount:0},"pos-branch":{fvi:3,amount:0},"pos-area":{fvi:4,amount:0},"pos-hq":{fvi:5,amount:0},"ment-l1":{fvi:0,amount:0},"ment-l2":{fvi:1,amount:0},"ment-l3":{fvi:3,amount:0},"ment-l4":{fvi:4,amount:0},"ment-l5":{fvi:5,amount:0},"sys-l1":{fvi:0,amount:0},"sys-l2":{fvi:2,amount:0},"sys-l3":{fvi:3,amount:0},"sys-l4":{fvi:4,amount:0},"sys-l5":{fvi:5,amount:0},"sem-l1":{fvi:0,amount:0},"sem-l2":{fvi:1,amount:0},"sem-l3":{fvi:3,amount:0},"sem-l4":{fvi:4,amount:0},"sem-l5":{fvi:5,amount:0},"pen3y-yes":{fvi:-5,amount:0},"pen3y-no":{fvi:0,amount:0},"none":{fvi:0,amount:0}};
-  const EXTRA_CAP={fvi:20, amount:0};
-
-  function renderExtraPages(){
-    const form=root.querySelector("#calculator-form");
-    const resultStep=document.getElementById("gstep-result");
-    Array.from(form.querySelectorAll('[data-extra="1"]')).forEach(n=>n.remove());
-    EXTRA_PAGES.forEach((page,idx)=>{
-      const step=document.createElement("div"); step.className="gstep"; step.id=`gstep-extra-${idx+1}`; step.setAttribute("data-extra","1");
-      const grid=document.createElement("div"); grid.className="input-row";
-      page.forEach(q=>{
-        const wrap=document.createElement("div"); wrap.className="input-group";
-        const hasPill=(q.type==="range");
-        const label=document.createElement("label"); label.htmlFor = q.id; label.innerHTML=q.label + (hasPill?` <span class="val-pill" id="${q.id}-pill">0%</span>`:"");
-        wrap.appendChild(label);
-        if(q.type==="number"||q.type==="text"){
-          const inp=document.createElement("input"); inp.type=q.type; inp.id=q.id; inp.placeholder=q.placeholder||""; inp.min="0"; inp.inputMode="numeric"; wrap.appendChild(inp);
-        }else if(q.type==="range"){
-          const inp=document.createElement("input");
-          Object.assign(inp,{type:"range",min:q.min||0,max:q.max||100,step:q.step||1,value:q.value||0,id:q.id});
-          inp.className="slider"; wrap.appendChild(inp);
-          setTimeout(()=>{ const pill=document.getElementById(`${q.id}-pill`); if(pill) pill.textContent=`${(+inp.value||0)}%`; },0);
-          inp.addEventListener("input",()=>{ const pill=document.getElementById(`${q.id}-pill`); if(pill) pill.textContent=`${(+inp.value||0)}%`; });
-        }else if(q.type==="scale5"){
-          const select = document.createElement("select"); select.id = q.id; select.className = "gaw-select";
-          (q.scaleLabels||[]).forEach((lab,i)=>{
-            const val=(q.map&&q.map[i])||String(i+1); const option = document.createElement("option"); option.value = val; option.textContent = lab;
-            if (q.id === 'q-termination') { if (i === 1) option.selected = true; } else { if (i === Math.floor((q.scaleLabels.length -1) / 2)) option.selected = true;}
-            select.appendChild(option);
-          });
-          wrap.appendChild(select);
-        } else if (q.type === "checkbox_group") {
-            const checksDiv = document.createElement("div"); checksDiv.className = "checks compact"; checksDiv.id = q.id;
-            (q.options || []).forEach(opt => {
-                const checkLabel = document.createElement("label"); checkLabel.className = "card-check"; checkLabel.innerHTML = `<input type="checkbox" name="${q.id}" value="${opt.value}"><span><i></i>${opt.label}</span>`;
-                checksDiv.appendChild(checkLabel);
-            });
-            wrap.appendChild(checksDiv);
-        }
-        grid.appendChild(wrap);
-      });
-      step.appendChild(grid); form.insertBefore(step, resultStep);
-    });
-  }
-  renderExtraPages();
-
-  const allSteps=()=>Array.from(root.querySelectorAll(".gstep"));
   let currentStep=1;
-  const LAST_INPUT_STEP=()=> 6 + EXTRA_PAGES.length;
-  const RESULT_INDEX=()=> LAST_INPUT_STEP()+1;
-
+  const LAST_INPUT_STEP = 27;
+  const RESULT_INDEX = 28;
+  
   function showStep(n){
-    allSteps().forEach(s=>s.classList.remove("active"));
-    const t=allSteps()[n-1]; if(t){t.classList.add("active");}
-    if(progressBar) progressBar.style.width=(n>LAST_INPUT_STEP()?100:Math.max(0,((n-1)/LAST_INPUT_STEP())*100))+"%";
-    prevBtn.style.display=(n > 1 && n < RESULT_INDEX()) ? "block" : "none";
-    nextBtn.style.display=n<LAST_INPUT_STEP()?"block":"none";
-    submitBtn.style.display=n===LAST_INPUT_STEP()?"block":"none";
+    const allSteps = Array.from(root.querySelectorAll(".gstep"));
+    allSteps.forEach(s=>s.classList.remove("active"));
+    const t=allSteps[n-1]; if(t){t.classList.add("active");}
+    if(progressBar) progressBar.style.width=(n>LAST_INPUT_STEP?100:Math.max(0,((n-1)/LAST_INPUT_STEP)*100))+"%";
+    prevBtn.style.display=(n > 1) ? "block" : "none";
+    nextBtn.style.display=n<LAST_INPUT_STEP?"block":"none";
+    submitBtn.style.display=n===LAST_INPUT_STEP?"block":"none";
     const first = t?.querySelector('input, select, textarea');
     if(first){ setTimeout(()=>{ try{ first.focus(); if(first.select) first.select(); }catch(_){} }, 0); }
   }
-
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxbts4VXigU05RV2uXFh82-qj01rqhRKuk6CzbXiqxmaPFBsI-H7ZLoKd1k-Mc2AcM/exec";
-  const onlyDigits=s=>(s||"").replace(/[^\d]/g,"");
-  const readNumber=(sel,f=0)=>{const el=root.querySelector(sel); if(!el) return f; const v=parseFloat(String(el.value).replace(/,/g,"")); return isNaN(v)?f:v;};
-  const formatKoreanWon=(won)=>{won=Math.max(0,Math.round(won||0)); const eok=Math.floor(won/100000000); const man=Math.floor((won%100000000)/10000); if(eok>0&&man>0)return`${eok}억 ${man.toLocaleString("ko-KR")}만원`; if(eok>0)return`${eok}억`; if(man>0)return`${man.toLocaleString("ko-KR")}만원`; return"0원";};
-  const formData={};
-
-  function hasTerminationWithin3Y() { return (formData["q-termination"] || "") === "pen3y-yes"; }
-  function computeAnnualAPWon() { return (formData["monthly-premium"] || 0) * 10000 * 12; }
-  function computeFirstYearCommission(apWon) { return apWon * FIRST_YEAR_MULT; }
-  function computeTrailCommission(apWon, hasTermination) { if (hasTermination) return 0; return apWon * ((TOTAL_PAYOUT_MULT - FIRST_YEAR_MULT) / 3); }
-  function computeNextYearIncome(apWon, hasTermination) { return computeFirstYearCommission(apWon) + computeTrailCommission(apWon, hasTermination); }
-  function computeRelocationBonus() { const prevIncomeWon = (formData["prev-income-man"] || 0) * 10000; return { min: prevIncomeWon * 0.2, max: prevIncomeWon * 0.5 }; }
+  
   function mapFVIToGrade5(fvi) {
-    if (fvi >= 90) return { code:"G5", label:"Master FP", hint:"업계 상위 5%" };
-    if (fvi >= 80) return { code:"G4", label:"Expert FP", hint:"상위권 안정 성장" };
-    if (fvi >= 70) return { code:"G3", label:"Pro FP", hint:"균형 잡힌 수행" };
-    if (fvi >= 60) return { code:"G2", label:"Growing FP", hint:"성장 궤도 진입" };
-    return { code:"G1", label:"Starter FP", hint:"기초 체력 강화" };
-  }
-  function buildGrowthIndicatorsHTML() {
-    let badges = [];
-    const dailyConsults = formData["q-daily-consults"] || 0;
-    if (dailyConsults >= 4) badges.push("상위 상담 루틴"); else if (dailyConsults >= 3) badges.push("꾸준한 상담 루틴");
-    const marketingChecks = formData["q-digital-marketing"] || [];
-    if (marketingChecks.includes("dm_10k")) badges.push("대규모 SNS 인게이지");
-    if (marketingChecks.length >= 4) badges.push("디지털 파이프라인 우수"); else if (marketingChecks.length >= 2) badges.push("마케팅 기반 구축");
-    if ((formData.persistency || 0) < 85) badges.push("유지율 85% 달성 목표");
-    if ((formData["monthly-premium"] || 0) < 200) badges.push("월 AP 200만 달성 목표");
-    return badges.map(b => `<span class="badge">${b}</span>`).join('');
+    if (fvi >= 80) return { code:"A", label:"우수", hint:"업계 상위권" };
+    if (fvi >= 60) return { code:"B", label:"보통", hint:"평균 수준" };
+    return { code:"C", label:"개선 필요", hint:"역량 강화 필요" };
   }
   
   async function sendDataToGoogleSheet(resultData) {
     if (!GOOGLE_SCRIPT_URL.startsWith("https://script.google.com/")) { console.log("URL이 올바르지 않습니다."); return; }
-    const payload = { fvi: resultData.FVI, amount: resultData.amount, grade: resultData.grade, formData: formData };
-    if (resultData.nextYear) { payload.nextYear = resultData.nextYear; }
+    const payload = { fvi: resultData.FVI, grade: resultData.grade, formData: formData };
     try {
       await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
     } catch (error) { console.error("Google Sheet 전송 중 오류 발생:", error); }
   }
-
-  function saveBase(){
-      formData["access-url"] = root.querySelector("#access-url").value;
-    formData["user-name"] = root.querySelector("#user-name").value.trim() || '신청자';
-    formData["activity-region"] = root.querySelector("#activity-region").value;
-    formData["birth-year"]=readNumber("#birth-year",1987);
-    formData["career-length"]=readNumber("#career-length",0);
-    const won=parseInt(onlyDigits(prevIncomeKRWInput.value)||"0",10);
-    prevIncomeKRWInput.value=won?won.toLocaleString("ko-KR"):"0";
-    prevIncomeHint.textContent=`${won.toLocaleString("ko-KR")}원 = ${formatKoreanWon(won)}`;
-    formData["prev-income-man"]=Math.round(won/10000);
-    formData["monthly-contracts"]=readNumber("#monthly-contracts",0);
-    formData["monthly-premium"]=readNumber("#monthly-premium",0);
-    formData["non-life-ratio"]=+rangePNC.value;
-    formData["persistency"]=+rangePR.value;
-    formData.salesMethods=Array.from(root.querySelectorAll('#gstep-5 input:checked')).map(cb=>cb.value);
-    formData.certList=Array.from(root.querySelectorAll('#cert-list input:checked')).map(cb=>cb.value);
+  
+  function saveFormData(){
+    formData["user-name"] = root.querySelector("#user-name")?.value?.trim() || '신청자';
+    formData["activity-region"] = root.querySelector("#activity-region")?.value || '';
+    formData["birth-year"] = readNumber("#birth-year", 1987);
+    formData["career-length"] = readNumber("#career-length", 0);
+    
+    const won = parseInt(onlyDigits(prevIncomeKRWInput?.value||"0"), 10);
+    formData["prev-income-man"] = Math.round(won/10000);
+    
+    formData["monthly-contracts"] = readNumber("#monthly-contracts", 0);
+    formData["monthly-premium"] = readNumber("#monthly-premium", 0);
+    formData["non-life-ratio"] = +(root.querySelector("#non-life-ratio")?.value || 60);
+    formData["persistency"] = +(root.querySelector("#persistency-range")?.value || 92.5);
+    formData["managed-clients"] = +(root.querySelector("#managed-clients")?.value || 3);
+    formData["referral-rate"] = +(root.querySelector("#referral-rate")?.value || 40);
+    formData["household-share"] = +(root.querySelector("#household-share")?.value || 40);
+    
+    formData.salesMethods = Array.from(root.querySelectorAll('input[name="sales-method"]:checked')).map(cb=>cb.value);
+    formData["daily-consults"] = readNumber("#daily-consults", 0);
+    
+    formData.certList = Array.from(root.querySelectorAll('#cert-list input:checked')).map(cb=>cb.value);
+    formData["study-hours"] = +(root.querySelector("#study-hours")?.value || 5);
+    formData["seminar-participation"] = +(root.querySelector("#seminar-participation")?.value || 3);
+    
+    formData.digitalMarketing = Array.from(root.querySelectorAll('#gstep-18 .checks input:checked')).map(cb=>cb.value);
+    formData["digital-proficiency"] = +(root.querySelector("#digital-proficiency")?.value || 3);
+    formData["mobile-work"] = +(root.querySelector("#mobile-work")?.value || 3);
+    
+    formData["recruiting-count"] = readNumber("#recruiting-count", 0);
+    formData["organization-position"] = +(root.querySelector("#organization-position")?.value || 1);
+    formData["mentoring-activity"] = +(root.querySelector("#mentoring-activity")?.value || 1);
+    formData["system-development"] = +(root.querySelector("#system-development")?.value || 1);
+    
+    formData["termination-history"] = root.querySelector("#termination-history")?.value || 'no';
+    formData["product-selection"] = +(root.querySelector("#product-selection")?.value || 3);
+    formData["design-independence"] = +(root.querySelector("#design-independence")?.value || 3);
   }
-
-  function saveExtras(){
-    EXTRA_QUESTIONS.forEach(q=>{
-      if (q.type === "checkbox_group") {
-        formData[q.id] = Array.from(root.querySelectorAll(`#${q.id} input:checked`)).map(cb => cb.value);
-      } else {
-        const el = document.getElementById(q.id); if(el) formData[q.id] = el.value;
+  
+  function calcFVIandScores(){
+    const p = formData;
+    
+    // 소득 및 성과 (20점)
+    let incomeScore = 0;
+    const income = p["prev-income-man"] || 0;
+    if (income >= 10000) incomeScore = 10;
+    else if (income >= 7000) incomeScore = 7;
+    else if (income >= 5000) incomeScore = 5;
+    else if (income >= 3000) incomeScore = 3;
+    
+    let contractScore = 0;
+    const contracts = p["monthly-contracts"] || 0;
+    if (contracts >= 10) contractScore = 5;
+    else if (contracts >= 5) contractScore = 4;
+    else if (contracts >= 3) contractScore = 3;
+    else if (contracts >= 1) contractScore = 2;
+    
+    let premiumScore = 0;
+    const premium = p["monthly-premium"] || 0;
+    if (premium >= 1000) premiumScore = 5;
+    else if (premium >= 600) premiumScore = 4;
+    else if (premium >= 400) premiumScore = 3;
+    else if (premium >= 200) premiumScore = 2;
+    
+    const salesPerf = incomeScore + contractScore + premiumScore;
+    
+    // 포트폴리오 및 품질 (20점)
+    let nonLifeScore = 0;
+    const nonLifeRatio = p["non-life-ratio"] || 0;
+    if (nonLifeRatio >= 80) nonLifeScore = 5; // 70% 이상
+    else if (nonLifeRatio >= 60) nonLifeScore = 4; // 50%~70%
+    else if (nonLifeRatio >= 40) nonLifeScore = 3; // 30%~50%
+    else if (nonLifeRatio >= 20) nonLifeScore = 2; // 10%~30%
+    else nonLifeScore = 0; // 10% 미만
+    
+    let persistencyScore = 0;
+    const persistency = p["persistency"] || 0;
+    if (persistency >= 97.5) persistencyScore = 5; // 95% 이상
+    else if (persistency >= 92.5) persistencyScore = 4; // 90%~95%
+    else if (persistency >= 87.5) persistencyScore = 3; // 85%~90%
+    else if (persistency >= 82.5) persistencyScore = 2; // 80%~85%
+    else persistencyScore = 0; // 80% 미만
+    
+    let clientScore = 0;
+    const clients = p["managed-clients"] || 1;
+    if (clients === 5) clientScore = 5;
+    else if (clients === 4) clientScore = 4;
+    else if (clients === 3) clientScore = 3;
+    else if (clients === 2) clientScore = 2;
+    
+    let referralScore = 0;
+    const referralRate = p["referral-rate"] || 0;
+    if (referralRate >= 80) referralScore = 3; // 70% 이상
+    else if (referralRate >= 60) referralScore = 2; // 50%~70%
+    else if (referralRate >= 40) referralScore = 1; // 30%~50%
+    else if (referralRate >= 20) referralScore = 0.5; // 10%~30%
+    // 10% 미만은 0점
+    
+    let householdScore = 0;
+    const householdRate = p["household-share"] || 0;
+    if (householdRate >= 60) householdScore = 2; // 50%~70% 이상
+    else if (householdRate >= 40) householdScore = 1; // 30%~50%
+    // 30% 미만은 0점
+    
+    const custMgmt = nonLifeScore + persistencyScore + clientScore + referralScore + householdScore;
+    
+    // 영업 방식 및 전략 (15점)
+    const salesMethodCount = (p.salesMethods || []).length;
+    let methodScore = 0;
+    if (salesMethodCount >= 4) methodScore = 5;
+    else if (salesMethodCount === 3) methodScore = 4;
+    else if (salesMethodCount === 2) methodScore = 3;
+    else if (salesMethodCount === 1) methodScore = 2;
+    
+    let consultScore = 0;
+    const dailyConsults = p["daily-consults"] || 0;
+    if (dailyConsults >= 5) consultScore = 3;
+    else if (dailyConsults >= 3) consultScore = 2;
+    else if (dailyConsults >= 1) consultScore = 1;
+    
+    const strategy = methodScore + consultScore + 5 + 2; // 나머지 항목들은 평균값으로 설정
+    
+    // 전문성 및 교육 (15점)
+    const certCount = (p.certList || []).length;
+    let certScore = 0;
+    if (certCount >= 5) certScore = 5;
+    else if (certCount >= 3) certScore = 4;
+    else if (certCount >= 2) certScore = 3;
+    else if (certCount >= 1) certScore = 2;
+    
+    let studyScore = 0;
+    const studyHours = p["study-hours"] || 0;
+    if (studyHours >= 9) studyScore = 3; // 8시간 이상
+    else if (studyHours >= 7) studyScore = 2; // 6~8시간
+    else if (studyHours >= 5) studyScore = 1; // 4~6시간
+    else if (studyHours >= 3) studyScore = 0.5; // 2~4시간
+    // 2시간 이하는 0점
+    
+    let seminarScore = 0;
+    const seminar = p["seminar-participation"] || 3;
+    if (seminar === 5) seminarScore = 3;
+    else if (seminar === 4) seminarScore = 2;
+    else if (seminar === 3) seminarScore = 1;
+    else if (seminar === 2) seminarScore = 0.5;
+    
+    const expertise = certScore + studyScore + seminarScore + 2 + 2; // 나머지 항목들
+    
+    // 디지털 및 마케팅 역량 (10점)
+    const marketingCount = (p.digitalMarketing || []).length;
+    let marketingScore = 0;
+    if (marketingCount >= 4) marketingScore = 3;
+    else if (marketingCount === 3) marketingScore = 2;
+    else if (marketingCount === 2) marketingScore = 1;
+    
+    let digitalProfScore = 0;
+    const digitalProf = p["digital-proficiency"] || 3;
+    if (digitalProf === 5) digitalProfScore = 2;
+    else if (digitalProf === 4) digitalProfScore = 1.5;
+    else if (digitalProf === 3) digitalProfScore = 1;
+    else if (digitalProf === 2) digitalProfScore = 0.5;
+    
+    let mobileScore = 0;
+    const mobileWork = p["mobile-work"] || 3;
+    if (mobileWork === 5) mobileScore = 1;
+    else if (mobileWork === 4) mobileScore = 0.75;
+    else if (mobileWork === 3) mobileScore = 0.5;
+    else if (mobileWork === 2) mobileScore = 0.25;
+    
+    const digital = marketingScore + digitalProfScore + 2 + 2 + mobileScore;
+    
+    // 조직 및 리더십 (5점) + 윤리 (5점) = 10점
+    let recruitScore = 0;
+    const recruitCount = p["recruiting-count"] || 0;
+    if (recruitCount >= 5) recruitScore = 2;
+    else if (recruitCount >= 3) recruitScore = 1.5;
+    else if (recruitCount >= 1) recruitScore = 1;
+    
+    let positionScore = 0;
+    const position = p["organization-position"] || 1;
+    if (position === 5) positionScore = 1;
+    else if (position === 4) positionScore = 0.75;
+    else if (position === 3) positionScore = 0.5;
+    else if (position === 2) positionScore = 0.25;
+    
+    let mentorScore = 0;
+    const mentor = p["mentoring-activity"] || 1;
+    if (mentor === 5) mentorScore = 1;
+    else if (mentor === 4) mentorScore = 0.75;
+    else if (mentor === 3) mentorScore = 0.5;
+    else if (mentor === 2) mentorScore = 0.25;
+    
+    let systemScore = 0;
+    const system = p["system-development"] || 1;
+    if (system === 5) systemScore = 1;
+    else if (system === 4) systemScore = 0.75;
+    else if (system === 3) systemScore = 0.5;
+    else if (system === 2) systemScore = 0.25;
+    
+    let ethicsScore = 1; // 해촉 없음 기본점수
+    if (p["termination-history"] === 'yes') ethicsScore = 0;
+    
+    let selectionScore = 0;
+    const selection = p["product-selection"] || 3;
+    if (selection === 5) selectionScore = 1;
+    else if (selection === 4) selectionScore = 0.75;
+    else if (selection === 3) selectionScore = 0.5;
+    else if (selection === 2) selectionScore = 0.25;
+    
+    let independenceScore = 0;
+    const independence = p["design-independence"] || 3;
+    if (independence === 5) independenceScore = 1;
+    else if (independence === 4) independenceScore = 0.75;
+    else if (independence === 3) independenceScore = 0.5;
+    else if (independence === 2) independenceScore = 0.25;
+    
+    const recruiting = recruitScore + positionScore + mentorScore + systemScore + ethicsScore + selectionScore + independenceScore + 1; // 피드백 점수
+    
+    const FVI = Math.round(salesPerf + custMgmt + strategy + expertise + digital + recruiting);
+    
+    return { 
+      FVI, 
+      scores: { 
+        salesPerf: Math.min(salesPerf, 20), 
+        custMgmt: Math.min(custMgmt, 20), 
+        strategy: Math.min(strategy, 15), 
+        expertise: Math.min(expertise, 15), 
+        digital: Math.min(digital, 10),
+        recruiting: Math.min(recruiting, 10)
+      } 
+    };
+  }
+  
+  function buildAnalysis(p, scores) {
+    const contracts = p["monthly-contracts"] || 0;
+    const premium = p["monthly-premium"] || 0;
+    const persistency = p["persistency"] || 0;
+    const referral = p["referral-rate"] || 0;
+    const dailyConsults = p["daily-consults"] || 0;
+    
+    let contractTrend = contracts >= 5 ? "업계 평균 수준 (안정적)" : "업계 평균 미달 (개선 필요)";
+    let persistencyPattern = persistency >= 88 ? "업계 평균 수준 이상" : "업계 평균 미달 (88% 목표)";
+    let consultEfficiency = dailyConsults >= 3 ? "효율적 상담 운영" : "상담 빈도 증대 필요";
+    let referralStrength = referral >= 30 ? "소개 영업 기반 우수" : "소개 네트워크 확장 필요";
+    
+    return { contractTrend, persistencyPattern, consultEfficiency, referralStrength };
+  }
+  
+  function buildInsights(FVI, grade5, scores, analysis) {
+    let strengths = [];
+    if (scores.salesPerf >= 15) strengths.push("소득 및 성과 측면에서 우수한 실적을 보이고 있습니다.");
+    if (scores.custMgmt >= 15) strengths.push("고객 관리 역량이 뛰어나며 안정적인 고객 기반을 보유하고 있습니다.");
+    if (scores.expertise >= 12) strengths.push("전문성과 지속적인 학습 의지가 높습니다.");
+    
+    let improvements = [];
+    if (scores.digital < 6) improvements.push("디지털 역량 강화가 필요합니다. 온라인 마케팅과 비대면 상담 기술을 개발하세요.");
+    if (scores.recruiting < 6) improvements.push("리더십과 조직 역량 개발이 필요합니다. 후배 양성과 시스템화에 집중하세요.");
+    if (scores.strategy < 10) improvements.push("영업 전략의 다양화와 체계화가 필요합니다.");
+    
+    let potentials = [];
+    potentials.push("디지털 마케팅 도입으로 신규 고객 확보 20% 증가 가능");
+    potentials.push("영업 프로세스 체계화로 효율성 30% 향상 가능");
+    potentials.push("지속적인 전문성 개발로 고객 신뢰도 증진 가능");
+    
+    return { strengths, improvements, potentials };
+  }
+  
+  function renderRadarChart(scores) {
+    const ctx = document.getElementById('radar-chart')?.getContext('2d');
+    if (!ctx) return;
+    
+    new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels: ['소득성과', '고객관리', '영업전략', '전문성', '디지털', '리더십'],
+        datasets: [{
+          label: '점수',
+          data: [scores.salesPerf, scores.custMgmt, scores.strategy, scores.expertise, scores.digital, scores.recruiting],
+          backgroundColor: 'rgba(10, 122, 255, 0.2)',
+          borderColor: 'rgba(10, 122, 255, 1)',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          r: {
+            min: 0,
+            max: 20,
+            ticks: { stepSize: 5 }
+          }
+        }
       }
     });
   }
-
+  
+  function renderAnalysisTable(scores, analysis) {
+    const tableEl = document.getElementById('analysis-table');
+    if (!tableEl) return;
+    
+    tableEl.innerHTML = `
+      <table>
+        <thead>
+          <tr><th>평가영역</th><th>점수</th><th>분석</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>소득 및 성과</td><td>${scores.salesPerf}/20</td><td>연소득 ${formData["prev-income-man"]}만원, 월 ${formData["monthly-contracts"]}건 계약. ${analysis.contractTrend}</td></tr>
+          <tr><td>고객 관리</td><td>${scores.custMgmt}/20</td><td>유지율 ${formData.persistency}%, 관리고객수 기반. ${analysis.persistencyPattern}</td></tr>
+          <tr><td>영업 전략</td><td>${scores.strategy}/15</td><td>${formData.salesMethods?.length || 0}개 영업방식 활용. ${analysis.consultEfficiency}</td></tr>
+          <tr><td>전문성</td><td>${scores.expertise}/15</td><td>${formData.certList?.length || 0}개 자격증, 월 ${formData["study-hours"]}시간 학습</td></tr>
+          <tr><td>디지털 역량</td><td>${scores.digital}/10</td><td>마케팅 ${formData.digitalMarketing?.length || 0}개 활용, 비대면 숙련도 보통</td></tr>
+          <tr><td>리더십/윤리</td><td>${scores.recruiting}/10</td><td>조직 역할과 윤리적 영업 실천 정도</td></tr>
+        </tbody>
+      </table>
+    `;
+  }
+  
+  function renderReport(insights) {
+    if (!insightsBox) return;
+    
+    insightsBox.innerHTML = `
+      <div class="report-section">
+        <h3>💪 주요 강점</h3>
+        <ul>${insights.strengths.map(s => `<li>${s}</li>`).join('') || '<li>기본 역량을 갖추고 있습니다.</li>'}</ul>
+      </div>
+      <div class="report-section">
+        <h3>🎯 개선 포인트</h3>
+        <ul>${insights.improvements.map(i => `<li>${i}</li>`).join('') || '<li>전반적인 균형 발전이 필요합니다.</li>'}</ul>
+      </div>
+      <div class="report-section">
+        <h3>🚀 성장 가능성</h3>
+        <ul>${insights.potentials.map(p => `<li>${p}</li>`).join('')}</ul>
+      </div>
+    `;
+  }
+  
   function softValidate(){
-    if(currentStep===1){
-      const by=readNumber("#birth-year",NaN), cl=readNumber("#career-length",NaN);
+    if(currentStep===3){
+      const by=readNumber("#birth-year",NaN);
       if(isNaN(by)||by<1940||by>2015) root.querySelector("#birth-year").value="1987";
+    }
+    if(currentStep===4){
+      const cl=readNumber("#career-length",NaN);
       if(isNaN(cl)||cl<0||cl>80) root.querySelector("#career-length").value="0";
     }
-    if(currentStep===2 && !onlyDigits(prevIncomeKRWInput?.value||"")) prevIncomeKRWInput.value="0";
-    if(currentStep===3){
-      if(!root.querySelector("#monthly-contracts").value) root.querySelector("#monthly-contracts").value="0";
-      if(!root.querySelector("#monthly-premium").value) root.querySelector("#monthly-premium").value="0";
-    }
+    if(currentStep===5 && !onlyDigits(prevIncomeKRWInput?.value||"")) prevIncomeKRWInput.value="68000000";
     return true;
   }
-
-  function calcExtraBonuses(){
-    let fvi=0, amt=0;
-    const push=(k)=>{const r=BONUS_RULES[k||"none"]||{}; fvi+=(r.fvi||0); amt+=(r.amount||0);};
-    EXTRA_QUESTIONS.forEach(q=>{
-      const v=formData[q.id];
-      if (q.type === "checkbox_group") {
-        let marketingFVI = (formData[q.id]||[]).reduce((sum, val) => sum + (BONUS_RULES[val]?.fvi || 0), 0);
-        fvi += Math.min(marketingFVI, 5);
-      } else if(q.type==="scale5"){ push(v); } 
-      else if(typeof q.bonusCalc==="function"){ push(q.bonusCalc(v)); }
-    });
-    return { extraFVI:Math.min(fvi,EXTRA_CAP.fvi), extraAmount:Math.min(amt,EXTRA_CAP.amount) };
-  }
-
-  /* ==== 점수 계산 핵심 함수 모음 ==== */
-  function scoreIncome(man){ const w=man*10000; if (w < 30000000) return 3; if (w < 50000000) return 7; if (w < 100000000) return 11; if (w <= 400000000) return 13; return 15; }
-  function scoreContracts(n){ if (n < 5) return 2; if (n <= 10) return 5; if (n <= 20) return 8; return 10; }
-  function scoreAP(man){ const w=man*10000; if (w < 500000) return 2; if (w < 1000000) return 4; if (w < 2000000) return 6; if (w < 3000000) return 8; if (w < 5000000) return 9; return 10; }
-  function scorePNC(p){ if (p <= 30) return 1; if (p <= 40) return 2; if (p < 60) return 3; if (p < 70) return 4; return 5; }
-  function scorePersistency(p){ if (p < 70) return 5; if (p < 80) return 10; if (p < 85) return 14; if (p < 90) return 17; return 20; }
-  function scoreTenure(y){ if (y < 1) return 2; if (y < 3) return 5; if (y < 5) return 7; if (y < 10) return 8; return 10; }
-  function scoreAge(age){ if (age >= 40 && age <= 59) return 5; if (age >= 30 && age <= 39) return 3; if (age < 30 || age >= 60) return 2; return 3; }
-  function scoreChannels(cnt){ return Math.min(cnt*2, 10); }
-  const CERT_FVI_WEIGHTS={ life:1, nonlife:1, third:1, fund:1, securities:1, variable:2, cklu:2, afpk:3, ifp:3, cfp:5, actuary:5, lossadj:4 };
-  function scoreCerts(list){ const s=(list||[]).reduce((a,k)=>a+(CERT_FVI_WEIGHTS[k]||0),0); return Math.min(s,10); }
-
-  /* ==== 원 점수 계산 & 결과 ==== */
-  function calcFVIandAmount(){
-    const p=formData, age=(new Date()).getFullYear()-(p["birth-year"]||1987);
-    const currentValue=scoreIncome(p["prev-income-man"]||0)+scoreContracts(p["monthly-contracts"]||0)+scoreAP(p["monthly-premium"]||0)+scorePNC(p["non-life-ratio"]||50)+scorePersistency(p.persistency||0);
-    const growthPotential=scoreTenure(p["career-length"]||0)+scoreAge(age)+scoreChannels((p.salesMethods||[]).length)+scoreCerts(p.certList||[]);
-    const FVI=Math.min(currentValue,60)+Math.min(growthPotential,35)+(calcExtraBonuses().extraFVI||0);
-    return { FVI: Math.round(FVI) };
-  }
-
-function buildInsights(FVI, grade5, financialData) {
-  const p = formData;
-
-  // --- FP 활동 유형 분석 ---
-  let fpType = "";
-  if ((p["monthly-contracts"] || 0) >= 15 && (p["q-referral-rate"] || 0) < 20) {
-    fpType = "<strong>활동량 중심의 '부지런한 개척가'</strong> 타입으로,";
-  } else if ((p.persistency || 0) >= 90 && (p["q-referral-rate"] || 0) >= 30) {
-    fpType = "<strong>관계 중심의 '든든한 관리자'</strong> 타입으로,";
-  } else if ((p["monthly-premium"] || 0) >= 300) {
-    fpType = "<strong>전문성 중심의 '고가치 제안 전문가'</strong> 타입으로,";
-  }
-
-  // --- 강점 및 성장 기회 분석 ---
-  let strengths = [];
-  let opportunities = [];
-
-  // [강점 분석]
-  if ((p.persistency || 0) >= 90) {
-    strengths.push("<strong>탁월한 계약 유지율(90% 이상):</strong> 고객과의 높은 신뢰 관계를 증명하며, 이는 장기적인 고객 관리의 훌륭한 기반이 됩니다.");
-  }
-  if ((p["monthly-contracts"] || 0) >= 20) {
-    strengths.push("<strong>왕성한 활동량(월 20건 이상):</strong> 꾸준한 계약 체결을 통해 시장에서 살아남는 강력한 영업력을 보여주고 있습니다.");
-  }
-  const marketingActivities = p["q-digital-marketing"] || [];
-  if (marketingActivities.includes("dm_10k") || marketingActivities.includes("dm_app")) {
-    strengths.push("<strong>뛰어난 디지털 마케팅:</strong> 1만 명 이상의 팔로워 또는 자체 플랫폼을 활용하여 잠재 고객에게 꾸준히 노출되는 시스템을 갖추고 있습니다.");
-  }
-  if ((p["q-referral-rate"] || 0) >= 40) {
-    strengths.push("<strong>강력한 추천 네트워크(소개율 40% 이상):</strong> 높은 고객 만족도를 바탕으로 추가적인 비용 없이 신규 고객을 창출하는 선순환 구조를 만들었습니다.");
-  }
-
-  // [성장 기회 분석]
-  if ((p.persistency || 0) < 85) {
-    opportunities.push("<strong>계약 품질 향상:</strong> 13회차 유지율 85% 달성을 최우선 목표로 삼아 계약의 질을 높이고 장기적인 수익 안정성을 확보해야 합니다. <strong>(실행 방안: 완전판매 프로세스 점검 및 고객 만족도 해피콜 정기 시행)</strong>");
-  }
-  if ((p["q-daily-consults"] || 0) < 3) {
-    opportunities.push("<strong>신규 고객 접점 확대:</strong> 하루 평균 상담 횟수를 3건 이상으로 설정하고 주간 활동 계획을 관리하여 영업 파이프라인을 넓힐 필요가 있습니다. <strong>(실행 방안: 주간 단위 활동량 목표 설정 및 결과 리뷰)</strong>");
-  }
-  if (marketingActivities.length <= 1) { // 카톡만 선택했거나 아무것도 선택 안 한 경우
-    opportunities.push("<strong>온라인 영향력 구축:</strong> 하나의 SNS 채널(블로그 등)을 정해 전문적인 콘텐츠를 주 1회 이상 발행하여 온라인 신뢰를 쌓는 것이 중요합니다. <strong>(실행 방안: 본인 전문 분야 관련 콘텐츠 3개월 계획 수립 및 실행)</strong>");
-  }
-  if ((p["q-referral-rate"] || 0) < 20) {
-    opportunities.push("<strong>소개 영업 활성화:</strong> 기존 고객의 만족도를 높여 자연스러운 소개로 이어지게 만들어야 합니다. <strong>(실행 방안: 분기별 정보지 발송 등 체계적인 사후 관리를 통한 소개 요청 프로세스 정립)</strong>");
-  }
-
-  // --- 최종 결과 리포트(HTML) 생성 ---
-  let introHTML = `<h4>💡 종합 분석</h4><p style="margin:0; line-height:1.7;">FVI 종합점수 ${FVI}점, <strong>'${grade5.label}'</strong> 등급의 ${fpType} 현재 안정적인 성과와 더불어 명확한 성장 잠재력을 보유하고 있습니다. 산출된 시장가치는 내년 예상 총소득 <strong>${formatKoreanWon(financialData.totalNextYearIncome)}</strong>과 정착지원금 최대치 <strong>${formatKoreanWon(financialData.relocationBonusMax)}</strong>를 더한 추정치입니다.</p>`;
-
-  let strengthHTML = `<h4 style="margin-top:20px;">👍 주요 강점</h4><ul style="margin:0; padding-left:20px; line-height:1.8;">`;
-  if (strengths.length > 0) {
-    strengthHTML += strengths.map(s => `<li>${s}</li>`).join('');
-  } else {
-    strengthHTML += "<li>현재 활동 데이터를 기반으로 자신만의 핵심 강점을 정의하고 발전시켜 나갈 중요한 시기입니다.</li>";
-  }
-  strengthHTML += "</ul>";
-
-  let opportunityHTML = `<h4 style="margin-top:20px;">📈 성장 기회 및 실행 방안</h4><ul style="margin:0; padding-left:20px; line-height:1.8;">`;
-  if (opportunities.length > 0) {
-    opportunityHTML += opportunities.map(o => `<li>${o}</li>`).join('');
-  } else {
-    opportunityHTML += "<li>현재의 강점을 더욱 극대화하고, 시장 변화에 맞춰 새로운 영업 전략을 시도하며 한 단계 더 도약할 수 있습니다.</li>";
-  }
-  opportunityHTML += `</ul><p style="text-align:center; font-size:13px; opacity:0.8; margin-top:16px;">위 성장 기회를 잘 활용하신다면, 내년에는 더욱 높은 시장 가치를 인정받는 전문가로 발돋움하실 수 있을 것입니다.</p>`;
-
-  return introHTML + strengthHTML + opportunityHTML;
-}
-
-  function renderAdditionalResults(fviScore) {
-    let container = document.getElementById("additional-results-container");
-    if (!container) {
-        container = document.createElement("div");
-        container.id = "additional-results-container";
-        root.querySelector("#insights-box").after(container);
-    }
-    const hasTerm = hasTerminationWithin3Y(), apWon = computeAnnualAPWon();
-    const firstYear = computeFirstYearCommission(apWon), trail = computeTrailCommission(apWon, hasTerm);
-    const totalIncome = firstYear + trail, bonus = computeRelocationBonus();
-    
-    container.innerHTML = `
-        <h3>내년 예상 총소득 및 성장 분석</h3>
-        <div class="result-breakdown">
-            <p><span>1년 차 지급 (1200%)</span> <span>${formatKoreanWon(firstYear)}</span></p>
-            <p><span>유지 수수료 (연)</span> <span>${hasTerm ? '0원 (해촉 이력 반영)' : formatKoreanWon(trail)}</span></p>
-            <p class="total"><span><strong>내년 예상 총소득</strong></span> <span><strong>${formatKoreanWon(totalIncome)}</strong></span></p>
-        </div>
-        <p class="info-line">정착지원금 추정(이직 시): ${formatKoreanWon(bonus.min)} ~ ${formatKoreanWon(bonus.max)}</p>
-        <div class="growth-indicators"><h3>성장 가능성 지표</h3>${buildGrowthIndicatorsHTML()}</div>
-        <p class="disclaimer">※ 유지 수수료(잔여수수료)는 이직 시점과 횟수, 계약 조건에 따라 개인별 차이가 크게 발생할 수 있습니다.</p>
-    `;
-    
-    return { firstYearCommission: firstYear, trailCommission: trail, totalNextYearIncome: totalIncome, relocationBonusMin: bonus.min, relocationBonusMax: bonus.max, grade5: mapFVIToGrade5(fviScore) };
-  }
-
+  
   function goPrev(){ if(currentStep > 1) { currentStep--; showStep(currentStep); } }
   function goNext(){
     softValidate();
-    if (currentStep <= 6) saveBase(); else saveExtras();
-    if (currentStep < LAST_INPUT_STEP()){ currentStep++; showStep(currentStep); }
-    else if (currentStep === LAST_INPUT_STEP()){
-      const { FVI } = calcFVIandAmount();
+    saveFormData();
+    
+    if (currentStep < LAST_INPUT_STEP){
+      currentStep++; 
+      showStep(currentStep);
+    } else if (currentStep === LAST_INPUT_STEP){
+      const { FVI, scores } = calcFVIandScores();
       const grade5 = mapFVIToGrade5(FVI);
-      const nextYearData = renderAdditionalResults(FVI);
-      const marketValue = nextYearData.totalNextYearIncome + nextYearData.relocationBonusMax;
-
-      if(root.querySelector("#result-title")) root.querySelector("#result-title").textContent = `${formData["user-name"]||'신청자'}님의 FVI와 예상 금액`;
+      const analysis = buildAnalysis(formData, scores);
+      const insights = buildInsights(FVI, grade5, scores, analysis);
+  
+      if(root.querySelector("#result-title")) {
+        root.querySelector("#result-title").textContent = `${formData["user-name"]||'신청자'}님의 FVI 분석 결과`;
+      }
       fviScoreEl.textContent = `FVI ${FVI}`;
-      gradeText.innerHTML = `5단계 등급: <strong>${grade5.label} (${grade5.code})</strong>`;
-      finalValueText.textContent = formatKoreanWon(marketValue);
-    insightsBox.innerHTML = buildInsights(FVI, grade5, nextYearData);
+      gradeText.innerHTML = `등급: <strong>${grade5.label} (${grade5.code}급)</strong> - ${grade5.hint}`;
+  
+      renderRadarChart(scores);
+      renderAnalysisTable(scores, analysis);
+      renderReport(insights);
       
-      window.__FVI__ = { FVI, grade: grade5.label, amountKRW: marketValue };
-      sendDataToGoogleSheet({ FVI, amount: marketValue, grade: grade5.label, nextYear: nextYearData });
-      currentStep=RESULT_INDEX(); showStep(currentStep);
+      window.__FVI__ = { FVI, grade: grade5.label };
+      sendDataToGoogleSheet({ FVI, grade: grade5.label });
+      currentStep=RESULT_INDEX; 
+      showStep(currentStep);
     }
   }
-  prevBtn.addEventListener("click",goPrev); nextBtn.addEventListener("click",goNext); submitBtn.addEventListener("click",goNext);
-
-  root.querySelector("#calculator-form").addEventListener("keydown",(e)=>{
-    if(e.key!=="Enter") return; e.preventDefault();
-    if(e.shiftKey){ goPrev(); return; }
-    if(currentStep<LAST_INPUT_STEP()) nextBtn.click(); else if(currentStep===LAST_INPUT_STEP()) submitBtn.click();
+  
+  prevBtn?.addEventListener("click", goPrev); 
+  nextBtn?.addEventListener("click", goNext); 
+  submitBtn?.addEventListener("click", goNext);
+  
+  // 슬라이더 이벤트 (남은 슬라이더 없음)
+  const sliders = [];
+  
+  sliders.forEach(({ slider, display }) => {
+    const sliderEl = root.querySelector(slider);
+    const displayEl = root.querySelector(display);
+    if (sliderEl && displayEl) {
+      sliderEl.addEventListener("input", () => {
+        displayEl.textContent = `${sliderEl.value}%`;
+      });
+      // 초기값 설정
+      displayEl.textContent = `${sliderEl.value}%`;
+    }
   });
-
-  rangePNC?.addEventListener("input",()=>{ if(rangePNCText) rangePNCText.textContent=`${(+rangePNC.value||0)}%`; });
-  rangePR?.addEventListener("input",()=>{ if(rangePRText) rangePRText.textContent=`${(+rangePR.value||0)}%`; });
-
+  
+  // 소득 입력 포맷팅
   function formatWithCommasKeepCursor(input){
+    if (!input) return;
     const start=input.selectionStart, before=input.value, digits=before.replace(/[^\d]/g,'');
-    if(digits===""){ input.value=""; prevIncomeHint.textContent="예: 100,000,000원 = 1억 0만원"; return; }
-    const after=Number(digits).toLocaleString('ko-KR'); input.value=after;
-    const diff=after.length-before.length; input.setSelectionRange(Math.max(0,(start||after.length)+diff), Math.max(0,(start||after.length)+diff));
-    prevIncomeHint.textContent = `${after}원 = ${formatKoreanWon(Number(digits))}`;
+    if(digits===""){ input.value=""; return; }
+    const after=Number(digits).toLocaleString('ko-KR'); 
+    input.value=after;
+    const diff=after.length-before.length; 
+    input.setSelectionRange(Math.max(0,(start||after.length)+diff), Math.max(0,(start||after.length)+diff));
   }
-  prevIncomeKRWInput?.addEventListener("input",()=>formatWithCommasKeepCursor(prevIncomeKRWInput));
-
+  
+  prevIncomeKRWInput?.addEventListener("input", () => formatWithCommasKeepCursor(prevIncomeKRWInput));
+  
+  // 키보드 네비게이션
+  root.querySelector("#calculator-form")?.addEventListener("keydown",(e)=>{
+    if(e.key!=="Enter") return; 
+    e.preventDefault();
+    if(e.shiftKey){ goPrev(); return; }
+    if(currentStep<LAST_INPUT_STEP) nextBtn.click(); 
+    else if(currentStep===LAST_INPUT_STEP) submitBtn.click();
+  });
+  
+  // 다시 시작 버튼
   document.getElementById("restart-btn")?.addEventListener("click",()=>{
-  // 현재 주소에서 쿼리스트링(?fvi=...)을 제외한 기본 주소로 새 창을 엽니다.
-  const baseUrl = window.location.origin + window.location.pathname;
-  window.open(baseUrl, '_blank');
-});
-
-  async function runGemini(){
+    root.querySelector("#calculator-form")?.reset(); 
+    for(const k in formData) delete formData[k];
+    
+    // 모든 셀렉트 박스 초기값 복원
+    const selectors = [
+      { id: "#non-life-ratio", value: "60" },
+      { id: "#persistency-range", value: "92.5" },
+      { id: "#managed-clients", value: "3" },
+      { id: "#referral-rate", value: "40" },
+      { id: "#household-share", value: "40" },
+      { id: "#study-hours", value: "5" },
+      { id: "#seminar-participation", value: "3" },
+      { id: "#digital-proficiency", value: "3" },
+      { id: "#mobile-work", value: "3" },
+      { id: "#organization-position", value: "1" },
+      { id: "#mentoring-activity", value: "1" },
+      { id: "#system-development", value: "1" },
+      { id: "#termination-history", value: "no" },
+      { id: "#product-selection", value: "3" },
+      { id: "#design-independence", value: "3" }
+    ];
+    
+    selectors.forEach(({ id, value }) => {
+      const element = root.querySelector(id);
+      if (element) element.value = value;
+    });
+    
+    currentStep=1; 
+    showStep(currentStep); 
+    document.getElementById("calculator-container")?.scrollTo({top:0, behavior:"smooth"});
+  });
+  
+  // AI 컨설팅 기능
+  async function runGemini() {
     const aiBtn = document.getElementById("ai-consulting-btn");
     const aiBox = document.getElementById("ai-result-container");
     const aiContent = document.getElementById("ai-result-content");
-    const GEMINI_API_KEY="AIzaSyBO1RdvcdQP4rXm1EtRAiOY0EE86seTF9Y";
-    const GEMINI_MODEL="gemini-1.5-flash-latest";
-    const GEMINI_URL=`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
-
-    if(!aiBtn || !aiBox || !aiContent) { console.error("AI 컨설팅에 필요한 DOM 요소를 찾을 수 없습니다."); return; }
-
-    aiBox.style.display="block"; aiContent.innerHTML='<div class="loader" style="margin:10px auto"></div>';
-    aiBtn.disabled=true; aiBtn.style.opacity=".5";
-    const profile = Object.entries(formData).map(([key, value]) => `- ${key}: ${Array.isArray(value) ? value.join(', ') : value}`).join('\n');
-const promptEnhanced = `You are a senior branch manager and performance analyst in the South Korean insurance industry. Your analysis MUST be strictly and logically based on the provided FP Profile data. Do not make assumptions or generalize beyond the data given.
-
-**Core Instructions:**
-1.  **Ground all claims in data:** For every strength or weakness you list, cite the specific data point from the profile that supports it.
-2.  **Be realistic about weaknesses:** If a value is low (e.g., persistency < 85%, monthly-premium < 100) or an option is not selected, clearly identify it as a weakness or an area for improvement.
-3.  **Marketing Skill Evaluation:**
-    - If 'q-digital-marketing' is only ['dm_kakao'] or ['dm_sns_start'], classify this as a **"very early stage"** weakness and recommend foundational steps. Do NOT praise their marketing ability.
-    - Only classify marketing as a 'strength' if the profile includes 'dm_1k' (1k followers) or higher.
-4.  **Action Plan:** The 'actions_90days' plan must directly address the top 2-3 weaknesses identified in your analysis. The KPIs must be specific and measurable.
-
-**JSON Schema (Strictly Adhere):**
-{"intro": "A 1-2 sentence summary based on FVI grade and key data points.", "strengths": [{"point": "Specific strength...", "evidence": "Based on persistency of 92%"}], "weaknesses": [{"point": "Specific weakness...", "evidence": "Based on q-daily-consults being 2"}], "next_year_income": { "first_year_commission": 0, "trail_commission": 0, "total": 0, "relocation_bonus_min": 0, "relocation_bonus_max": 0 }, "grade5": {"code":"G1-G5","label":"...","hint":"..."}, "actions_90days": [ {"title":"...", "detail":"...", "kpi":"..."}, {"title":"...", "detail":"...", "kpi":"..."} ]}
-
-**FP Profile:**
-${profile}`;    const renderFromJSON=(obj)=>{
-      const esc = (s)=>String(s ?? "").replace(/[&<>]/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m]));
-      const toLI=(arr)=> (arr||[]).map(t=>`<li>${esc(t)}</li>`).join("") || "<li>내용 없음</li>";
-      const actions = (obj.actions_90days||[]).map(t=>`<li><strong>${esc(t.title)}:</strong> ${esc(t.detail)} (KPI: ${esc(t.kpi)})</li>`).join("") || "<li>내용 없음</li>";
-      const income = obj.next_year_income || {}, grade = obj.grade5 || {};
-      return `<div class="ai-sections"><div class="ai-card"><h4>핵심 요약</h4><p style="margin:0;color:var(--muted);line-height:1.7">${esc(obj.intro)}</p></div><div class="ai-card"><h4>상세 분석</h4><ul style="margin:0;padding-left:20px;line-height:1.8;"><li><strong>5단계 등급:</strong> ${esc(grade.label)} (${esc(grade.code)}) - ${esc(grade.hint)}</li><li><strong>내년 예상소득:</strong> ${formatKoreanWon(income.total)} (1년차 ${formatKoreanWon(income.first_year_commission)} + 유지 ${formatKoreanWon(income.trail_commission)})</li><li><strong>성장 지표:</strong> ${(obj.growth_flags || []).join(', ') || "데이터 부족"}</li></ul></div><div class="ai-card"><h4>강점</h4><ul style="margin:0;padding-left:20px;line-height:1.8;">${toLI(obj.strengths)}</ul></div><div class="ai-card"><h4>보완점</h4><ul style="margin:0;padding-left:20px;line-height:1.8;">${toLI(obj.weaknesses)}</ul></div><div class="ai-card ai-tips"><h4>90일 실행 계획</h4><ol style="margin:0;padding-left:20px;line-height:1.8;">${actions}</ol></div></div>`;
+    const GEMINI_API_KEY = "AIzaSyBO1RdvcdQP4rXm1EtRAiOY0EE86seTF9Y";
+    const GEMINI_MODEL = "gemini-1.5-flash-latest";
+    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
+  
+    if (!aiBtn || !aiBox || !aiContent) {
+      console.error("AI 컨설팅 DOM 요소 누락");
+      return;
+    }
+  
+    aiBox.style.display = "block";
+    aiContent.innerHTML = '<div class="loader" style="margin:10px auto"></div>';
+    aiBtn.disabled = true;
+    aiBtn.style.opacity = ".5";
+  
+    const readableProfile = {
+      "이름": formData["user-name"] || "익명",
+      "활동 지역": formData["activity-region"] || "정보없음",
+      "경력": `${formData["career-length"] || 0}년`,
+      "연 소득": `${formData["prev-income-man"] || 0}만원`,
+      "월 계약 건수": `${formData["monthly-contracts"] || 0}건`,
+      "월 업적": `${formData["monthly-premium"] || 0}만원`,
+      "손해보험 비중": `${formData["non-life-ratio"] || 0}%`,
+      "유지율": `${formData["persistency"] || 0}%`,
+      "관리 고객수": formData["managed-clients"] ? `${formData["managed-clients"]}단계` : "정보없음",
+      "영업 방식": (formData.salesMethods || []).join(', ') || "정보없음",
+      "자격증": (formData.certList || []).join(', ') || "정보없음",
+      "디지털 역량": (formData.digitalMarketing || []).join(', ') || "정보없음"
     };
-    try{
-      if(!GEMINI_API_KEY || GEMINI_API_KEY.includes("YOUR_API_KEY")){ aiContent.textContent="API 키가 비어 있습니다."; return; }
-      const res = await fetch(GEMINI_URL, { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ contents:[{ parts:[{ text: promptEnhanced }]}] }) });
-      if(!res.ok) throw new Error(`Gemini API 오류: ${res.status} ${res.statusText}`);
-      const data=await res.json();
-      let text=data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-      text=text.trim().replace(/^```(?:json)?\s*/i,"").replace(/```$/i,"").trim();
-      let obj; try{ obj=JSON.parse(text); } catch(_){ obj={intro:"AI 분석 결과 생성에 실패했습니다."}; }
-      aiContent.innerHTML = renderFromJSON(obj);
-    }catch(e){
-      console.error(e); aiContent.textContent="AI 분석에 실패했습니다.";
-    }finally{
-      aiBtn.disabled=false; aiBtn.style.opacity="1";
+  
+    const prompt = `당신은 대한민국 보험업계의 시니어 지점장입니다. 아래 설계사 프로필을 분석하여 JSON 형태로 컨설팅 리포트를 제공해주세요.
+  
+프로필:
+${Object.entries(readableProfile).map(([key, value]) => `${key}: ${value}`).join('\n')}
+  
+다음 JSON 형식으로 응답해주세요:
+{
+  "summary": "전체적인 평가를 1-2문장으로",
+  "strengths": ["주요 강점 3가지"],
+  "improvements": ["개선이 필요한 부분 3가지"],
+  "action_plan": [
+    {"period": "1개월", "goal": "목표", "action": "구체적 실행방안"},
+    {"period": "3개월", "goal": "목표", "action": "구체적 실행방안"},
+    {"period": "6개월", "goal": "목표", "action": "구체적 실행방안"}
+  ]
+}`;
+  
+    try {
+      console.log("Gemini API 요청 시작");
+      
+      const response = await fetch(GEMINI_URL, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ 
+          contents: [{ 
+            parts: [{ text: prompt }] 
+          }],
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 1024
+          }
+        })
+      });
+      
+      console.log("API 응답 상태:", response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("API 오류:", errorText);
+        throw new Error(`API 오류: ${response.status} - ${errorText}`);
+      }
+      
+      const data = await response.json();
+      console.log("API 응답 데이터:", data);
+      
+      let text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      
+      // JSON 파싱을 위한 텍스트 정리
+      text = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/```$/i, "").trim();
+      
+      let obj;
+      try {
+        obj = JSON.parse(text);
+        console.log("파싱된 객체:", obj);
+      } catch (parseError) {
+        console.error("JSON 파싱 오류:", parseError);
+        console.log("원본 텍스트:", text);
+        obj = { 
+          summary: "AI 분석 결과를 처리하는 중 오류가 발생했습니다.",
+          strengths: ["기본적인 보험 업무 수행 수행"],
+          improvements: ["체계적인 목표 설정이 필요합니다"],
+          action_plan: [
+            {"period": "1개월", "goal": "현 상황 점검", "action": "월간 실적 분석"},
+            {"period": "3개월", "goal": "역량 강화", "action": "전문 교육 참여"},
+            {"period": "6개월", "goal": "성과 개선", "action": "목표 재설정"}
+          ]
+        };
+      }
+      
+      const renderAIResult = (obj) => {
+        const esc = (s) => String(s ?? "").replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m]));
+        const toLI = (arr) => (arr||[]).map(t => `<li>${esc(t)}</li>`).join("") || "<li>분석 내용이 없습니다</li>";
+        const actions = (obj.action_plan||[]).map(t=>`<li><strong>${esc(t.period||'기간미정')}:</strong> ${esc(t.goal||'목표미정')} - ${esc(t.action||'방안미정')}</li>`).join("") || "<li>실행 계획이 없습니다</li>";
+        
+        return `<div class="ai-sections">
+          <div class="ai-card"><h4>📊 종합 평가</h4><p style="margin:0;color:var(--muted);line-height:1.7">${esc(obj.summary || '평가 내용이 없습니다')}</p></div>
+          <div class="ai-card"><h4>💪 강점</h4><ul style="margin:0;padding-left:20px;line-height:1.8;">${toLI(obj.strengths)}</ul></div>
+          <div class="ai-card"><h4>🎯 개선점</h4><ul style="margin:0;padding-left:20px;line-height:1.8;">${toLI(obj.improvements)}</ul></div>
+          <div class="ai-card"><h4>📅 실행 계획</h4><ul style="margin:0;padding-left:20px;line-height:1.8;">${actions}</ul></div>
+        </div>`;
+      };
+      
+      aiContent.innerHTML = renderAIResult(obj);
+      
+    } catch (error) {
+      console.error("AI 컨설팅 오류:", error);
+      aiContent.innerHTML = `
+        <div style="text-align:center; padding:20px; color:var(--muted);">
+          <p>AI 분석에 일시적인 문제가 발생했습니다.</p>
+          <p style="font-size:14px; margin-top:10px;">잠시 후 다시 시도해주세요.</p>
+          <p style="font-size:12px; color:var(--muted); margin-top:15px;">오류 정보: ${error.message}</p>
+        </div>
+      `;
+    } finally {
+      aiBtn.disabled = false;
+      aiBtn.style.opacity = "1";
     }
   }
+  
   document.getElementById("ai-consulting-btn")?.addEventListener("click", runGemini);
-
-  function makeShareUrl(FVI, grade, amountKRW){
+  
+  // 카카오톡 공유
+  function makeShareUrl(FVI, grade){
     const url = new URL(window.location.href);
-    url.searchParams.set("fvi", String(FVI)); url.searchParams.set("grade", grade); url.searchParams.set("amount", String(amountKRW));
-    try{ url.searchParams.set("p", btoa(unescape(encodeURIComponent(JSON.stringify(formData))))); }catch(_){}
+    url.searchParams.set("fvi", String(FVI)); 
+    url.searchParams.set("grade", grade);
+    try{ 
+      url.searchParams.set("p", btoa(unescape(encodeURIComponent(JSON.stringify(formData))))); 
+    }catch(_){}
     return url.toString();
   }
+  
   document.getElementById("send-kakao-btn")?.addEventListener("click", ()=>{
-    if(!(window.Kakao && Kakao.isInitialized && Kakao.isInitialized())){ alert("카카오 SDK 초기화 실패"); return; }
-    const d = window.__FVI__; if(!d){ alert("먼저 결과를 계산해 주세요."); return; }
-    const shareUrl = makeShareUrl(d.FVI, d.grade, d.amountKRW);
+    if(!(window.Kakao && Kakao.isInitialized && Kakao.isInitialized())){ 
+      alert("카카오 SDK 초기화 실패"); 
+      return; 
+    }
+    const d = window.__FVI__; 
+    if(!d){ 
+      alert("먼저 결과를 계산해 주세요."); 
+      return; 
+    }
+    const shareUrl = makeShareUrl(d.FVI, d.grade);
     const userName = formData["user-name"] || '신청자';
+    
     Kakao.Share.sendDefault({
       objectType: "feed",
       content: {
-        title: `${userName}님의 FP 가치(FVI) 결과 확인`,
-        description: `FVI ${d.FVI}점 | 내년 시장가치: ${formatKoreanWon(d.amountKRW)} | 등급: ${d.grade}`,
+        title: `${userName}님의 FP 가치(FVI) 결과`,
+        description: `FVI ${d.FVI}점 | 등급: ${d.grade}급`,
         imageUrl: "https://cdn.imweb.me/upload/S2016083157c63a62163fa/0f6f7efb6a83a.png",
         link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
       },
-      buttons: [ { title: "설계사지수(FVI) 보기", link: { mobileWebUrl: shareUrl, webUrl: shareUrl } } ],
+      buttons: [ 
+        { title: "FVI 결과 보기", link: { mobileWebUrl: shareUrl, webUrl: shareUrl } } 
+      ],
     });
   });
-
-  (function hydrateFromQuery(){
-    const p = new URLSearchParams(location.search);
-    const fvi = p.get("fvi"), grade = p.get("grade"), amount = p.get("amount");
-    if(p.get("p")){ try{ Object.assign(formData, JSON.parse(decodeURIComponent(escape(atob(p.get("p")))))); }catch(e){ console.warn("payload decode failed", e); } }
-    if(!fvi) { showStep(1); return; }
-    
-    const fviNum = Number(fvi);
-    const grade5 = mapFVIToGrade5(fviNum);
-    const nextYearData = renderAdditionalResults(fviNum);
-    const marketValue = nextYearData.totalNextYearIncome + nextYearData.relocationBonusMax;
-
-    if(root.querySelector("#result-title")) root.querySelector("#result-title").textContent = `${formData['user-name']||'신청자'}님의 FVI와 예상 금액`;
-    fviScoreEl.textContent = `FVI ${fviNum}`;
-    gradeText.innerHTML = `5단계 등급: <strong>${grade5.label} (${grade5.code})</strong>`;
-    finalValueText.textContent = formatKoreanWon(marketValue);
-    insightsBox.textContent = buildInsights(fviNum, grade5, nextYearData);
-
-    if(document.getElementById("send-kakao-btn")) document.getElementById("send-kakao-btn").style.display = 'none';
-    if(document.getElementById("ai-consulting-btn")) document.getElementById("ai-consulting-btn").style.display = 'none';
-    window.__FVI__ = { FVI: fviNum, grade: grade5.label, amountKRW: marketValue };
-    currentStep = RESULT_INDEX(); showStep(currentStep);
-  })();
+  
+  // 초기 화면 설정
+  showStep(1);
 })();
 </script>
 </body>
