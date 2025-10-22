@@ -817,15 +817,19 @@ ${Object.entries(readableProfile).map(([key, value]) => `- ${key}: ${value}`).jo
     root.querySelector("#calculator-form")?.reset();
     for(const k in formData) delete formData[k];
     if (window.__FVI__) delete window.__FVI__;
+
+    // Clear localStorage (theme cache)
+    localStorage.removeItem("fvi-theme");
+
     const selectors = [ { id: "#non-life-ratio", value: "60" }, { id: "#persistency-range", value: "92.5" }, { id: "#managed-clients", value: "3" }, { id: "#referral-rate", value: "40" }, { id: "#household-share", value: "40" }, { id: "#study-hours", value: "5" }, { id: "#seminar-participation", value: "3" }, { id: "#digital-proficiency", value: "3" }, { id: "#mobile-work", value: "3" }, { id: "#organization-position", value: "1" }, { id: "#mentoring-activity", value: "1" }, { id: "#system-development", value: "1" }, { id: "#termination-history", value: "no" }, { id: "#product-selection", value: "3" }, { id: "#design-independence", value: "3" } ];
     selectors.forEach(({ id, value }) => { const element = root.querySelector(id); if (element) element.value = value; });
-    
+
     // --- [변경 사항] 새로 추가된 컨테이너와 기존 컨테이너 모두 초기화 ---
     const autoReportContainer = document.getElementById("automatic-report-container");
     if (autoReportContainer) autoReportContainer.innerHTML = "";
     const aiResultContainer = document.getElementById("ai-result-container");
     if (aiResultContainer) aiResultContainer.style.display = "none";
-    
+
     const canvas = document.getElementById('radar-chart');
     if (canvas) { const ctx = canvas.getContext('2d'); if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height); }
     const cleanUrl = window.location.origin + window.location.pathname;
