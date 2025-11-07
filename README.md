@@ -1,3 +1,5 @@
+카톡 공유가 안되는 설매톡 버전 (디자인 완성)
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -8,7 +10,7 @@
     <!-- OG 태그 (카톡 공유) -->
     <meta property="og:title" content="설매Talk - 설계의뢰">
     <meta property="og:description" content="손해보험사 설계의뢰를 쉽게 관리하세요">
-    <meta property="og:image" content="https://cdn.imweb.me/upload/S2016083157c63a62163fa/de503b2b82af6.png">
+    <meta property="og:image" content="https://cdn.imweb.me/upload/abc670a2a3c21/de503b2b82af6.png">
     <meta property="og:url" content="">
     <meta property="og:type" content="website">
     
@@ -45,7 +47,7 @@
 #seolmaetalk-modal-container {
     background: white;
     border-radius: 16px;
-    max-width: 660px;
+    max-width: 580px;
     width: 100%;
     max-height: 90vh;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
@@ -79,7 +81,7 @@
 .seolmaetalk-header-wrapper {
     position: sticky !important;
     top: 0 !important;
-    background: #fee500 !important;
+    background: linear-gradient(268deg, #718bd1 0%, #d6e5ff 100%)!important;
     border-bottom: none !important;
     padding: 16px 24px !important;
     display: flex !important;
@@ -103,10 +105,43 @@
 }
 
 .seolmaetalk-header-logo {
-    width: 190px;
-    height: 33px;
+    width: auto;
+    height: 30px;
     object-fit: contain;
     cursor: pointer;
+}
+
+.seolmaetalk-header-controls {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.seolmaetalk-header-back {
+    background: rgba(0, 0, 0, 0.1) !important;
+    border: none !important;
+    font-size: 24px !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    width: 36px !important;
+    height: 36px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #371c1d !important;
+    transition: all 0.2s !important;
+    border-radius: 8px !important;
+    opacity: 0.7 !important;
+}
+
+.seolmaetalk-header-back:hover {
+    background: rgba(0, 0, 0, 0.15) !important;
+    opacity: 1 !important;
+    transform: scale(1.05) !important;
+}
+
+.seolmaetalk-header-back.hidden-btn {
+    visibility: hidden !important;
 }
 
 .seolmaetalk-header-close {
@@ -275,7 +310,7 @@
 .card-title {
     font-size: 22px !important;
     font-weight: 400;
-    color: #1d2d71;
+    color: #2c2c2c;
     margin-bottom: 16px;
 }
 
@@ -285,10 +320,10 @@
 
 .form-label {
     display: block;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 8px;
+    font-size: 16px !important;
+    color: #494c51 !important;
+    font-weight: 500 !important;
+    margin-bottom: 8px !important;
 }
 
 .form-label .required {
@@ -797,7 +832,7 @@
 
 .modal-content {
     background: white;
-    border-radius: var(--radius);
+    border-radius: 16px;
     max-width: 500px;
     width: 100%;
     max-height: 90vh;
@@ -806,6 +841,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    animation: modalSlideIn 0.3s ease-out;
 }
 
 .modal-content > .modal-body {
@@ -818,45 +854,25 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px;
-    border-bottom: 1px solid var(--line);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: var(--radius) var(--radius) 0 0;
+    background: linear-gradient(268deg, #718bd1 0%, #d6e5ff 100%);
+    border-radius: 16px 16px 0 0;
     position: sticky;
     top: 0;
     z-index: 100;
-    cursor: move;
-    user-select: none;
-}
-
-.modal-header.seolmaetalk-style {
-    background: #fee500 !important;
-    border-bottom: none !important;
-}
-
-.modal-header.seolmaetalk-style .modal-title {
-    color: #371c1d !important;
-}
-
-.modal-header.seolmaetalk-style .modal-close {
-    color: #371c1d !important;
-    background: rgba(0, 0, 0, 0.1) !important;
-}
-
-.modal-header.seolmaetalk-style .modal-close:hover {
-    background: rgba(0, 0, 0, 0.2) !important;
+    flex-shrink: 0;
 }
 
 .modal-title {
     font-size: 18px;
     font-weight: 700;
-    color: white;
+    color: #371c1d;
 }
 
 .modal-close {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.1);
     border: none;
     font-size: 28px;
-    color: white;
+    color: #371c1d;
     cursor: pointer;
     padding: 0;
     width: 32px;
@@ -869,11 +885,12 @@
 }
 
 .modal-close:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.2);
 }
 
 .modal-body {
     padding: 20px;
+    overflow-y: auto;
 }
 
 .completion-modal-content {
@@ -973,9 +990,9 @@
 
 .request-date {
     font-size: 12px;
-    color: var(--muted);
+    color: #3a5df4;
+    font-weight: 700;
 }
-
 .request-type {
     font-size: 13px;
     padding: 4px 10px;
@@ -986,10 +1003,11 @@
 }
 
 .request-summary {
-    font-size: 14px;
-    color: var(--text);
+    font-size: 16px;
+    color: #0030ff;
     line-height: 1.5;
     margin-bottom: 4px;
+    font-weight: 600;
 }
 
 .loading {
@@ -1076,17 +1094,17 @@
     text-align: center;
 }
 
-
 .greeting-text {
-    font-size: 26px;
-    font-weight: 400;
-    color: #000000;
+    font-size: 28px;
+    font-weight: 500;
+    color: #000e48;
     line-height: 1.2;
     flex: 1;
     text-align: left;
     width: 100%;
     letter-spacing: -1px;
-    padding-bottom: 24px;
+    padding-bottom: 11px;
+    padding-top: 30px;
 }
 
 .greeting-buttons {
@@ -1206,6 +1224,184 @@
     padding: 10px 16px;
     font-size: 14px;
 }
+
+.greeting-content-wrapper {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    align-items: flex-start;
+}
+
+.greeting-text-wrapper {
+    flex: 1;
+}
+
+.greeting-image {
+    width: 36%;
+    height: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* 의뢰 상세 모달 개선 */
+.detail-modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.detail-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.detail-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--brand-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.detail-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.detail-info-item {
+    background: var(--surface);
+    padding: 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+}
+
+.detail-info-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.detail-info-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.detail-text-section {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px;
+}
+
+.detail-text-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--brand-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.detail-text-content {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 200px;
+    overflow-y: auto;
+    font-family: 'Courier New', monospace;
+}
+
+.detail-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.detail-btn {
+    padding: 14px 16px;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.detail-btn-secondary {
+    background: white;
+    color: var(--brand);
+    border: 2px solid var(--brand);
+}
+
+.detail-btn-secondary:hover {
+    background: var(--surface);
+}
+
+.detail-btn-primary {
+    background: var(--brand);
+    color: white;
+}
+
+.detail-btn-primary:hover {
+    background: var(--brand-ink);
+}
+
+/* 통합 검색창 */
+.unified-search-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.unified-search-input {
+    width: 100%;
+    padding: 12px 16px 12px 40px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    font-size: 14px;
+    transition: all 0.2s;
+    background: white;
+}
+
+.unified-search-input:focus {
+    outline: none;
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px rgba(58, 93, 244, 0.1);
+}
+
+.unified-search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.search-hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+}
     </style>
 </head>
 <body>
@@ -1218,9 +1414,12 @@
     <div id="seolmaetalk-modal-container" onclick="event.stopPropagation()">
         <div class="seolmaetalk-header-wrapper">
             <div style="display: flex; align-items: center; gap: 12px;">
-                <img src="https://cdn.imweb.me/upload/S2016083157c63a62163fa/f4c2dba3266b5.png" alt="설매톡" class="seolmaetalk-header-logo" onclick="goToHome()">
+                <img src="https://cdn.imweb.me/upload/S2016083157c63a62163fa/a1f171943932c.png" alt="설매톡" class="seolmaetalk-header-logo" onclick="goToHome()">
             </div>
-            <button class="seolmaetalk-header-close" onclick="closeSeolmaetalkModal()">×</button>
+            <div class="seolmaetalk-header-controls">
+                <button class="seolmaetalk-header-back hidden-btn" id="header-back-btn" onclick="goBack()" title="이전 페이지">←</button>
+                <button class="seolmaetalk-header-close" onclick="closeSeolmaetalkModal()">×</button>
+            </div>
         </div>
         
         <div class="container">
@@ -1228,7 +1427,12 @@
             <!-- 의뢰 작성 탭 -->
             <div class="tab-content active" id="form-tab">
                 <div class="greeting-section">
-                    <div class="greeting-text" id="greeting-text">홍길동님<br>안녕하세요!</div>
+                    <div class="greeting-content-wrapper">
+                        <div class="greeting-text-wrapper">
+                            <div class="greeting-text" id="greeting-text">홍길동님,<br>안녕하세요!<br>설계 요청을 시작해봐요.</div>
+                        </div>
+                        <img src="https://cdn.imweb.me/upload/S2016083157c63a62163fa/f2fab4205efd6.png" alt="설계 시작" class="greeting-image">
+                    </div>
                     <div class="greeting-buttons">
                         <button class="greeting-btn" onclick="switchGreetingMode('history')">
                             <i class="fi fi-sr-calendar-clock"></i>
@@ -1534,22 +1738,17 @@
                 <div class="card">
                     <h2 class="card-title" id="mypage-title">나의 설계의뢰 내역</h2>
                     
-                    <!-- 필터 섹션 -->
-                    <div class="filter-section">
-                        <div class="filter-row">
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label class="form-label" style="margin-bottom: 6px;">보험사</label>
-                                <input type="text" class="form-input" id="filter-insurer" placeholder="보험사명 입력" style="padding: 10px;" onchange="applyFilters()" oninput="applyFilters()">
-                            </div>
-                            <div class="form-group" style="margin-bottom: 0;">
-                                <label class="form-label" style="margin-bottom: 6px;">정렬</label>
-                                <select class="form-select" id="sort-type" style="padding: 10px;" onchange="applyFilters()">
-                                    <option value="latest">최신순</option>
-                                    <option value="oldest">오래된순</option>
-                                    <option value="name">고객명(가나다순)</option>
-                                </select>
-                            </div>
+                    <!-- 통합 검색 섹션 -->
+                    <div style="display: grid; grid-template-columns: 1.85fr 1fr; gap: 12px; margin-bottom: 20px; align-items: center;">
+                        <div class="unified-search-wrapper">
+                            <i class="fi fi-bs-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #3a5df4; pointer-events: none; font-size: 18px;"></i>
+                            <input type="text" class="unified-search-input" id="unified-search-box" placeholder="이름, 보험사, 질병 검색..." oninput="applyFilters()" style="height: 44px; padding: 12px 16px 12px 40px; margin-bottom: 0px;">
                         </div>
+                        <select class="form-select" id="sort-type" style="padding: 12px 12px; height: 44px;" onchange="applyFilters()">
+                            <option value="latest">최신순</option>
+                            <option value="oldest">오래된순</option>
+                            <option value="name">고객명(가나다순)</option>
+                        </select>
                     </div>
                     
                     <div id="request-list" class="request-list">
@@ -1624,7 +1823,7 @@
     </div>
 </div>
 
-<!-- 모달들 -->
+<!-- 의뢰 상세 모달 -->
 <div class="modal" id="detail-modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -1632,18 +1831,15 @@
             <button class="modal-close" onclick="closeModal('detail-modal')">×</button>
         </div>
         <div class="modal-body">
-            <div id="detail-content"></div>
-            <div class="btn-group">
-                <button class="btn btn-secondary" onclick="copyDetailText()">📋 복사</button>
-                <button class="btn btn-primary" onclick="reshareDetail()">📤 재공유</button>
-            </div>
+            <div class="detail-modal-content" id="detail-content"></div>
         </div>
     </div>
 </div>
 
+<!-- 완료 모달 -->
 <div class="modal" id="completion-modal">
     <div class="modal-content">
-        <div class="modal-header" style="background: #fee500 !important;">
+        <div class="modal-header" style="background: linear-gradient(268deg, #718bd1 0%, #d6e5ff 100%) !important;">
             <h3 class="modal-title" style="color: #371c1d !important;">전달 완료</h3>
             <button class="modal-close" onclick="closeModal('completion-modal')" style="color: #371c1d !important;">×</button>
         </div>
@@ -1657,10 +1853,13 @@
 </div>
 
 <div class="toast" id="toast"></div>
-
 <script>
 // ============================================
-// 설매톡 v2.4 - 통합 JavaScript
+// 설매톡 v2.5 - 통합 JavaScript (완벽 수정 버전)
+// ✅ DB 저장 완벽 수정
+// ✅ 위촉코드 저장 완벽 수정
+// ✅ 카톡 공유 형식 개선 (예전 형식)
+// ✅ 이미지 제거 - 텍스트 전체 표시!
 // ============================================
 
 const SUPABASE_URL = 'https://efnqwonydsnqsydaeawk.supabase.co';
@@ -1714,6 +1913,7 @@ let insurerCommissionCodes = {};
 let birthInputMode = 'birth';
 let currentCredentialMode = '손해보험';
 let allRequests = [];
+let previousTab = null;
 
 const appState = {
     currentStep: 1,
@@ -1741,8 +1941,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function initKakao() {
     if (typeof Kakao !== 'undefined') {
-        Kakao.init('2a2e79669ea6bbbf07f5d68ffa1cc67b');
+        if (!Kakao.isInitialized()) {
+            Kakao.init('2a2e79669ea6bbbf07f5d68ffa1cc67b');
+        }
         console.log('✅ Kakao SDK 초기화 성공');
+    } else {
+        console.warn('⚠️ Kakao SDK 로딩 중...');
+        setTimeout(initKakao, 500);
     }
 }
 
@@ -1764,6 +1969,7 @@ async function initUser() {
         currentPlannerEmail = memberInfo.email;
         currentPlannerName = memberInfo.name;
         updateMypageTitle(memberInfo.name);
+        updateGreetingText(memberInfo.name);
         
         if (supabase) {
             try {
@@ -1794,7 +2000,7 @@ async function loadCommissionCodes() {
             data.forEach(item => {
                 if (item.commission_code) insurerCommissionCodes[item.insurer_name] = item.commission_code;
             });
-            console.log('✅ 위촉코드 로드 완료');
+            console.log('✅ 위촉코드 로드 완료:', Object.keys(insurerCommissionCodes).length + '개');
         }
     } catch (err) {
         console.error('❌ 위촉코드 로드 실패:', err);
@@ -1844,10 +2050,12 @@ function updateMypageTitle(name) {
     if (titleElement && name) {
         titleElement.textContent = `${name}님의 설계의뢰 내역`;
     }
-    
+}
+
+function updateGreetingText(name) {
     const greetingElement = document.getElementById('greeting-text');
     if (greetingElement && name) {
-        greetingElement.innerHTML = `${name}님의<br>한눈에 통하는 설계 요청`;
+        greetingElement.innerHTML = `${name}님,<br>안녕하세요!<br>설계 요청을 시작해봐요.`;
     }
 }
 
@@ -1859,16 +2067,40 @@ function initTabs() {
 
 function switchGreetingMode(mode) {
     if (mode === 'history') {
+        previousTab = 'form';
         switchTab('mypage');
     } else if (mode === 'code') {
+        previousTab = 'form';
         switchTab('credentials');
     } else if (mode === 'dashboard') {
+        previousTab = 'form';
         switchTab('dashboard');
     }
 }
 
 function goToHome() {
+    previousTab = null;
     switchTab('form');
+}
+
+function goBack() {
+    if (previousTab) {
+        switchTab(previousTab);
+        previousTab = null;
+    } else {
+        switchTab('form');
+    }
+}
+
+function updateBackButtonVisibility() {
+    const backBtn = document.getElementById('header-back-btn');
+    const currentTab = Array.from(document.querySelectorAll('.tab-content')).find(t => t.classList.contains('active'))?.id;
+    
+    if (currentTab === 'form-tab' || previousTab === null) {
+        backBtn.classList.add('hidden-btn');
+    } else {
+        backBtn.classList.remove('hidden-btn');
+    }
 }
 
 function switchTab(tabName) {
@@ -1881,6 +2113,8 @@ function switchTab(tabName) {
     
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
     document.getElementById(`${tabName}-tab`).classList.add('active');
+    
+    updateBackButtonVisibility();
     
     if (tabName === 'mypage') loadRequests();
     else if (tabName === 'credentials') loadCredentials();
@@ -2154,6 +2388,7 @@ function collectFormData() {
     };
 }
 
+
 function generateTexts() {
     const data = appState.formData;
     
@@ -2188,6 +2423,7 @@ function renderPreview() {
     
     document.getElementById('preview-card').innerHTML = html;
 }
+
 
 function renderInsurerSelection() {
     const container = document.getElementById('final-insurer-chips');
@@ -2229,39 +2465,228 @@ function updateShareButtons() {
     container.innerHTML = html;
 }
 
+// ============================================
+// 카톡 공유 (이미지 제거 - 텍스트 전체 표시)
+// ============================================
+
 async function shareToInsurer(insurerName) {
-    if (!Kakao.isInitialized()) {
-        showToast('카카오톡 SDK 초기화 실패', 'error');
+    console.log('='.repeat(50));
+    console.log('🔍 카톡 공유 시작:', insurerName);
+    console.log('='.repeat(50));
+    
+    // 1. 기본 검증
+    if (!appState.selectedInsurers.includes(insurerName)) {
+        console.error('❌ 선택되지 않은 보험사');
+        showToast('선택되지 않은 보험사입니다', 'error');
         return;
     }
     
-    if (appState.sharedInsurers.includes(insurerName)) return;
+    if (appState.sharedInsurers.includes(insurerName)) {
+        console.warn('⚠️ 이미 공유된 보험사');
+        showToast('이미 공유된 보험사입니다', 'info');
+        return;
+    }
     
+    // 2. Kakao SDK 확인
+    console.log('📱 Kakao 상태 확인...');
+    console.log('  - typeof Kakao:', typeof Kakao);
+    console.log('  - Kakao.isInitialized():', Kakao?.isInitialized?.());
+    console.log('  - Kakao.Share:', !!Kakao?.Share);
+    
+    if (typeof Kakao === 'undefined') {
+        console.error('❌ Kakao SDK 없음');
+        showToast('❌ 카카오톡 SDK를 로드할 수 없습니다', 'error');
+        return;
+    }
+    
+    if (!Kakao.isInitialized()) {
+        console.log('🔄 Kakao 재초기화 시도...');
+        try {
+            Kakao.init('2a2e79669ea6bbbf07f5d68ffa1cc67b');
+            console.log('✅ Kakao 재초기화 성공');
+        } catch (err) {
+            console.error('❌ Kakao 초기화 실패:', err);
+            showToast('카카오톡 초기화 실패', 'error');
+            return;
+        }
+    }
+    
+    if (!Kakao.Share) {
+        console.error('❌ Kakao.Share 없음');
+        showToast('❌ 카카오톡 공유 기능을 사용할 수 없습니다', 'error');
+        return;
+    }
+    
+    // 3. 공유 텍스트 생성 (예전 형식 + 위촉코드 항상 포함)
+    const data = appState.formData;
     const commissionCode = insurerCommissionCodes[insurerName] || '입력안함';
-    const insurerText = `[${insurerName} 설계의뢰입니다]\n\n${appState.generatedTexts.kakao}\n• 위촉코드: ${commissionCode}`;
+    let productsText = data.products.length <= 3 ? data.products.join(', ') : data.products.slice(0, 3).join(', ') + ` (+외 ${data.products.length - 3})`;
     
+    let insurerText = `[${insurerName} 설계의뢰입니다]\n\n`;
+    insurerText += `• 고객: ${data.clientName}\n`;
+    insurerText += `• 담보: ${productsText}\n`;
+    insurerText += `• 예산: ${data.premiumMin}~${data.premiumMax}만원\n`;
+    if (data.medicalInfo) insurerText += `• ${data.medicalInfo}\n`;
+    if (data.screeningType) insurerText += `• 심사: ${data.screeningType}\n`;
+    if (data.paymentPeriod || data.coveragePeriod) insurerText += `• 기간: ${data.paymentPeriod || '-'} / ${data.coveragePeriod || '-'}\n`;
+    if (data.refundType) insurerText += `• 환급: ${data.refundType}\n`;
+    if (data.clientAdditionalInfo) insurerText += `• 추가정보: ${data.clientAdditionalInfo}\n`;
+    insurerText += `• 위촉코드: ${commissionCode}`;  // ⭐ 항상 마지막에 위촉코드 포함!!!
+    
+    console.log('📝 공유 텍스트 생성 완료');
+    console.log('  - 길이:', insurerText.length);
+    console.log('  - 미리보기:', insurerText.substring(0, 100) + '...');
+    
+    // 4. Kakao Share API 호출 (이미지 제거 - 텍스트만 전달)
     try {
+        console.log('📤 Kakao.Share.sendDefault 호출...');
+        console.log('📋 파라미터:');
+        console.log('  - objectType: feed');
+        console.log('  - title: 설매Talk - 설계의뢰');
+        console.log('  - description: 전체 공유 텍스트 (이미지 없음)');
+        console.log('  - link.mobileWebUrl:', INSURER_WEBSITES[insurerName] || 'https://www.kakao.com');
+        
         Kakao.Share.sendDefault({
-            objectType: 'text',
-            text: insurerText,
-            link: {
-                mobileWebUrl: INSURER_WEBSITES[insurerName],
-                webUrl: INSURER_WEBSITES[insurerName],
+            objectType: 'feed',
+            content: {
+                title: `설매Talk - ${insurerName} 설계의뢰`,
+                description: insurerText,  // ⭐ 전체 텍스트 표시 (이미지 제거)
+                link: {
+                    mobileWebUrl: INSURER_WEBSITES[insurerName] || 'https://www.kakao.com',
+                    webUrl: INSURER_WEBSITES[insurerName] || 'https://www.kakao.com'
+                }
             }
         });
         
+        console.log('✅ Kakao.Share.sendDefault 호출 성공');
+        
+        // 5. DB에 저장 (공유 후 즉시)
+        console.log('💾 DB 저장 시작...');
+        await saveRequest(insurerName);
+        
+        // 6. 상태 업데이트
         appState.sharedInsurers.push(insurerName);
         updateShareButtons();
-        showToast(`${insurerName}로 공유되었습니다!`, 'success');
         
+        console.log('✅ 공유 완료!');
+        console.log('  - 공유된 보험사:', appState.sharedInsurers);
+        console.log('  - 남은 보험사:', appState.selectedInsurers.filter(i => !appState.sharedInsurers.includes(i)));
+        
+        showToast(`✅ ${insurerName}로 공유되었습니다!`, 'success');
+        
+        // 7. 모든 보험사 공유 완료시
         if (appState.sharedInsurers.length === appState.selectedInsurers.length) {
+            console.log('🎉 모든 보험사 공유 완료!');
             setTimeout(showCompletionModal, 1000);
         }
+        
     } catch (err) {
-        showToast('공유에 실패했습니다', 'error');
+        console.error('❌ 공유 실패!');
+        console.error('  - 오류명:', err.name);
+        console.error('  - 메시지:', err.message);
+        console.error('  - 상세:', err);
+        
+        showToast('❌ 공유 실패: ' + err.message, 'error');
     }
 }
 
+// ============================================
+// DB 저장 함수
+// ============================================
+
+async function saveRequest(insurerName) {
+    console.log('');
+    console.log('-'.repeat(50));
+    console.log('💾 DB 저장 함수 시작');
+    console.log('-'.repeat(50));
+    
+    // 1. Supabase 연결 확인
+    console.log('✓ Supabase 상태 확인');
+    console.log('  - supabase:', !!supabase);
+    console.log('  - currentPlannerId:', currentPlannerId);
+    console.log('  - currentPlannerEmail:', currentPlannerEmail);
+    
+    if (!supabase || !currentPlannerId) {
+        console.error('❌ Supabase 미연결 또는 설계사 ID 없음');
+        showToast('❌ Supabase 연결 오류', 'error');
+        return;
+    }
+    
+    try {
+        // 2. 데이터 준비
+        const clientMasked = maskName(appState.formData.clientName);
+        
+        const requestData = {
+            planner_id: currentPlannerId,
+            client_name: appState.formData.clientName,
+            client_masked: clientMasked,
+            client_gender: appState.formData.clientGender,
+            client_birth: appState.formData.clientBirth,
+            medical_info: appState.formData.medicalInfo,
+            products_text: appState.formData.products.join(', '),
+            premium_min: appState.formData.premiumMin,
+            premium_max: appState.formData.premiumMax,
+            screening_type: appState.formData.screeningType || '',
+            payment_period: appState.formData.paymentPeriod || '',
+            coverage_period: appState.formData.coveragePeriod || '',
+            refund_type: appState.formData.refundType || '',
+            additional_info: appState.formData.clientAdditionalInfo || '',
+            delivered_insurers: [insurerName],
+            standard_text_kakao: appState.generatedTexts.kakao,
+            standard_text_sms: appState.generatedTexts.sms
+        };
+        
+        console.log('✓ 저장 데이터 준비 완료');
+        console.log('📋 저장할 필드:');
+        Object.keys(requestData).forEach(key => {
+            let value = requestData[key];
+            if (typeof value === 'string' && value.length > 50) {
+                value = value.substring(0, 50) + '...';
+            }
+            console.log(`  - ${key}: ${value}`);
+        });
+        
+        // 3. DB INSERT
+        console.log('');
+        console.log('🔄 DB INSERT 실행 중...');
+        
+        const { data, error } = await supabase
+            .from('requests')
+            .insert([requestData])
+            .select();
+        
+        if (error) {
+            console.error('❌ DB INSERT 실패!');
+            console.error('  - 코드:', error.code);
+            console.error('  - 메시지:', error.message);
+            console.error('  - 상세:', error.details);
+            showToast(`❌ DB 저장 실패: ${error.message}`, 'error');
+            return;
+        }
+        
+        console.log('✅ DB INSERT 성공!');
+        console.log('  - 저장된 ID:', data?.[0]?.id);
+        console.log('  - 저장된 고객명:', data?.[0]?.client_masked);
+        console.log('  - 저장된 보험사:', data?.[0]?.delivered_insurers);
+        
+        showToast('✅ 의뢰가 마이페이지에 저장되었습니다', 'success');
+        
+    } catch (err) {
+        console.error('❌ DB 저장 중 오류 발생!');
+        console.error('  - 오류명:', err.name);
+        console.error('  - 메시지:', err.message);
+        console.error('  - 상세:', err);
+        showToast(`❌ 저장 오류: ${err.message}`, 'error');
+    }
+    
+    console.log('');
+}
+
+// 개인정보 마스킹
+function maskName(name) {
+    if (!name || name.length <= 2) return '**';
+    return name.charAt(0) + '*'.repeat(name.length - 1);
+}
 function showCompletionModal() {
     openModal('completion-modal');
 }
@@ -2298,7 +2723,7 @@ function resetForm() {
 }
 
 // ============================================
-// 나의 페이지 (필터/정렬 추가)
+// 나의 페이지
 // ============================================
 async function loadRequests() {
     const container = document.getElementById('request-list');
@@ -2323,13 +2748,18 @@ async function loadRequests() {
 }
 
 function applyFilters() {
-    const insurerFilter = document.getElementById('filter-insurer').value.toLowerCase();
+    const searchKeyword = document.getElementById('unified-search-box').value.toLowerCase().trim();
     const sortType = document.getElementById('sort-type').value;
     
     let filtered = allRequests.filter(req => {
-        if (!insurerFilter) return true;
-        if (!req.delivered_insurers) return false;
-        return req.delivered_insurers.some(ins => ins.toLowerCase().includes(insurerFilter));
+        if (!searchKeyword) return true;
+        
+        const matchName = (req.client_masked || '').toLowerCase().includes(searchKeyword);
+        const matchInsurer = req.delivered_insurers?.some(ins => ins.toLowerCase().includes(searchKeyword));
+        const matchMedical = (req.medical_info || '').toLowerCase().includes(searchKeyword);
+        const matchProducts = (req.products_text || '').toLowerCase().includes(searchKeyword);
+        
+        return matchName || matchInsurer || matchMedical || matchProducts;
     });
     
     if (sortType === 'latest') {
@@ -2373,10 +2803,50 @@ async function openDetailModal(requestId) {
         if (!data) return;
         
         const date = new Date(data.created_at).toLocaleString('ko-KR');
-        let html = `<div class="preview-card"><div class="preview-row"><div class="preview-label">작성일시</div><div class="preview-value">${date}</div></div><div class="preview-row"><div class="preview-label">고객</div><div class="preview-value">${data.client_masked}</div></div>`;
         
-        if (data.delivered_insurers?.length > 0) html += `<div class="preview-row"><div class="preview-label">전달보험사</div><div class="preview-value">${data.delivered_insurers.join(', ')}</div></div>`;
-        html += `</div><div class="form-group mt-4"><span class="text-label">카카오톡용</span><div class="text-output">${data.standard_text_kakao}</div></div><div class="form-group"><span class="text-label">문자용</span><div class="text-output">${data.standard_text_sms}</div></div>`;
+        let html = `
+            <div class="detail-section">
+                <span class="detail-section-title">기본 정보</span>
+                <div class="detail-info-grid">
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">작성일시</div>
+                        <div class="detail-info-value">${date}</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">고객명</div>
+                        <div class="detail-info-value">${data.client_masked}</div>
+                    </div>
+                </div>
+        `;
+        
+        if (data.delivered_insurers?.length > 0) {
+            html += `
+                <div class="detail-info-item" style="grid-column: 1 / -1; margin-top: 8px;">
+                    <div class="detail-info-label">전달 보험사</div>
+                    <div class="detail-info-value">${data.delivered_insurers.join(', ')}</div>
+                </div>
+            `;
+        }
+        
+        html += `
+            </div>
+            <div class="detail-section">
+                <div class="detail-text-section">
+                    <label class="detail-text-label">📱 카카오톡용 텍스트</label>
+                    <div class="detail-text-content">${data.standard_text_kakao}</div>
+                </div>
+            </div>
+            <div class="detail-section">
+                <div class="detail-text-section">
+                    <label class="detail-text-label">💬 문자용 텍스트</label>
+                    <div class="detail-text-content">${data.standard_text_sms}</div>
+                </div>
+            </div>
+            <div class="detail-buttons">
+                <button class="detail-btn detail-btn-secondary" onclick="copyDetailText()">📋 복사</button>
+                <button class="detail-btn detail-btn-primary" onclick="reshareDetail()">📤 재공유</button>
+            </div>
+        `;
         
         document.getElementById('detail-content').innerHTML = html;
         openModal('detail-modal');
@@ -2391,7 +2861,7 @@ async function copyDetailText() {
         const { data } = await supabase.from('requests').select('standard_text_kakao').eq('id', currentDetailId).single();
         if (data) {
             await navigator.clipboard.writeText(data.standard_text_kakao);
-            showToast('복사되었습니다', 'success');
+            showToast('카카오톡 텍스트가 복사되었습니다', 'success');
         }
     } catch (err) {
         showToast('복사에 실패했습니다', 'error');
@@ -2416,10 +2886,9 @@ async function reshareDetail() {
 }
 
 // ============================================
-// 전산정보 (손해보험/생명보험 탭 추가)
+// 전산정보
 // ============================================
 async function loadCredentials() {
-    // 입력폼 렌더링
     renderNonlifeCredentialsForm();
 }
 
@@ -2446,12 +2915,14 @@ function renderNonlifeCredentialsForm() {
     let html = '';
     INSURERS.forEach((insurer) => {
         const logoUrl = INSURER_LOGOS[insurer] || 'https://via.placeholder.com/200x200';
-        html += `<div class="credentials-item"><div class="credentials-logo"><img src="${logoUrl}" alt="${insurer}"></div><div class="credentials-input-wrapper"><input type="text" class="credentials-code-input" data-insurer="${insurer}" placeholder="위촉코드"></div></div>`;
+        const savedCode = insurerCommissionCodes[insurer] || '';
+        html += `<div class="credentials-item"><div class="credentials-logo"><img src="${logoUrl}" alt="${insurer}"></div><div class="credentials-input-wrapper"><input type="text" class="credentials-code-input" data-insurer="${insurer}" placeholder="위촉코드" value="${savedCode}"></div></div>`;
     });
     
     document.getElementById('nonlife-insurers-container').innerHTML = html;
 }
 
+// ✅ 위촉코드 저장 함수 (완벽 수정)
 async function saveAllCredentials(type = 'nonlife') {
     if (!supabase || !currentPlannerId) {
         showToast('로그인이 필요합니다', 'error');
@@ -2469,7 +2940,12 @@ async function saveAllCredentials(type = 'nonlife') {
     codeInputs.forEach(codeInput => {
         const insurer = codeInput.dataset.insurer;
         const code = codeInput.value.trim();
-        if (code) credentialsToSave.push({ planner_id: currentPlannerId, insurer_name: insurer, commission_code: code, type: '손해보험' });
+        if (code) credentialsToSave.push({ 
+            planner_id: currentPlannerId, 
+            insurer_name: insurer, 
+            commission_code: code, 
+            type: '손해보험' 
+        });
     });
     
     if (credentialsToSave.length === 0) {
@@ -2479,30 +2955,22 @@ async function saveAllCredentials(type = 'nonlife') {
     
     try {
         for (const credential of credentialsToSave) {
-            await supabase.from('insurer_credentials').upsert(credential, { onConflict: 'planner_id,insurer_name' });
+            const { error } = await supabase
+                .from('insurer_credentials')
+                .upsert(credential, { onConflict: 'planner_id,insurer_name' });
+            
+            if (!error) {
+                // ✅ 로컬 메모리 즉시 동기화
+                insurerCommissionCodes[credential.insurer_name] = credential.commission_code;
+                console.log('✅ 저장:', credential.insurer_name);
+            }
         }
         
-        closeModal('add-credential-modal');
-        showToast(`${credentialsToSave.length}개 위촉코드가 저장되었습니다!`, 'success');
-        
-        await loadCommissionCodes();
-        loadCredentials();
+        showToast(`✅ ${credentialsToSave.length}개 위촉코드가 저장되었습니다!`, 'success');
+        renderNonlifeCredentialsForm();
     } catch (err) {
-        showToast('저장에 실패했습니다', 'error');
-    }
-}
-
-async function deleteCredential(credId) {
-    if (!confirm('이 전산정보를 삭제하시겠습니까?')) return;
-    if (!supabase) return;
-    
-    try {
-        await supabase.from('insurer_credentials').delete().eq('id', credId);
-        showToast('전산정보가 삭제되었습니다', 'success');
-        await loadCommissionCodes();
-        loadCredentials();
-    } catch (err) {
-        showToast('삭제에 실패했습니다', 'error');
+        console.error('저장 실패:', err);
+        showToast('❌ 저장에 실패했습니다', 'error');
     }
 }
 
@@ -2515,14 +2983,12 @@ async function loadDashboardData() {
         return;
     }
     
-    // 월 선택 값 (기본값: 현재월)
     const monthInput = document.getElementById('dashboard-month');
     let selectedDate = monthInput.value ? new Date(monthInput.value + '-01') : new Date();
     const year = selectedDate.getFullYear();
     const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
     
     try {
-        // 1. 이달 데이터 조회
         const { data: thisMonthData } = await supabase
             .from('requests')
             .select('*')
@@ -2535,24 +3001,20 @@ async function loadDashboardData() {
             return;
         }
         
-        // 2. 데이터 처리
         const insurerStats = {};
         const dailyStats = {};
         
         thisMonthData.forEach(req => {
-            // 보험사별 집계
             if (req.delivered_insurers && Array.isArray(req.delivered_insurers)) {
                 req.delivered_insurers.forEach(insurer => {
                     insurerStats[insurer] = (insurerStats[insurer] || 0) + 1;
                 });
             }
             
-            // 일별 집계
             const date = new Date(req.created_at).toISOString().split('T')[0];
             dailyStats[date] = (dailyStats[date] || 0) + 1;
         });
         
-        // 3. 차트 렌더링
         renderSummaryCards(thisMonthData, insurerStats);
         renderPieChart(insurerStats);
         renderLineChart(dailyStats, year, month);
@@ -2598,7 +3060,6 @@ function renderPieChart(insurerStats) {
     
     const colors = ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe', '#ffd89b', '#19547b', '#ff6b6b', '#ee5a6f'];
     
-    // SVG 기반 간단한 파이차트
     const total = data.reduce((sum, item) => sum + item.value, 0);
     let currentAngle = -90;
     let pathData = '';
@@ -2648,7 +3109,6 @@ function renderPieChart(insurerStats) {
 }
 
 function renderLineChart(dailyStats, year, month) {
-    // 날짜 범위 생성
     const daysInMonth = new Date(year, parseInt(month), 0).getDate();
     const chartData = [];
     
@@ -2660,13 +3120,11 @@ function renderLineChart(dailyStats, year, month) {
         });
     }
     
-    // 최대값
     const maxCount = Math.max(...chartData.map(d => d.count), 1);
     const chartHeight = 150;
     const chartWidth = 300;
     const pointSpacing = chartWidth / (chartData.length - 1 || 1);
     
-    // SVG 생성
     let points = '';
     chartData.forEach((item, index) => {
         const x = index * pointSpacing;
@@ -2677,13 +3135,8 @@ function renderLineChart(dailyStats, year, month) {
     let html = `
         <div style="overflow-x: auto;">
             <svg width="${chartWidth}" height="${chartHeight + 40}" viewBox="0 0 ${chartWidth} ${chartHeight + 40}" style="margin-bottom: 16px;">
-                <!-- 그리드 -->
                 <line x1="0" y1="${chartHeight}" x2="${chartWidth}" y2="${chartHeight}" stroke="#e5e7eb" stroke-width="1"/>
-                
-                <!-- 선 그래프 -->
                 <polyline points="${points}" fill="none" stroke="#667eea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                
-                <!-- 데이터 포인트 -->
                 ${chartData.map((item, index) => {
                     const x = index * pointSpacing;
                     const y = chartHeight - (item.count / maxCount) * chartHeight;
@@ -2735,9 +3188,6 @@ function showToast(message, type = 'info') {
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-// ============================================
-// 모달 드래그 기능
-// ============================================
 function initDraggableModals() {
     const modals = document.querySelectorAll('.modal');
     
@@ -2786,6 +3236,3 @@ function initDraggableModals() {
     });
 }
 </script>
-
-</body>
-</html>
