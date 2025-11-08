@@ -1,5 +1,3 @@
-카톡 공유가 안되는 설매톡 버전 (디자인 완성)
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -10,7 +8,6 @@
     <!-- OG 태그 (카톡 공유) -->
     <meta property="og:title" content="설매Talk - 설계의뢰">
     <meta property="og:description" content="손해보험사 설계의뢰를 쉽게 관리하세요">
-    <meta property="og:image" content="https://cdn.imweb.me/upload/abc670a2a3c21/de503b2b82af6.png">
     <meta property="og:url" content="">
     <meta property="og:type" content="website">
     
@@ -38,6 +35,16 @@
     padding: 20px;
 }
 
+	  #sort-type {
+  appearance: none; /* 기본 화살표 제거 */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='black' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center; /* 오른쪽에서 12px 떨어지게 */
+  background-size: 18px;
+  padding-right: 40px; /* 화살표 공간 확보 */
+}
+	  
+	  
 #seolmaetalk-modal-overlay.active {
     display: flex;
     align-items: center;
@@ -81,7 +88,7 @@
 .seolmaetalk-header-wrapper {
     position: sticky !important;
     top: 0 !important;
-    background: linear-gradient(268deg, #718bd1 0%, #d6e5ff 100%)!important;
+    background: linear-gradient(99deg, #fce000 0%, #fed100 100%) !important;
     border-bottom: none !important;
     padding: 16px 24px !important;
     display: flex !important;
@@ -989,9 +996,9 @@
 }
 
 .request-date {
-    font-size: 12px;
-    color: #3a5df4;
-    font-weight: 700;
+    font-size: 14px;
+    color: #ff7096;
+    font-weight: 600;
 }
 .request-type {
     font-size: 13px;
@@ -1004,10 +1011,10 @@
 
 .request-summary {
     font-size: 16px;
-    color: #0030ff;
+    color: #282828;
     line-height: 1.5;
     margin-bottom: 4px;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .loading {
@@ -1740,10 +1747,12 @@
                     
                     <!-- 통합 검색 섹션 -->
                     <div style="display: grid; grid-template-columns: 1.85fr 1fr; gap: 12px; margin-bottom: 20px; align-items: center;">
-                        <div class="unified-search-wrapper">
-                            <i class="fi fi-bs-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #3a5df4; pointer-events: none; font-size: 18px;"></i>
+                      <div class="unified-search-wrapper">
+                            <i class="btb bt-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #3a5df4; pointer-events: none; font-size: 18px;"></i>
                             <input type="text" class="unified-search-input" id="unified-search-box" placeholder="이름, 보험사, 질병 검색..." oninput="applyFilters()" style="height: 44px; padding: 12px 16px 12px 40px; margin-bottom: 0px;">
                         </div>
+
+
                         <select class="form-select" id="sort-type" style="padding: 12px 12px; height: 44px;" onchange="applyFilters()">
                             <option value="latest">최신순</option>
                             <option value="oldest">오래된순</option>
@@ -1870,23 +1879,6 @@ const INSURERS = [
     '롯데손해보험', '한화손해보험', 'MG손해보험', 'NH농협손해보험', 'AIG손해보험',
     '하나손해보험', '라이나손보', 'AXA손해보험'
 ];
-
-const INSURER_WEBSITES = {
-    '삼성화재': 'https://www.samsungfire.com',
-    '현대해상': 'https://www.hi.co.kr',
-    'DB손해보험': 'https://www.idbins.com',
-    'KB손해보험': 'https://www.kbinsure.co.kr',
-    '메리츠화재': 'https://www.meritzfire.com',
-    '한화손해보험': 'https://www.hwgeneralins.com',
-    '롯데손해보험': 'https://www.lotteins.co.kr',
-    'MG손해보험': 'https://www.mginsurance.co.kr',
-    '흥국화재': 'https://www.heungkukfire.co.kr',
-    '하나손해보험': 'https://www.hanainsure.co.kr',
-    'NH농협손해보험': 'https://www.nhfire.co.kr',
-    '라이나손보': 'https://www.lina.co.kr',
-    'AXA손해보험': 'https://www.axa.co.kr',
-    'AIG손해보험': 'https://www.aig.co.kr'
-};
 
 const INSURER_LOGOS = {
     'KB손해보험': 'https://cdn.imweb.me/thumbnail/20250406/35b1a73f72aa2.png',
@@ -2388,7 +2380,6 @@ function collectFormData() {
     };
 }
 
-
 function generateTexts() {
     const data = appState.formData;
     
@@ -2423,7 +2414,6 @@ function renderPreview() {
     
     document.getElementById('preview-card').innerHTML = html;
 }
-
 
 function renderInsurerSelection() {
     const container = document.getElementById('final-insurer-chips');
@@ -2466,7 +2456,11 @@ function updateShareButtons() {
 }
 
 // ============================================
-// 카톡 공유 (이미지 제거 - 텍스트 전체 표시)
+// 카톡 공유 (최종 수정)
+// ✅ Kakao.Link.sendDefault(text) 사용
+// ✅ 생년월일/연령대 필수 포함
+// ✅ 이름 전체 노출
+// ✅ 링크 변경: https://gaworld.kr/infra
 // ============================================
 
 async function shareToInsurer(insurerName) {
@@ -2491,7 +2485,7 @@ async function shareToInsurer(insurerName) {
     console.log('📱 Kakao 상태 확인...');
     console.log('  - typeof Kakao:', typeof Kakao);
     console.log('  - Kakao.isInitialized():', Kakao?.isInitialized?.());
-    console.log('  - Kakao.Share:', !!Kakao?.Share);
+    console.log('  - Kakao.Link:', !!Kakao?.Link);
     
     if (typeof Kakao === 'undefined') {
         console.error('❌ Kakao SDK 없음');
@@ -2511,19 +2505,22 @@ async function shareToInsurer(insurerName) {
         }
     }
     
-    if (!Kakao.Share) {
-        console.error('❌ Kakao.Share 없음');
+    if (!Kakao.Link) {
+        console.error('❌ Kakao.Link 없음');
         showToast('❌ 카카오톡 공유 기능을 사용할 수 없습니다', 'error');
         return;
     }
     
-    // 3. 공유 텍스트 생성 (예전 형식 + 위촉코드 항상 포함)
+    // 3. 공유 텍스트 생성 (생년월일/연령대 필수 포함, 이름 전체 노출)
     const data = appState.formData;
     const commissionCode = insurerCommissionCodes[insurerName] || '입력안함';
-    let productsText = data.products.length <= 3 ? data.products.join(', ') : data.products.slice(0, 3).join(', ') + ` (+외 ${data.products.length - 3})`;
+    let productsText = data.products.length <= 3 
+        ? data.products.join(', ') 
+        : data.products.slice(0, 3).join(', ') + ` (+외 ${data.products.length - 3})`;
     
     let insurerText = `[${insurerName} 설계의뢰입니다]\n\n`;
     insurerText += `• 고객: ${data.clientName}\n`;
+    insurerText += `• 생년월일/연령대: ${data.clientBirth}\n`;
     insurerText += `• 담보: ${productsText}\n`;
     insurerText += `• 예산: ${data.premiumMin}~${data.premiumMax}만원\n`;
     if (data.medicalInfo) insurerText += `• ${data.medicalInfo}\n`;
@@ -2531,34 +2528,28 @@ async function shareToInsurer(insurerName) {
     if (data.paymentPeriod || data.coveragePeriod) insurerText += `• 기간: ${data.paymentPeriod || '-'} / ${data.coveragePeriod || '-'}\n`;
     if (data.refundType) insurerText += `• 환급: ${data.refundType}\n`;
     if (data.clientAdditionalInfo) insurerText += `• 추가정보: ${data.clientAdditionalInfo}\n`;
-    insurerText += `• 위촉코드: ${commissionCode}`;  // ⭐ 항상 마지막에 위촉코드 포함!!!
+    insurerText += `• 위촉코드: ${commissionCode}`;
     
     console.log('📝 공유 텍스트 생성 완료');
-    console.log('  - 길이:', insurerText.length);
-    console.log('  - 미리보기:', insurerText.substring(0, 100) + '...');
+    console.log('  - 길이:', insurerText.length + '자');
+    console.log('  - 미리보기:', insurerText.substring(0, 80) + '...');
     
-    // 4. Kakao Share API 호출 (이미지 제거 - 텍스트만 전달)
+    // 4. Kakao.Link.sendDefault API 호출 (TEXT 형식)
     try {
-        console.log('📤 Kakao.Share.sendDefault 호출...');
-        console.log('📋 파라미터:');
-        console.log('  - objectType: feed');
-        console.log('  - title: 설매Talk - 설계의뢰');
-        console.log('  - description: 전체 공유 텍스트 (이미지 없음)');
-        console.log('  - link.mobileWebUrl:', INSURER_WEBSITES[insurerName] || 'https://www.kakao.com');
+        console.log('📤 Kakao.Link.sendDefault 호출...');
+        console.log('  - 형식: text (최대 길이 텍스트)');
+        console.log('  - 링크: https://gaworld.kr/infra');
         
-        Kakao.Share.sendDefault({
-            objectType: 'feed',
-            content: {
-                title: `설매Talk - ${insurerName} 설계의뢰`,
-                description: insurerText,  // ⭐ 전체 텍스트 표시 (이미지 제거)
-                link: {
-                    mobileWebUrl: INSURER_WEBSITES[insurerName] || 'https://www.kakao.com',
-                    webUrl: INSURER_WEBSITES[insurerName] || 'https://www.kakao.com'
-                }
+        Kakao.Link.sendDefault({
+            objectType: 'text',
+            text: insurerText,
+            link: {
+                mobileWebUrl: 'https://gaworld.kr/infra',
+                webUrl: 'https://gaworld.kr/infra'
             }
         });
         
-        console.log('✅ Kakao.Share.sendDefault 호출 성공');
+        console.log('✅ Kakao.Link.sendDefault 호출 성공');
         
         // 5. DB에 저장 (공유 후 즉시)
         console.log('💾 DB 저장 시작...');
@@ -2589,7 +2580,6 @@ async function shareToInsurer(insurerName) {
         showToast('❌ 공유 실패: ' + err.message, 'error');
     }
 }
-
 // ============================================
 // DB 저장 함수
 // ============================================
@@ -2687,6 +2677,7 @@ function maskName(name) {
     if (!name || name.length <= 2) return '**';
     return name.charAt(0) + '*'.repeat(name.length - 1);
 }
+
 function showCompletionModal() {
     openModal('completion-modal');
 }
@@ -2922,7 +2913,6 @@ function renderNonlifeCredentialsForm() {
     document.getElementById('nonlife-insurers-container').innerHTML = html;
 }
 
-// ✅ 위촉코드 저장 함수 (완벽 수정)
 async function saveAllCredentials(type = 'nonlife') {
     if (!supabase || !currentPlannerId) {
         showToast('로그인이 필요합니다', 'error');
@@ -2960,7 +2950,6 @@ async function saveAllCredentials(type = 'nonlife') {
                 .upsert(credential, { onConflict: 'planner_id,insurer_name' });
             
             if (!error) {
-                // ✅ 로컬 메모리 즉시 동기화
                 insurerCommissionCodes[credential.insurer_name] = credential.commission_code;
                 console.log('✅ 저장:', credential.insurer_name);
             }
@@ -3235,4 +3224,5 @@ function initDraggableModals() {
         });
     });
 }
-</script>
+</script></body>
+</html>
