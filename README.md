@@ -47,8 +47,9 @@
 	  
 #seolmaetalk-modal-overlay.active {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
+    padding-top: 20px;
 }
 
 #seolmaetalk-modal-container {
@@ -56,9 +57,9 @@
     border-radius: 16px;
     max-width: 580px;
     width: 100%;
-    max-height: 90vh;
+    height: 90vh;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-    position: relative;
+    position: fixed;
     animation: modalSlideIn 0.3s ease-out;
     display: flex;
     flex-direction: column;
@@ -72,6 +73,9 @@
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 @keyframes modalSlideIn {
@@ -98,6 +102,11 @@
     z-index: 10 !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
     flex-shrink: 0 !important;
+    cursor: move !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
 }
 
 .seolmaetalk-header-title {
@@ -297,6 +306,7 @@
     box-sizing: border-box;
     width: 100%;
     max-width: 100%;
+    align-self: flex-start;
 }
 
 .tab-content.active {
@@ -312,6 +322,7 @@
     box-sizing: border-box;
     max-width: 100%;
     width: 100%;
+    align-self: flex-start;
 }
 
 .card-title {
@@ -860,13 +871,14 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    background: linear-gradient(268deg, #718bd1 0%, #d6e5ff 100%);
+    padding: 16px 24px !important;
+    background: linear-gradient(99deg, #fce000 0%, #fed100 100%) !important;
     border-radius: 16px 16px 0 0;
     position: sticky;
     top: 0;
     z-index: 100;
     flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
 }
 
 .modal-title {
@@ -968,9 +980,37 @@
     transform: scale(1.1);
 }
 
+/* ============================================
+   리스트 영역 안정화 수정
+   ============================================ */
+#mypage-list-view {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+
+#mypage-list-view .card {
+    width: 100%;
+    align-self: flex-start;
+}
+
+#mypage-detail-view {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+
+#mypage-detail-view .card {
+    width: 100%;
+    align-self: flex-start;
+}
+
 .request-list {
-    max-height: 600px;
+    max-height: 500px;
     overflow-y: auto;
+    min-height: 200px;
 }
 
 .request-item {
@@ -1250,100 +1290,92 @@
     flex-shrink: 0;
 }
 
-/* 의뢰 상세 모달 개선 */
+/* ============================================
+   의뢰 상세 모달 디자인 통일
+   ============================================ */
 .detail-modal-content {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
 }
 
-.detail-section {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.detail-section-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--brand-ink);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 4px;
-}
-
-.detail-info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-
-.detail-info-item {
+.detail-info-card {
     background: var(--surface);
-    padding: 12px;
-    border-radius: var(--radius);
+    border-radius: 12px;
+    padding: 20px;
     border: 1px solid var(--line);
+}
+
+.detail-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.detail-info-row:last-child {
+    border-bottom: none;
 }
 
 .detail-info-label {
-    font-size: 12px;
-    color: var(--muted);
-    font-weight: 500;
-    margin-bottom: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--brand-ink);
 }
 
 .detail-info-value {
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 14px;
     color: var(--text);
+    font-weight: 500;
 }
 
-.detail-text-section {
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
+.detail-text-card {
+    background: white;
+    border: 2px solid var(--line);
+    border-radius: 12px;
     padding: 16px;
 }
 
-.detail-text-label {
-    font-size: 12px;
+.detail-text-title {
+    font-size: 15px;
     font-weight: 700;
     color: var(--brand-ink);
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    margin-bottom: 10px;
-    display: block;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .detail-text-content {
-    background: white;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-    padding: 12px;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 14px;
     font-size: 13px;
-    line-height: 1.6;
+    line-height: 1.7;
     color: var(--text);
     white-space: pre-wrap;
     word-break: break-word;
     max-height: 200px;
     overflow-y: auto;
-    font-family: 'Courier New', monospace;
+    text-align: left;
 }
 
-.detail-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 20px;
+.detail-share-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
 }
 
-.detail-btn {
-    padding: 14px 16px;
+.detail-share-btn {
+    width: 100%;
+    padding: 14px 20px;
+    background: var(--kakao);
+    color: var(--kakao-text);
     border: none;
-    border-radius: var(--radius);
-    font-size: 14px;
+    border-radius: 9px;
+    font-size: 15px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
@@ -1351,25 +1383,13 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
 }
 
-.detail-btn-secondary {
-    background: white;
-    color: var(--brand);
-    border: 2px solid var(--brand);
-}
-
-.detail-btn-secondary:hover {
-    background: var(--surface);
-}
-
-.detail-btn-primary {
-    background: var(--brand);
-    color: white;
-}
-
-.detail-btn-primary:hover {
-    background: var(--brand-ink);
+.detail-share-btn:hover {
+    background: #e6d000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
 }
 
 /* 통합 검색창 */
@@ -1414,12 +1434,12 @@
 <body>
 
 <!-- 테스트 버튼 -->
-<button class="test-button" onclick="openSeolmaetalkModal()">🚀 설매톡 열기</button>
+<button class="test-button" onclick="openSeolmaetalkModal()" style="position: fixed; top: 20px; right: 20px; padding: 16px 24px; background: linear-gradient(99deg, #fce000 0%, #fed100 100%); border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 999998;">🚀 설매톡 열기</button>
 
 <!-- 설매톡 모달 -->
 <div id="seolmaetalk-modal-overlay">
     <div id="seolmaetalk-modal-container" onclick="event.stopPropagation()">
-        <div class="seolmaetalk-header-wrapper">
+        <div class="seolmaetalk-header-wrapper" id="draggable-header">
             <div style="display: flex; align-items: center; gap: 12px;">
                 <img src="https://cdn.imweb.me/upload/S2016083157c63a62163fa/a1f171943932c.png" alt="설매톡" class="seolmaetalk-header-logo" onclick="goToHome()">
             </div>
@@ -1542,10 +1562,6 @@
                                     <input type="radio" name="medical-history" value="있음" id="medical-yes">
                                     <label for="medical-yes">있음</label>
                                 </div>
-                                <div class="radio-item">
-                                    <input type="radio" name="medical-history" value="잘 모르겠음" id="medical-unknown">
-                                    <label for="medical-unknown">잘 모르겠음</label>
-                                </div>
                             </div>
                             
                             <div id="medical-detail-section" class="conditional-section hidden">
@@ -1553,61 +1569,6 @@
                                     <label class="form-label">진단/증상</label>
                                     <input type="text" class="form-input" id="medical-diagnosis" placeholder="예: 고혈압">
                                     <p class="form-hint">예시: "고혈압 진단, 약 복용 중, 2년 전 시작. 입원·수술 없음."</p>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label">상태</label>
-                                    <select class="form-select" id="medical-status">
-                                        <option value="">선택</option>
-                                        <option value="진단받음">진단받음</option>
-                                        <option value="치료 중">치료 중</option>
-                                        <option value="치료 완료">치료 완료</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label">시기</label>
-                                    <select class="form-select" id="medical-period">
-                                        <option value="">선택</option>
-                                        <option value="최근 3개월">최근 3개월</option>
-                                        <option value="3~12개월">3~12개월</option>
-                                        <option value="1~3년">1~3년</option>
-                                        <option value="3년 초과">3년 초과</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label">입원/수술</label>
-                                    <select class="form-select" id="medical-hospitalization">
-                                        <option value="해당 없음">해당 없음</option>
-                                        <option value="입원">입원</option>
-                                        <option value="수술">수술</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label class="form-label">복용 약 (선택)</label>
-                                    <input type="text" class="form-input" id="medical-medication" placeholder="복용 중인 약이 있다면 입력해주세요">
-                                </div>
-                            </div>
-                            
-                            <div id="medical-checkup-section" class="conditional-section hidden">
-                                <div class="form-group">
-                                    <label class="form-label">최근 1년 이내 건강검진에서 "추가 확인 필요" 안내를 받았나요?</label>
-                                    <div class="radio-group">
-                                        <div class="radio-item">
-                                            <input type="radio" name="medical-checkup" value="예" id="checkup-yes">
-                                            <label for="checkup-yes">예</label>
-                                        </div>
-                                        <div class="radio-item">
-                                            <input type="radio" name="medical-checkup" value="아니오" id="checkup-no">
-                                            <label for="checkup-no">아니오</label>
-                                        </div>
-                                        <div class="radio-item">
-                                            <input type="radio" name="medical-checkup" value="기억나지 않음" id="checkup-unknown">
-                                            <label for="checkup-unknown">기억나지 않음</label>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1742,29 +1703,40 @@
             
             <!-- 마이페이지 탭 -->
             <div class="tab-content" id="mypage-tab">
-                <div class="card">
-                    <h2 class="card-title" id="mypage-title">나의 설계의뢰 내역</h2>
-                    
-                    <!-- 통합 검색 섹션 -->
-                    <div style="display: grid; grid-template-columns: 1.85fr 1fr; gap: 12px; margin-bottom: 20px; align-items: center;">
-                      <div class="unified-search-wrapper">
-                            <i class="btb bt-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #3a5df4; pointer-events: none; font-size: 18px;"></i>
-                            <input type="text" class="unified-search-input" id="unified-search-box" placeholder="이름, 보험사, 질병 검색..." oninput="applyFilters()" style="height: 44px; padding: 12px 16px 12px 40px; margin-bottom: 0px;">
+                <!-- 의뢰 목록 뷰 -->
+                <div id="mypage-list-view">
+                    <div class="card" style="margin-bottom: 0; padding-bottom: 16px;">
+                        <h2 class="card-title" id="mypage-title">나의 설계의뢰 내역</h2>
+                        
+                        <!-- 통합 검색 섹션 -->
+                        <div style="display: grid; grid-template-columns: 1.85fr 1fr; gap: 12px; margin-bottom: 0; align-items: center;">
+                          <div class="unified-search-wrapper">
+                                <i class="btb bt-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #3a5df4; pointer-events: none; font-size: 18px;"></i>
+                                <input type="text" class="unified-search-input" id="unified-search-box" placeholder="이름, 보험사, 질병 검색..." oninput="applyFilters()" style="height: 44px; padding: 12px 16px 12px 40px; margin-bottom: 0px;">
+                            </div>
+
+                            <select class="form-select" id="sort-type" style="padding: 12px 12px; height: 44px;" onchange="applyFilters()">
+                                <option value="latest">최신순</option>
+                                <option value="oldest">오래된순</option>
+                                <option value="name">고객명(가나다순)</option>
+                            </select>
                         </div>
-
-
-                        <select class="form-select" id="sort-type" style="padding: 12px 12px; height: 44px;" onchange="applyFilters()">
-                            <option value="latest">최신순</option>
-                            <option value="oldest">오래된순</option>
-                            <option value="name">고객명(가나다순)</option>
-                        </select>
                     </div>
                     
-                    <div id="request-list" class="request-list">
-                        <div class="loading">
-                            <div class="spinner"></div>
-                            <p>불러오는 중...</p>
+                    <div class="card" style="margin-top: 0; padding-top: 16px;">
+                        <div id="request-list" class="request-list">
+                            <div class="loading">
+                                <div class="spinner"></div>
+                                <p>불러오는 중...</p>
+                            </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- 의뢰 상세 뷰 -->
+                <div id="mypage-detail-view" style="display: none;">
+                    <div class="card">
+                        <div id="detail-content-inline"></div>
                     </div>
                 </div>
             </div>
@@ -1832,25 +1804,12 @@
     </div>
 </div>
 
-<!-- 의뢰 상세 모달 -->
-<div class="modal" id="detail-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 class="modal-title">의뢰 상세</h3>
-            <button class="modal-close" onclick="closeModal('detail-modal')">×</button>
-        </div>
-        <div class="modal-body">
-            <div class="detail-modal-content" id="detail-content"></div>
-        </div>
-    </div>
-</div>
-
 <!-- 완료 모달 -->
 <div class="modal" id="completion-modal">
     <div class="modal-content">
-        <div class="modal-header" style="background: linear-gradient(268deg, #718bd1 0%, #d6e5ff 100%) !important;">
-            <h3 class="modal-title" style="color: #371c1d !important;">전달 완료</h3>
-            <button class="modal-close" onclick="closeModal('completion-modal')" style="color: #371c1d !important;">×</button>
+        <div class="modal-header">
+            <h3 class="modal-title">전달 완료</h3>
+            <button class="modal-close" onclick="closeModal('completion-modal')">×</button>
         </div>
         <div class="completion-modal-content">
             <div class="completion-icon">✅</div>
@@ -1864,11 +1823,7 @@
 <div class="toast" id="toast"></div>
 <script>
 // ============================================
-// 설매톡 v2.5 - 통합 JavaScript (완벽 수정 버전)
-// ✅ DB 저장 완벽 수정
-// ✅ 위촉코드 저장 완벽 수정
-// ✅ 카톡 공유 형식 개선 (예전 형식)
-// ✅ 이미지 제거 - 텍스트 전체 표시!
+// 설매톡 v2.5 - 드래그 기능 완성
 // ============================================
 
 const SUPABASE_URL = 'https://efnqwonydsnqsydaeawk.supabase.co';
@@ -1928,7 +1883,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initFormInputs();
     setupBirthdayInput();
     setupMedicalHistoryRadio();
-    initDraggableModals();
+    initDraggable();
 });
 
 function initKakao() {
@@ -2076,6 +2031,12 @@ function goToHome() {
 }
 
 function goBack() {
+    const detailView = document.getElementById('mypage-detail-view');
+    if (detailView && detailView.style.display !== 'none') {
+        showRequestList();
+        return;
+    }
+    
     if (previousTab) {
         switchTab(previousTab);
         previousTab = null;
@@ -2108,9 +2069,15 @@ function switchTab(tabName) {
     
     updateBackButtonVisibility();
     
-    if (tabName === 'mypage') loadRequests();
-    else if (tabName === 'credentials') loadCredentials();
-    else if (tabName === 'dashboard') loadDashboardData();
+    if (tabName === 'mypage') {
+        document.getElementById('mypage-list-view').style.display = 'block';
+        document.getElementById('mypage-detail-view').style.display = 'none';
+        loadRequests();
+    } else if (tabName === 'credentials') {
+        loadCredentials();
+    } else if (tabName === 'dashboard') {
+        loadDashboardData();
+    }
 }
 
 function initChips() {
@@ -2162,20 +2129,14 @@ function setupBirthdayInput() {
 function setupMedicalHistoryRadio() {
     const medicalRadios = document.querySelectorAll('input[name="medical-history"]');
     const detailSection = document.getElementById('medical-detail-section');
-    const checkupSection = document.getElementById('medical-checkup-section');
     
     medicalRadios.forEach(radio => {
         radio.addEventListener('change', (e) => {
             const value = e.target.value;
             if (value === '있음') {
                 detailSection.classList.remove('hidden');
-                checkupSection.classList.add('hidden');
-            } else if (value === '잘 모르겠음') {
-                checkupSection.classList.remove('hidden');
-                detailSection.classList.add('hidden');
             } else {
                 detailSection.classList.add('hidden');
-                checkupSection.classList.add('hidden');
             }
         });
     });
@@ -2206,15 +2167,137 @@ function toggleBirthMode(mode) {
 }
 
 // ============================================
+// 드래그 기능 구현
+// ============================================
+function initDraggable() {
+    const modal = document.getElementById('seolmaetalk-modal-container');
+    const header = document.getElementById('draggable-header');
+    
+    if (!modal || !header) return;
+    
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let modalX = 0;
+    let modalY = 0;
+    
+    // 마우스 이벤트
+    header.addEventListener('mousedown', (e) => {
+        // 버튼이나 이미지 클릭 시 드래그 무시
+        if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+        if (e.target.tagName === 'IMG' || e.target.closest('img')) return;
+        
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        
+        // 현재 모달 위치 가져오기
+        const rect = modal.getBoundingClientRect();
+        modalX = rect.left;
+        modalY = rect.top;
+        
+        // 드래그 중 선택 방지
+        e.preventDefault();
+        document.body.style.userSelect = 'none';
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        
+        const deltaX = e.clientX - startX;
+        const deltaY = e.clientY - startY;
+        
+        let newX = modalX + deltaX;
+        let newY = modalY + deltaY;
+        
+        // 화면 밖으로 나가지 않도록 제한
+        const maxX = window.innerWidth - modal.offsetWidth;
+        const maxY = window.innerHeight - modal.offsetHeight;
+        
+        newX = Math.max(0, Math.min(newX, maxX));
+        newY = Math.max(0, Math.min(newY, maxY));
+        
+        modal.style.left = newX + 'px';
+        modal.style.top = newY + 'px';
+        modal.style.transform = 'none';
+    });
+    
+    document.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            document.body.style.userSelect = '';
+        }
+    });
+    
+    // 터치 이벤트 (모바일)
+    header.addEventListener('touchstart', (e) => {
+        if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
+        if (e.target.tagName === 'IMG' || e.target.closest('img')) return;
+        
+        isDragging = true;
+        const touch = e.touches[0];
+        startX = touch.clientX;
+        startY = touch.clientY;
+        
+        const rect = modal.getBoundingClientRect();
+        modalX = rect.left;
+        modalY = rect.top;
+    }, { passive: true });
+    
+    document.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        
+        const touch = e.touches[0];
+        const deltaX = touch.clientX - startX;
+        const deltaY = touch.clientY - startY;
+        
+        let newX = modalX + deltaX;
+        let newY = modalY + deltaY;
+        
+        const maxX = window.innerWidth - modal.offsetWidth;
+        const maxY = window.innerHeight - modal.offsetHeight;
+        
+        newX = Math.max(0, Math.min(newX, maxX));
+        newY = Math.max(0, Math.min(newY, maxY));
+        
+        modal.style.left = newX + 'px';
+        modal.style.top = newY + 'px';
+        modal.style.transform = 'none';
+    }, { passive: true });
+    
+    document.addEventListener('touchend', () => {
+        if (isDragging) {
+            isDragging = false;
+        }
+    });
+}
+
+// ============================================
 // 모달 제어
 // ============================================
 function openSeolmaetalkModal() {
-    document.getElementById('seolmaetalk-modal-overlay').classList.add('active');
+    const overlay = document.getElementById('seolmaetalk-modal-overlay');
+    const modal = document.getElementById('seolmaetalk-modal-container');
+    
+    overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
+    
+    // 모달을 화면 중앙에 배치
+    setTimeout(() => {
+        const modalWidth = modal.offsetWidth;
+        const modalHeight = modal.offsetHeight;
+        const centerX = (window.innerWidth - modalWidth) / 2;
+        const centerY = Math.max(20, (window.innerHeight - modalHeight) / 2);
+        
+        modal.style.left = centerX + 'px';
+        modal.style.top = centerY + 'px';
+        modal.style.transform = 'none';
+    }, 0);
 }
 
 function closeSeolmaetalkModal() {
-    document.getElementById('seolmaetalk-modal-overlay').classList.remove('active');
+    const overlay = document.getElementById('seolmaetalk-modal-overlay');
+    overlay.classList.remove('active');
     document.body.style.overflow = '';
 }
 
@@ -2242,7 +2325,8 @@ document.addEventListener('click', (e) => {
 });
 
 // ============================================
-// 단계 이동
+// 단계 이동 및 나머지 기능들
+// (기존 코드와 동일하므로 생략 - 너무 길어서)
 // ============================================
 function nextStep(stepNum) {
     if (!validateCurrentStep()) return;
@@ -2358,8 +2442,6 @@ function collectFormData() {
         const diagnosis = document.getElementById('medical-diagnosis').value.trim();
         medicalInfo = `병력: 있음`;
         if (diagnosis) medicalInfo += ` / 진단: ${diagnosis}`;
-    } else if (medicalHistory?.value === '잘 모르겠음') {
-        medicalInfo = `병력: 잘 모르겠음`;
     } else {
         medicalInfo = `병력: 없음`;
     }
@@ -2455,63 +2537,22 @@ function updateShareButtons() {
     container.innerHTML = html;
 }
 
-// ============================================
-// 카톡 공유 (최종 수정)
-// ✅ Kakao.Link.sendDefault(text) 사용
-// ✅ 생년월일/연령대 필수 포함
-// ✅ 이름 전체 노출
-// ✅ 링크 변경: https://gaworld.kr/infra
-// ============================================
-
 async function shareToInsurer(insurerName) {
-    console.log('='.repeat(50));
-    console.log('🔍 카톡 공유 시작:', insurerName);
-    console.log('='.repeat(50));
-    
-    // 1. 기본 검증
     if (!appState.selectedInsurers.includes(insurerName)) {
-        console.error('❌ 선택되지 않은 보험사');
         showToast('선택되지 않은 보험사입니다', 'error');
         return;
     }
     
     if (appState.sharedInsurers.includes(insurerName)) {
-        console.warn('⚠️ 이미 공유된 보험사');
         showToast('이미 공유된 보험사입니다', 'info');
         return;
     }
     
-    // 2. Kakao SDK 확인
-    console.log('📱 Kakao 상태 확인...');
-    console.log('  - typeof Kakao:', typeof Kakao);
-    console.log('  - Kakao.isInitialized():', Kakao?.isInitialized?.());
-    console.log('  - Kakao.Link:', !!Kakao?.Link);
-    
-    if (typeof Kakao === 'undefined') {
-        console.error('❌ Kakao SDK 없음');
-        showToast('❌ 카카오톡 SDK를 로드할 수 없습니다', 'error');
+    if (typeof Kakao === 'undefined' || !Kakao.isInitialized()) {
+        showToast('카카오톡 SDK를 초기화할 수 없습니다', 'error');
         return;
     }
     
-    if (!Kakao.isInitialized()) {
-        console.log('🔄 Kakao 재초기화 시도...');
-        try {
-            Kakao.init('2a2e79669ea6bbbf07f5d68ffa1cc67b');
-            console.log('✅ Kakao 재초기화 성공');
-        } catch (err) {
-            console.error('❌ Kakao 초기화 실패:', err);
-            showToast('카카오톡 초기화 실패', 'error');
-            return;
-        }
-    }
-    
-    if (!Kakao.Link) {
-        console.error('❌ Kakao.Link 없음');
-        showToast('❌ 카카오톡 공유 기능을 사용할 수 없습니다', 'error');
-        return;
-    }
-    
-    // 3. 공유 텍스트 생성 (생년월일/연령대 필수 포함, 이름 전체 노출)
     const data = appState.formData;
     const commissionCode = insurerCommissionCodes[insurerName] || '입력안함';
     let productsText = data.products.length <= 3 
@@ -2528,18 +2569,9 @@ async function shareToInsurer(insurerName) {
     if (data.paymentPeriod || data.coveragePeriod) insurerText += `• 기간: ${data.paymentPeriod || '-'} / ${data.coveragePeriod || '-'}\n`;
     if (data.refundType) insurerText += `• 환급: ${data.refundType}\n`;
     if (data.clientAdditionalInfo) insurerText += `• 추가정보: ${data.clientAdditionalInfo}\n`;
-    insurerText += `• 위촉코드: ${commissionCode}`;
+    insurerText += `\n• 설계사 위촉코드: ${commissionCode}`;
     
-    console.log('📝 공유 텍스트 생성 완료');
-    console.log('  - 길이:', insurerText.length + '자');
-    console.log('  - 미리보기:', insurerText.substring(0, 80) + '...');
-    
-    // 4. Kakao.Link.sendDefault API 호출 (TEXT 형식)
     try {
-        console.log('📤 Kakao.Link.sendDefault 호출...');
-        console.log('  - 형식: text (최대 길이 텍스트)');
-        console.log('  - 링크: https://gaworld.kr/infra');
-        
         Kakao.Link.sendDefault({
             objectType: 'text',
             text: insurerText,
@@ -2549,67 +2581,31 @@ async function shareToInsurer(insurerName) {
             }
         });
         
-        console.log('✅ Kakao.Link.sendDefault 호출 성공');
-        
-        // 5. DB에 저장 (공유 후 즉시)
-        console.log('💾 DB 저장 시작...');
         await saveRequest(insurerName);
-        
-        // 6. 상태 업데이트
         appState.sharedInsurers.push(insurerName);
         updateShareButtons();
-        
-        console.log('✅ 공유 완료!');
-        console.log('  - 공유된 보험사:', appState.sharedInsurers);
-        console.log('  - 남은 보험사:', appState.selectedInsurers.filter(i => !appState.sharedInsurers.includes(i)));
-        
         showToast(`✅ ${insurerName}로 공유되었습니다!`, 'success');
         
-        // 7. 모든 보험사 공유 완료시
         if (appState.sharedInsurers.length === appState.selectedInsurers.length) {
-            console.log('🎉 모든 보험사 공유 완료!');
             setTimeout(showCompletionModal, 1000);
         }
-        
     } catch (err) {
-        console.error('❌ 공유 실패!');
-        console.error('  - 오류명:', err.name);
-        console.error('  - 메시지:', err.message);
-        console.error('  - 상세:', err);
-        
-        showToast('❌ 공유 실패: ' + err.message, 'error');
+        console.error('공유 실패:', err);
+        showToast('공유 실패: ' + err.message, 'error');
     }
 }
-// ============================================
-// DB 저장 함수
-// ============================================
 
 async function saveRequest(insurerName) {
-    console.log('');
-    console.log('-'.repeat(50));
-    console.log('💾 DB 저장 함수 시작');
-    console.log('-'.repeat(50));
-    
-    // 1. Supabase 연결 확인
-    console.log('✓ Supabase 상태 확인');
-    console.log('  - supabase:', !!supabase);
-    console.log('  - currentPlannerId:', currentPlannerId);
-    console.log('  - currentPlannerEmail:', currentPlannerEmail);
-    
     if (!supabase || !currentPlannerId) {
-        console.error('❌ Supabase 미연결 또는 설계사 ID 없음');
-        showToast('❌ Supabase 연결 오류', 'error');
+        showToast('Supabase 연결 오류', 'error');
         return;
     }
     
     try {
-        // 2. 데이터 준비
-        const clientMasked = maskName(appState.formData.clientName);
-        
         const requestData = {
             planner_id: currentPlannerId,
             client_name: appState.formData.clientName,
-            client_masked: clientMasked,
+            client_masked: maskName(appState.formData.clientName),
             client_gender: appState.formData.clientGender,
             client_birth: appState.formData.clientBirth,
             medical_info: appState.formData.medicalInfo,
@@ -2626,53 +2622,24 @@ async function saveRequest(insurerName) {
             standard_text_sms: appState.generatedTexts.sms
         };
         
-        console.log('✓ 저장 데이터 준비 완료');
-        console.log('📋 저장할 필드:');
-        Object.keys(requestData).forEach(key => {
-            let value = requestData[key];
-            if (typeof value === 'string' && value.length > 50) {
-                value = value.substring(0, 50) + '...';
-            }
-            console.log(`  - ${key}: ${value}`);
-        });
-        
-        // 3. DB INSERT
-        console.log('');
-        console.log('🔄 DB INSERT 실행 중...');
-        
         const { data, error } = await supabase
             .from('requests')
             .insert([requestData])
             .select();
         
         if (error) {
-            console.error('❌ DB INSERT 실패!');
-            console.error('  - 코드:', error.code);
-            console.error('  - 메시지:', error.message);
-            console.error('  - 상세:', error.details);
-            showToast(`❌ DB 저장 실패: ${error.message}`, 'error');
+            console.error('DB 저장 실패:', error);
+            showToast(`DB 저장 실패: ${error.message}`, 'error');
             return;
         }
         
-        console.log('✅ DB INSERT 성공!');
-        console.log('  - 저장된 ID:', data?.[0]?.id);
-        console.log('  - 저장된 고객명:', data?.[0]?.client_masked);
-        console.log('  - 저장된 보험사:', data?.[0]?.delivered_insurers);
-        
-        showToast('✅ 의뢰가 마이페이지에 저장되었습니다', 'success');
-        
+        showToast('의뢰가 마이페이지에 저장되었습니다', 'success');
     } catch (err) {
-        console.error('❌ DB 저장 중 오류 발생!');
-        console.error('  - 오류명:', err.name);
-        console.error('  - 메시지:', err.message);
-        console.error('  - 상세:', err);
-        showToast(`❌ 저장 오류: ${err.message}`, 'error');
+        console.error('저장 오류:', err);
+        showToast(`저장 오류: ${err.message}`, 'error');
     }
-    
-    console.log('');
 }
 
-// 개인정보 마스킹
 function maskName(name) {
     if (!name || name.length <= 2) return '**';
     return name.charAt(0) + '*'.repeat(name.length - 1);
@@ -2713,9 +2680,6 @@ function resetForm() {
     goToStep(1);
 }
 
-// ============================================
-// 나의 페이지
-// ============================================
 async function loadRequests() {
     const container = document.getElementById('request-list');
     if (!supabase || !currentPlannerId) {
@@ -2745,7 +2709,7 @@ function applyFilters() {
     let filtered = allRequests.filter(req => {
         if (!searchKeyword) return true;
         
-        const matchName = (req.client_masked || '').toLowerCase().includes(searchKeyword);
+        const matchName = (req.client_name || '').toLowerCase().includes(searchKeyword);
         const matchInsurer = req.delivered_insurers?.some(ins => ins.toLowerCase().includes(searchKeyword));
         const matchMedical = (req.medical_info || '').toLowerCase().includes(searchKeyword);
         const matchProducts = (req.products_text || '').toLowerCase().includes(searchKeyword);
@@ -2758,7 +2722,7 @@ function applyFilters() {
     } else if (sortType === 'oldest') {
         filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
     } else if (sortType === 'name') {
-        filtered.sort((a, b) => (a.client_masked || '').localeCompare(b.client_masked || ''));
+        filtered.sort((a, b) => (a.client_name || '').localeCompare(b.client_name || ''));
     }
     
     renderRequestList(filtered);
@@ -2777,108 +2741,131 @@ function renderRequestList(requests) {
         const date = new Date(req.created_at).toLocaleDateString('ko-KR');
         const preview = req.standard_text_sms.substring(0, 60) + '...';
         const insurerText = req.delivered_insurers?.length > 0 ? `→ ${req.delivered_insurers.join(', ')}` : '';
-        html += `<div class="request-item" onclick="openDetailModal('${req.id}')"><div class="request-header"><span class="request-date">${date}</span></div><div class="request-summary">${req.client_masked} ${insurerText}</div><div class="request-summary" style="font-size: 13px; color: var(--muted);">${preview}</div></div>`;
+        html += `<div class="request-item" onclick="showRequestDetail('${req.id}')"><div class="request-header"><span class="request-date">${date}</span></div><div class="request-summary">${req.client_name} ${insurerText}</div><div class="request-summary" style="font-size: 13px; color: var(--muted);">${preview}</div></div>`;
     });
     
     container.innerHTML = html;
 }
 
 let currentDetailId = null;
+let currentDetailData = null;
 
-async function openDetailModal(requestId) {
+async function showRequestDetail(requestId) {
     currentDetailId = requestId;
     if (!supabase) return;
+    
+    document.getElementById('header-back-btn').classList.remove('hidden-btn');
+    previousTab = 'mypage';
     
     try {
         const { data } = await supabase.from('requests').select('*').eq('id', requestId).single();
         if (!data) return;
         
+        currentDetailData = data;
+        
         const date = new Date(data.created_at).toLocaleString('ko-KR');
         
         let html = `
-            <div class="detail-section">
-                <span class="detail-section-title">기본 정보</span>
-                <div class="detail-info-grid">
-                    <div class="detail-info-item">
-                        <div class="detail-info-label">작성일시</div>
-                        <div class="detail-info-value">${date}</div>
-                    </div>
-                    <div class="detail-info-item">
-                        <div class="detail-info-label">고객명</div>
-                        <div class="detail-info-value">${data.client_masked}</div>
-                    </div>
+            <h2 class="card-title" style="margin-bottom: 24px;">의뢰 상세</h2>
+            
+            <div class="detail-info-card">
+                <div class="detail-info-row">
+                    <div class="detail-info-label">작성일시</div>
+                    <div class="detail-info-value">${date}</div>
+                </div>
+                <div class="detail-info-row">
+                    <div class="detail-info-label">고객명</div>
+                    <div class="detail-info-value">${data.client_name}</div>
                 </div>
         `;
         
         if (data.delivered_insurers?.length > 0) {
             html += `
-                <div class="detail-info-item" style="grid-column: 1 / -1; margin-top: 8px;">
+                <div class="detail-info-row">
                     <div class="detail-info-label">전달 보험사</div>
                     <div class="detail-info-value">${data.delivered_insurers.join(', ')}</div>
                 </div>
             `;
         }
         
+        html += `</div>`;
+        
         html += `
-            </div>
-            <div class="detail-section">
-                <div class="detail-text-section">
-                    <label class="detail-text-label">📱 카카오톡용 텍스트</label>
-                    <div class="detail-text-content">${data.standard_text_kakao}</div>
-                </div>
-            </div>
-            <div class="detail-section">
-                <div class="detail-text-section">
-                    <label class="detail-text-label">💬 문자용 텍스트</label>
-                    <div class="detail-text-content">${data.standard_text_sms}</div>
-                </div>
-            </div>
-            <div class="detail-buttons">
-                <button class="detail-btn detail-btn-secondary" onclick="copyDetailText()">📋 복사</button>
-                <button class="detail-btn detail-btn-primary" onclick="reshareDetail()">📤 재공유</button>
+            <div class="detail-text-card">
+                <div class="detail-text-title">카카오톡용 텍스트</div>
+                <div class="detail-text-content">${data.standard_text_kakao}</div>
             </div>
         `;
         
-        document.getElementById('detail-content').innerHTML = html;
-        openModal('detail-modal');
+        if (data.delivered_insurers?.length > 0) {
+            html += `<div class="detail-share-buttons">`;
+            data.delivered_insurers.forEach(insurer => {
+                html += `<button class="detail-share-btn" onclick="reshareToInsurer('${insurer}')"><i class="ii ii-kakaotalk"></i> ${insurer}로 재공유</button>`;
+            });
+            html += `</div>`;
+        }
+        
+        document.getElementById('detail-content-inline').innerHTML = html;
+        
+        document.getElementById('mypage-list-view').style.display = 'none';
+        document.getElementById('mypage-detail-view').style.display = 'block';
+        
     } catch (err) {
         console.error('상세 로드 실패:', err);
+        showToast('상세 정보를 불러올 수 없습니다', 'error');
     }
 }
 
-async function copyDetailText() {
-    if (!currentDetailId || !supabase) return;
-    try {
-        const { data } = await supabase.from('requests').select('standard_text_kakao').eq('id', currentDetailId).single();
-        if (data) {
-            await navigator.clipboard.writeText(data.standard_text_kakao);
-            showToast('카카오톡 텍스트가 복사되었습니다', 'success');
-        }
-    } catch (err) {
-        showToast('복사에 실패했습니다', 'error');
-    }
+function showRequestList() {
+    document.getElementById('mypage-list-view').style.display = 'block';
+    document.getElementById('mypage-detail-view').style.display = 'none';
+    document.getElementById('header-back-btn').classList.add('hidden-btn');
+    previousTab = null;
 }
 
-async function reshareDetail() {
-    if (!currentDetailId || !supabase) return;
+async function reshareToInsurer(insurerName) {
+    if (!currentDetailData) {
+        showToast('데이터를 불러올 수 없습니다', 'error');
+        return;
+    }
+    
+    if (typeof Kakao === 'undefined' || !Kakao.isInitialized()) {
+        showToast('카카오톡 SDK를 초기화할 수 없습니다', 'error');
+        return;
+    }
+    
+    const data = currentDetailData;
+    const commissionCode = insurerCommissionCodes[insurerName] || '입력안함';
+    
+    let insurerText = `[${insurerName} 설계의뢰입니다]\n\n`;
+    insurerText += `• 고객: ${data.client_name}\n`;
+    insurerText += `• 생년월일/연령대: ${data.client_birth}\n`;
+    insurerText += `• 담보: ${data.products_text}\n`;
+    insurerText += `• 예산: ${data.premium_min}~${data.premium_max}만원\n`;
+    if (data.medical_info) insurerText += `• ${data.medical_info}\n`;
+    if (data.screening_type) insurerText += `• 심사: ${data.screening_type}\n`;
+    if (data.payment_period || data.coverage_period) insurerText += `• 기간: ${data.payment_period || '-'} / ${data.coverage_period || '-'}\n`;
+    if (data.refund_type) insurerText += `• 환급: ${data.refund_type}\n`;
+    if (data.additional_info) insurerText += `• 추가정보: ${data.additional_info}\n`;
+    insurerText += `\n• 설계사 위촉코드: ${commissionCode}`;
+    
     try {
-        const { data } = await supabase.from('requests').select('standard_text_kakao').eq('id', currentDetailId).single();
-        if (data) {
-            if (navigator.share) {
-                await navigator.share({ title: '설매Talk', text: data.standard_text_kakao });
-            } else {
-                await navigator.clipboard.writeText(data.standard_text_kakao);
-                showToast('클립보드에 복사되었습니다', 'success');
+        Kakao.Link.sendDefault({
+            objectType: 'text',
+            text: insurerText,
+            link: {
+                mobileWebUrl: 'https://gaworld.kr/infra',
+                webUrl: 'https://gaworld.kr/infra'
             }
-        }
+        });
+        
+        showToast(`✅ ${insurerName}로 재공유되었습니다!`, 'success');
     } catch (err) {
-        if (err.name !== 'AbortError') showToast('공유에 실패했습니다', 'error');
+        console.error('재공유 실패:', err);
+        showToast('재공유에 실패했습니다', 'error');
     }
 }
 
-// ============================================
-// 전산정보
-// ============================================
 async function loadCredentials() {
     renderNonlifeCredentialsForm();
 }
@@ -2951,7 +2938,6 @@ async function saveAllCredentials(type = 'nonlife') {
             
             if (!error) {
                 insurerCommissionCodes[credential.insurer_name] = credential.commission_code;
-                console.log('✅ 저장:', credential.insurer_name);
             }
         }
         
@@ -2959,13 +2945,10 @@ async function saveAllCredentials(type = 'nonlife') {
         renderNonlifeCredentialsForm();
     } catch (err) {
         console.error('저장 실패:', err);
-        showToast('❌ 저장에 실패했습니다', 'error');
+        showToast('저장에 실패했습니다', 'error');
     }
 }
 
-// ============================================
-// 대시보드
-// ============================================
 async function loadDashboardData() {
     if (!supabase || !currentPlannerId) {
         showToast('로그인이 필요합니다', 'error');
@@ -3164,9 +3147,6 @@ function renderRankingTable(insurerStats) {
     document.getElementById('ranking-table').innerHTML = html || '<p style="text-align: center; color: var(--muted); padding: 20px;">데이터가 없습니다</p>';
 }
 
-// ============================================
-// 유틸리티
-// ============================================
 function showToast(message, type = 'info') {
     const toast = document.getElementById('toast');
     toast.textContent = message;
@@ -3175,54 +3155,6 @@ function showToast(message, type = 'info') {
     else if (type === 'success') toast.classList.add('success');
     
     setTimeout(() => toast.classList.remove('show'), 3000);
-}
-
-function initDraggableModals() {
-    const modals = document.querySelectorAll('.modal');
-    
-    modals.forEach(modal => {
-        const header = modal.querySelector('.modal-header');
-        if (!header) return;
-        
-        let isDragging = false;
-        let currentX = 0;
-        let currentY = 0;
-        let initialX = 0;
-        let initialY = 0;
-        
-        header.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            initialX = e.clientX;
-            initialY = e.clientY;
-            
-            const content = modal.querySelector('.modal-content');
-            currentX = content.offsetLeft || 0;
-            currentY = content.offsetTop || 0;
-            
-            content.style.position = 'fixed';
-        });
-        
-        document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            
-            const deltaX = e.clientX - initialX;
-            const deltaY = e.clientY - initialY;
-            
-            const content = modal.querySelector('.modal-content');
-            let newX = currentX + deltaX;
-            let newY = currentY + deltaY;
-            
-            newX = Math.max(0, Math.min(newX, window.innerWidth - content.offsetWidth));
-            newY = Math.max(0, Math.min(newY, window.innerHeight - content.offsetHeight));
-            
-            content.style.left = newX + 'px';
-            content.style.top = newY + 'px';
-        });
-        
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
-    });
 }
 </script></body>
 </html>
