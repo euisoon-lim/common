@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>설매Talk - 설계의뢰 시스템</title>
     
-    <!-- OG 태그 (카톡 공유) -->
     <meta property="og:title" content="설매Talk - 설계의뢰">
     <meta property="og:description" content="손해보험사 설계의뢰를 쉽게 관리하세요">
     <meta property="og:url" content="">
@@ -18,8 +17,34 @@
     <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4" crossorigin="anonymous"></script>
 
     <style>
+:root {
+    --brand: #3a5df4;
+    --brand-ink: #2845c4;
+    --brand-light: #5a7af7;
+    --kakao: #FEE500;
+    --kakao-text: #000000;
+    --text: #0a0a0a;
+    --muted: #6b7280;
+    --bg: #ffffff;
+    --surface: #f8f9fe;
+    --line: #e5e7eb;
+    --error: #dc2626;
+    --success: #059669;
+    --radius: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
 
-	/* 기간 선택 버튼 */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto Mono', 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+}
+
 .period-preset-btn {
     padding: 10px 16px;
     background: white;
@@ -43,10 +68,6 @@
     border-color: var(--brand);
 }
 
-
-/* ============================================
-   모달 오버레이 & 컨테이너
-   ============================================ */
 #seolmaetalk-modal-overlay {
     display: none;
     position: fixed;
@@ -61,8 +82,6 @@
     padding: 20px;
 }
 
-	  
-	  
 #seolmaetalk-modal-overlay.active {
     display: flex;
     align-items: flex-start;
@@ -111,7 +130,7 @@
 .seolmaetalk-header-wrapper {
     position: sticky !important;
     top: 0 !important;
-    background: linear-gradient(99deg, #fce000 0%, #fed100 100%) !important;
+    background: linear-gradient(99deg, #F4D13A 0%, #fed100 100%) !important;
     border-bottom: none !important;
     padding: 18px 24px !important;
     display: flex !important;
@@ -198,27 +217,6 @@
 .seolmaetalk-header-close:hover {
     background: rgba(0, 0, 0, 0.2) !important;
     transform: scale(1.1) !important;
-}
-
-:root {
-    --brand: #3a5df4;
-    --brand-ink: #2845c4;
-    --brand-light: #5a7af7;
-    --kakao: #FEE500;
-    --kakao-text: #000000;
-    --text: #0a0a0a;
-    --muted: #6b7280;
-    --bg: #ffffff;
-    --surface: #f8f9fe;
-    --line: #e5e7eb;
-    --error: #dc2626;
-    --success: #059669;
-    --radius: 8px;
-    --shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-* {
-    box-sizing: border-box;
 }
 
 .tabs {
@@ -1042,9 +1040,6 @@
     transform: scale(1.1);
 }
 
-/* ============================================
-   리스트 영역 안정화 수정
-   ============================================ */
 #mypage-list-view {
     display: flex;
     flex-direction: column;
@@ -1102,6 +1097,7 @@
     color: #ff7096;
     font-weight: 600;
 }
+
 .request-type {
     font-size: 13px;
     padding: 4px 10px;
@@ -1352,9 +1348,6 @@
     flex-shrink: 0;
 }
 
-/* ============================================
-   의뢰 상세 모달 디자인 통일
-   ============================================ */
 .detail-modal-content {
     display: flex;
     flex-direction: column;
@@ -1541,7 +1534,6 @@
     object-fit: contain;
 }
 
-/* 통합 검색창 */
 .unified-search-wrapper {
     position: relative;
     width: 100%;
@@ -1578,14 +1570,20 @@
     color: var(--muted);
     margin-top: 6px;
 }
+
+.step-content {
+    width: 100%;
+}
+
+.step-content.hidden {
+    display: none;
+}
     </style>
 </head>
 <body>
 
-<!-- 테스트 버튼 -->
 <button class="test-button" onclick="openSeolmaetalkModal()" style="position: fixed; top: 20px; right: 20px; padding: 16px 24px; background: linear-gradient(99deg, #fce000 0%, #fed100 100%); border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 999998;">🚀 설매톡 열기</button>
 
-<!-- 설매톡 모달 -->
 <div id="seolmaetalk-modal-overlay">
     <div id="seolmaetalk-modal-container" onclick="event.stopPropagation()">
         <div class="seolmaetalk-header-wrapper" id="draggable-header">
@@ -1841,8 +1839,14 @@
                     </div>
                     
                     <div class="card">
-                        <h2 class="card-title">전달할 손해보험사 선택<span class="required">*</span></h2>
-                        <p class="form-hint mb-4">설계 의뢰를 전달할 손해보험사를 선택해주세요. (복수 선택 가능)</p>
+                        <h2 class="card-title">전달할 보험사 선택<span class="required">*</span></h2>
+                        <p class="form-hint mb-4">설계 의뢰를 전달할 보험사를 선택해주세요. (복수 선택 가능)</p>
+                        
+                        <div class="mode-selector" style="margin-bottom: 24px;">
+                            <button class="mode-btn active" onclick="switchInsuranceType('nonlife')">손해보험</button>
+                            <button class="mode-btn" onclick="switchInsuranceType('life')">생명보험</button>
+                        </div>
+                        
                         <div class="insurer-logo-grid" id="final-insurer-chips"></div>
                     </div>
                     
@@ -1856,12 +1860,10 @@
             
             <!-- 마이페이지 탭 -->
             <div class="tab-content" id="mypage-tab">
-                <!-- 의뢰 목록 뷰 -->
                 <div id="mypage-list-view">
                     <div class="card" style="margin-bottom: 0; padding-bottom: 16px;">
                         <h2 class="card-title" id="mypage-title">나의 설계의뢰 내역</h2>
                         
-                        <!-- 통합 검색 섹션 -->
                         <div style="display: grid; grid-template-columns: 1.85fr 1fr; gap: 12px; margin-bottom: 0; align-items: center;">
                           <div class="unified-search-wrapper">
                                 <i class="btb bt-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #3a5df4; pointer-events: none; font-size: 18px;"></i>
@@ -1886,7 +1888,6 @@
                     </div>
                 </div>
 
-                <!-- 의뢰 상세 뷰 -->
                 <div id="mypage-detail-view" style="display: none;">
                     <div class="card">
                         <div id="detail-content-inline"></div>
@@ -1898,13 +1899,12 @@
             <div class="tab-content" id="credentials-tab">
                 <div style="padding: 20px;">
                     <h2 class="card-title" style="margin-bottom: 24px;">전산정보 관리</h2>
-                    <!-- 손해보험/생명보험 탭 -->
+                    
                     <div class="mode-selector" style="margin-bottom: 24px;">
                         <button class="mode-btn active" onclick="switchCredentialMode('손해보험')">손해보험</button>
                         <button class="mode-btn" onclick="switchCredentialMode('생명보험')">생명보험</button>
                     </div>
                     
-                    <!-- 손해보험 입력 폼 -->
                     <div id="nonlife-credentials-section">
                         <p class="form-hint mb-4">손해보험사별 위촉코드를 입력해주세요.</p>
                         <div class="credentials-logo-grid" id="nonlife-insurers-container"></div>
@@ -1913,74 +1913,66 @@
                         </div>
                     </div>
                     
-                    <!-- 생명보험 입력 폼 -->
                     <div id="life-credentials-section" style="display: none;">
-                        <p style="text-align: center; color: var(--muted); padding: 40px 20px;">
-                            <span style="font-size: 48px; display: block; margin-bottom: 12px;">🔧</span>
-                            준비중입니다
-                        </p>
+                        <p class="form-hint mb-4">생명보험사별 위촉코드를 입력해주세요.</p>
+                        <div class="credentials-logo-grid" id="life-insurers-container"></div>
+                        <div class="btn-group" style="margin-top: 28px;">
+                            <button class="btn btn-primary" style="width: 100%;" onclick="saveAllCredentials('life')">저장</button>
+                        </div>
                     </div>
                 </div>
             </div>
             
-        <!-- 대시보드 탭 -->
-<div class="tab-content" id="dashboard-tab">
-    <div class="card">
-        <h2 class="card-title">판매 분석</h2>
-        
-        <!-- 기간 선택 필터 -->
-        <div style="margin-bottom: 20px;">
-            <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
-                <button class="period-preset-btn active" data-preset="7days" onclick="selectDatePreset('7days')">최근 7일</button>
-                <button class="period-preset-btn" data-preset="30days" onclick="selectDatePreset('30days')">최근 30일</button>
-                <button class="period-preset-btn" data-preset="90days" onclick="selectDatePreset('90days')">최근 90일</button>
-                <button class="period-preset-btn" data-preset="custom" onclick="selectDatePreset('custom')">기간선택</button>
-            </div>
-            
-            <!-- 커스텀 기간 선택 -->
-            <div id="custom-date-range" style="display: none; gap: 12px; margin-bottom: 16px; align-items: center;">
-                <input type="date" id="range-start-date" class="form-input" style="flex: 1; padding: 10px; height: 40px;">
-                <span style="color: var(--muted);">~</span>
-                <input type="date" id="range-end-date" class="form-input" style="flex: 1; padding: 10px; height: 40px;">
-                <button class="btn btn-secondary" onclick="applyCustomDateRange()" style="padding: 10px 20px; height: 40px;">적용</button>
-            </div>
-        </div>
-        
-        <!-- 요약 카드 -->
-        <div id="summary-cards" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px;"></div>
-        
-        <!-- 전월 비교 -->
-        <div id="month-comparison-card"></div>
-        
-        <!-- 차트 컨테이너 -->
-        <div id="charts-container" style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 24px;">
-            <div id="pie-chart-container" style="background: white; border-radius: 8px; padding: 16px; border: 1px solid var(--line);"></div>
-        </div>
-        
-        <!-- 최근 7일 선그래프 -->
-        <div style="background: white; border-radius: 8px; padding: 16px; border: 1px solid var(--line); margin-bottom: 24px;">
-            <div style="font-weight: 600; margin-bottom: 16px;">최근 7일 의뢰 추이</div>
-            <div id="last-7days-chart" style="overflow-x: auto;"></div>
-        </div>
-        
-        <!-- 고객분석 (3칼럼) -->
-        <div style="margin-bottom: 24px;">
-            <div style="font-weight: 600; margin-bottom: 16px;">고객분석</div>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
-                <div id="age-analysis-card"></div>
-                <div id="gender-analysis-card"></div>
-                <div id="medical-analysis-card"></div>
+            <!-- 대시보드 탭 -->
+            <div class="tab-content" id="dashboard-tab">
+                <div class="card">
+                    <h2 class="card-title">판매 분석</h2>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;">
+                            <button class="period-preset-btn active" data-preset="7days" onclick="selectDatePreset('7days')">최근 7일</button>
+                            <button class="period-preset-btn" data-preset="30days" onclick="selectDatePreset('30days')">최근 30일</button>
+                            <button class="period-preset-btn" data-preset="90days" onclick="selectDatePreset('90days')">최근 90일</button>
+                            <button class="period-preset-btn" data-preset="custom" onclick="selectDatePreset('custom')">기간선택</button>
+                        </div>
+                        
+                        <div id="custom-date-range" style="display: none; gap: 12px; margin-bottom: 16px; align-items: center;">
+                            <input type="date" id="range-start-date" class="form-input" style="flex: 1; padding: 10px; height: 40px;">
+                            <span style="color: var(--muted);">~</span>
+                            <input type="date" id="range-end-date" class="form-input" style="flex: 1; padding: 10px; height: 40px;">
+                            <button class="btn btn-secondary" onclick="applyCustomDateRange()" style="padding: 10px 20px; height: 40px;">적용</button>
+                        </div>
+                    </div>
+                    
+                    <div id="summary-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px;"></div>
+                    
+                    <div id="month-comparison-card"></div>
+                    
+                    <div id="charts-container" style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 24px;">
+                        <div id="pie-chart-container" style="background: white; border-radius: 8px; padding: 16px; border: 1px solid var(--line);"></div>
+                    </div>
+                    
+                    <div style="background: white; border-radius: 8px; padding: 16px; border: 1px solid var(--line); margin-bottom: 24px;">
+                        <div style="font-weight: 600; margin-bottom: 16px;">최근 7일 의뢰 추이</div>
+                        <div id="last-7days-chart" style="overflow-x: auto;"></div>
+                    </div>
+                    
+                    <div style="margin-bottom: 24px;">
+                        <div style="font-weight: 600; margin-bottom: 16px;">고객분석</div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                            <div id="age-analysis-card"></div>
+                            <div id="gender-analysis-card"></div>
+                            <div id="medical-analysis-card"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="ranking-table-card"></div>
+                </div>
             </div>
         </div>
-        
-        <!-- 순위 테이블 -->
-        <div id="ranking-table-card"></div>
     </div>
 </div>
 
-
-
-<!-- 완료 모달 -->
 <div class="seolmaetalk-completion-modal" id="seolmaetalk-completion-modal">
     <div class="seolmaetalk-modal-content">
         <div class="seolmaetalk-modal-header">
@@ -2004,7 +1996,6 @@
     </div>
 </div>
 
-<!-- 타보험사 선택 모달 -->
 <div class="seolmaetalk-completion-modal" id="other-insurers-modal">
     <div class="seolmaetalk-modal-content" style="max-width: 600px;">
         <div class="seolmaetalk-modal-header">
@@ -2020,5 +2011,3 @@
 </div>
 
 <div class="toast" id="toast"></div>
-
-
