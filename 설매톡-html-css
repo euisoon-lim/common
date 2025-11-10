@@ -1579,6 +1579,73 @@ body {
     display: none;
 }
     </style>
+
+<!-- dashboard-tab 내부를 다음과 같이 구조화하면 됩니다. 기존 요소는 그대로, CSS로 레이아웃만 조정 -->
+
+<style>
+/* 대체: summary-cards 레이아웃 2열로 변경 (기존 3열) */
+#summary-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+/* 유지: 기존 코드 동일 */
+#summary-cards > div {
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s;
+}
+
+/* 유지: 기존 코드 동일 */
+#summary-cards > div:hover {
+    transform: translateY(-2px);
+}
+
+/* 대체: charts-container 1열 레이아웃 */
+#charts-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+/* 삭제: 보험사 비중분석 섹션 숨김 */
+#pie-chart-container {
+    display: none !important;
+}
+
+/* 대체: last-7days-chart 마진 조정 */
+#last-7days-chart {
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    padding: 16px;
+    background: white;
+    margin-bottom: 24px;
+}
+
+/* 추가: 고객분석 카드 1줄 100% 레이아웃 */
+#age-analysis-card,
+#gender-analysis-card,
+#medical-analysis-card {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    width: 100%;
+}
+
+/* 추가: 고객분석 카드 자식 전체 너비 */
+#age-analysis-card > div,
+#gender-analysis-card > div,
+#medical-analysis-card > div {
+    grid-column: 1 / -1;
+}
+</style>
+
+
+
+
 </head>
 <body>
 
@@ -1944,11 +2011,11 @@ body {
                         </div>
                     </div>
                     
-                    <div id="summary-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px;"></div>
+<div id="summary-cards" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px;"></div>
                     
                     <div id="month-comparison-card"></div>
                     
-                    <div id="charts-container" style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 24px;">
+<div id="charts-container" style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 24px;">
                         <div id="pie-chart-container" style="background: white; border-radius: 8px; padding: 16px; border: 1px solid var(--line);"></div>
                     </div>
                     
