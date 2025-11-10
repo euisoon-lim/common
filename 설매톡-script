@@ -75,6 +75,8 @@ const appState = {
     currentStep: 1,
     formData: {},
     selectedProducts: [],
+    selectedNonlifeInsurers: [],  // 추가: 손해보험 선택 분리
+    selectedLifeInsurers: [],      // 추가: 생명보험 선택 분리
     selectedInsurers: [],
     generatedTexts: { kakao: '', sms: '' },
     sharedInsurers: []
@@ -593,16 +595,17 @@ document.addEventListener('click', (e) => {
     }
 });
 
+// 1. switchInsuranceType 함수 - 보험사 선택 초기화 제거
 function switchInsuranceType(type) {
     currentInsuranceType = type;
     
     document.querySelectorAll('#step-3 .mode-btn').forEach(btn => btn.classList.remove('active'));
     event.target.classList.add('active');
     
-    appState.selectedInsurers = [];
     renderInsurerSelection();
     updateShareButtons();
 }
+
 
 function nextStep(stepNum) {
     if (!validateCurrentStep()) return;
@@ -795,11 +798,13 @@ function renderInsurerSelection() {
     const container = document.getElementById('final-insurer-chips');
     const insurerList = currentInsuranceType === 'life' ? LIFE_INSURERS : INSURERS;
     const insurerLogos = currentInsuranceType === 'life' ? LIFE_INSURER_LOGOS : INSURER_LOGOS;
+    const selectedInsurers = currentInsuranceType === 'life' ? appState.selectedLifeInsurers : appState.selectedNonlifeInsurers;
     
     let html = '';
     insurerList.forEach(insurer => {
         const logoUrl = insurerLogos[insurer] || 'https://via.placeholder.com/200x200';
-        html += `<div class="insurer-logo-item" data-insurer="${insurer}"><img src="${logoUrl}" alt="${insurer}" class="insurer-logo-img"></div>`;
+        const isSelected = selectedInsurers.includes(insurer) ? 'selected' : '';
+        html += `<div class="insurer-logo-item ${isSelected}" data-insurer="${insurer}"><img src="${logoUrl}" alt="${insurer}" class="insurer-logo-img"></div>`;
     });
     
     container.innerHTML = html;
@@ -813,7 +818,15 @@ function renderInsurerSelection() {
 
 function updateShareButtons() {
     const selectedItems = document.querySelectorAll('.insurer-logo-item.selected');
-    appState.selectedInsurers = Array.from(selectedItems).map(item => item.dataset.insurer);
+    
+    if (currentInsuranceType === 'life') {
+        appState.selectedLifeInsurers = Array.from(selectedItems).map(item => item.dataset.insurer);
+    } else {
+        appState.selectedNonlifeInsurers = Array.from(selectedItems).map(item => item.dataset.insurer);
+    }
+    
+    // 손해보험 + 생명보험 모두 누적
+    appState.selectedInsurers = [...appState.selectedNonlifeInsurers, ...appState.selectedLifeInsurers];
     
     const container = document.getElementById('share-buttons-container');
     
@@ -830,6 +843,7 @@ function updateShareButtons() {
     
     container.innerHTML = html;
 }
+
 
 async function shareToInsurer(insurerName) {
     if (!appState.selectedInsurers.includes(insurerName)) {
@@ -998,6 +1012,8 @@ function resetForm() {
     document.querySelectorAll('.chip.selected').forEach(c => c.classList.remove('selected'));
     
     appState.selectedProducts = [];
+    appState.selectedNonlifeInsurers = [];
+    appState.selectedLifeInsurers = [];
     appState.selectedInsurers = [];
     appState.sharedInsurers = [];
     currentInsuranceType = 'nonlife';
@@ -1306,43 +1322,129 @@ async function saveAllCredentials(type = 'nonlife') {
     }
 }
 
+// Summary Cards 렌더링
+/* 대체: TOP 보험사 카드 삭제하고 2열 요약만 표시 */
 function renderSummaryCards(data, insurerStats) {
     const total = data.length;
-    const topInsurer = Object.entries(insurerStats).sort((a, b) => b[1] - a[1])[0];
-    const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+    const daysInMonth = new Date(
+        new Date().getFullYear(),
+        new Date().getMonth() + 1,
+        0
+    ).getDate();
     const avgDaily = (total / daysInMonth).toFixed(1);
     
     const html = `
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px;">
-            <div style="background: linear-gradient(135deg, #4F46E5 0%, #667EEA 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 16px rgba(79, 70, 229, 0.15); transition: transform 0.3s ease;">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                    <div style="font-size: 13px; opacity: 0.9; font-weight: 600; letter-spacing: 0.5px;">이달 총 의뢰</div>
-                    <div style="width: 44px; height: 44px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; backdrop-filter: blur(10px);">📊</div>
-                </div>
-                <div style="font-size: 40px; font-weight: 800; margin-bottom: 8px; line-height: 1;">${total}</div>
-                <div style="font-size: 13px; opacity: 0.85;">건의 설계의뢰</div>
-            </div>
-            
-            <div style="background: white; color: #1F2937; padding: 24px; border-radius: 16px; border: 1px solid #E5E7EB; box-shadow: 0 2px 12px rgba(0,0,0,0.05); transition: transform 0.3s ease, box-shadow 0.3s ease;">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                    <div style="font-size: 13px; color: #6B7280; font-weight: 600; letter-spacing: 0.5px;">일평균</div>
-                    <div style="width: 44px; height: 44px; background: #F0F9FF; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px;">📈</div>
-                </div>
-                <div style="font-size: 40px; font-weight: 800; color: #4F46E5; margin-bottom: 8px; line-height: 1;">${avgDaily}</div>
-                <div style="font-size: 13px; color: #9CA3AF;">1일 평균 의뢰</div>
-            </div>
-            
-            <div style="background: white; color: #1F2937; padding: 24px; border-radius: 16px; border: 1px solid #E5E7EB; box-shadow: 0 2px 12px rgba(0,0,0,0.05); transition: transform 0.3s ease, box-shadow 0.3s ease;">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                    <div style="font-size: 13px; color: #6B7280; font-weight: 600; letter-spacing: 0.5px;">TOP 보험사</div>
-                    <div style="width: 44px; height: 44px; background: #FFFBEB; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px;">⭐</div>
-                </div>
-                <div style="font-size: 32px; font-weight: 800; color: #4F46E5; margin-bottom: 8px; line-height: 1;">${topInsurer ? topInsurer[0] : '-'}</div>
-                <div style="font-size: 13px; color: #9CA3AF;">${topInsurer ? '📮 ' + topInsurer[1] + '건 의뢰' : '데이터 없음'}</div>
-            </div>
+        <div style="background: linear-gradient(135deg, #5A6BFF 0%, #667EEA 100%); color: white;">
+            <div style="font-size: 12px; opacity: 0.9; font-weight: 600; margin-bottom: 12px;">이달 총 의뢰</div>
+            <div style="font-size: 48px; font-weight: 800; margin-bottom: 8px;">${total}</div>
+            <div style="font-size: 12px; opacity: 0.85;">건의 설계의뢰</div>
+        </div>
+        
+        <div style="background: white; color: #1F2937; border: 1px solid #e5e7eb;">
+            <div style="font-size: 12px; color: #6B7280; font-weight: 600; margin-bottom: 12px;">일평균</div>
+            <div style="font-size: 48px; font-weight: 800; color: #5A6BFF; margin-bottom: 8px;">${avgDaily}</div>
+            <div style="font-size: 12px; color: #9CA3AF;">1일 평균 의뢰</div>
         </div>
     `;
+    
     document.getElementById('summary-cards').innerHTML = html;
+}
+
+
+// 고객분석 렌더링
+function renderCustomerAnalysis(ageStats, genderStats, medicalStats) {
+    // 1. 연령대 분석 데이터 정렬
+    const ageOrder = [
+        '태아/신생아', '10세 미만 아동', '10대', '20대', '30대',
+        '40대', '50대', '60대', '70대', '80세 이상'
+    ];
+    
+    const sortedAges = Object.entries(ageStats)
+        .sort((a, b) => ageOrder.indexOf(a[0]) - ageOrder.indexOf(b[0]))
+        .slice(0, 5);
+    
+    const totalAge = Object.values(ageStats).reduce((a, b) => a + b, 0) || 1;
+    
+    // 2. 연령대 HTML 생성
+    let ageHtml = '<h3 style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 12px;">👤 연령대</h3>';
+    sortedAges.forEach(([age, count]) => {
+        const percent = ((count / totalAge) * 100).toFixed(0);
+        ageHtml += `
+            <div style="margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="font-size: 13px; font-weight: 600; color: #2c2c2c;">${age}</span>
+                    <span style="font-size: 13px; font-weight: 700; color: #5A6BFF;">${count}명</span>
+                </div>
+                <div style="height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden;">
+                    <div style="height: 100%; background: #5A6BFF; width: ${percent}%; border-radius: 3px;"></div>
+                </div>
+            </div>
+        `;
+    });
+    
+    // 3. 성별 분석 HTML 생성
+    const totalGender = Object.values(genderStats).reduce((a, b) => a + b, 0) || 1;
+    let genderHtml = '<h3 style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 12px;">👥 성별</h3>';
+    
+    Object.entries(genderStats).forEach(([gender, count]) => {
+        const percent = ((count / totalGender) * 100).toFixed(0);
+        const color = gender === '남성' ? '#5A6BFF' : '#EC4899';
+        
+        genderHtml += `
+            <div style="margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="font-size: 13px; font-weight: 600; color: #2c2c2c;">${gender}</span>
+                    <span style="font-size: 13px; font-weight: 700; color: ${color};">${count}명</span>
+                </div>
+                <div style="height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden;">
+                    <div style="height: 100%; background: ${color}; width: ${percent}%; border-radius: 3px;"></div>
+                </div>
+            </div>
+        `;
+    });
+    
+    // 4. 병력 분석 HTML 생성
+    const totalMedical = Object.values(medicalStats).reduce((a, b) => a + b, 0) || 1;
+    let medicalHtml = '<h3 style="font-size: 14px; font-weight: 600; color: #1f2937; margin-bottom: 12px;">🏥 병력</h3>';
+    
+    Object.entries(medicalStats).forEach(([medical, count]) => {
+        const percent = ((count / totalMedical) * 100).toFixed(0);
+        const color = medical === '없음' ? '#10B981' : '#F59E0B';
+        
+        medicalHtml += `
+            <div style="margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="font-size: 13px; font-weight: 600; color: #2c2c2c;">병력 ${medical}</span>
+                    <span style="font-size: 13px; font-weight: 700; color: ${color};">${count}명</span>
+                </div>
+                <div style="height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden;">
+                    <div style="height: 100%; background: ${color}; width: ${percent}%; border-radius: 3px;"></div>
+                </div>
+            </div>
+        `;
+    });
+    
+    // 5. 고객분석 컨테이너 생성 또는 조회
+    let container = document.getElementById('customer-analysis-container');
+    if (!container) {
+        const chartsContainer = document.getElementById('charts-container');
+        container = document.createElement('div');
+        container.id = 'customer-analysis-container';
+        chartsContainer.parentNode.insertBefore(container, chartsContainer.nextSibling);
+    }
+    
+    // 6. DOM 렌더링
+    container.innerHTML = `
+        <div style="background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);">
+            ${ageHtml}
+        </div>
+        <div style="background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);">
+            ${genderHtml}
+        </div>
+        <div style="background: white; border-radius: 12px; border: 1px solid #e5e7eb; padding: 16px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);">
+            ${medicalHtml}
+        </div>
+    `;
 }
 
 function renderPieChart(insurerStats) {
@@ -1436,7 +1538,8 @@ function renderRankingTable(insurerStats) {
         html = '<div style="text-align: center; color: #9CA3AF; padding: 32px; font-size: 13px;">📭 데이터가 없습니다</div>';
     } else {
         const total = Object.values(insurerStats).reduce((a, b) => a + b, 0) || 1;
-        const badgeColors = ['#4F46E5', '#667EEA', '#818CF8', '#A5B4FC', '#C7D2FE'];
+        const badgeColors = ['#FFD700', '#C0C0C0', '#CD7F32', '#A5B4FC', '#DBEAFE'];
+        const badgeNames = ['🥇', '🥈', '🥉', '4위', '5위'];
         
         sorted.forEach((item, index) => {
             const percent = ((item[1] / total) * 100).toFixed(1);
@@ -1444,13 +1547,13 @@ function renderRankingTable(insurerStats) {
             
             html += `
                 <div style="display: flex; align-items: center; gap: 12px; padding: 16px 0; border-bottom: 1px solid #F0F0F0;">
-                    <div style="width: 32px; height: 32px; background: linear-gradient(135deg, ${badgeColors[index]}, ${badgeColors[(index+1)%5]}); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; flex-shrink: 0;">
-                        ${index + 1}
+                    <div style="width: 32px; height: 32px; background: ${badgeColors[index]}; color: ${index < 3 ? '#000' : '#fff'}; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; flex-shrink: 0;">
+                        ${badgeNames[index]}
                     </div>
                     <div style="flex: 1;">
                         <div style="font-weight: 600; font-size: 14px; color: #1F2937; margin-bottom: 6px;">${item[0]}</div>
                         <div style="height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden;">
-                            <div style="height: 100%; background: linear-gradient(90deg, ${badgeColors[index]}, ${badgeColors[(index+1)%5]}); width: ${maxWidth}%; border-radius: 3px;"></div>
+                            <div style="height: 100%; background: ${badgeColors[index]}; width: ${maxWidth}%; border-radius: 3px;"></div>
                         </div>
                     </div>
                     <div style="text-align: right; flex-shrink: 0;">
@@ -1549,7 +1652,7 @@ function renderLast7DaysChart(last7DaysStats) {
     });
     
     const svg = `
-        <svg width="${chartWidth}" height="${chartHeight + 30}" viewBox="0 0 ${chartWidth} ${chartHeight + 30}" style="margin: 0 auto;">
+        <svg width="${chartWidth}" height="${chartHeight + 30}" viewBox="0 0 ${chartWidth} ${chartHeight + 30}" style="margin: 0 auto; display: block;">
             <defs>
                 <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" style="stop-color:#667EEA;stop-opacity:0.3" />
@@ -1569,24 +1672,7 @@ function renderLast7DaysChart(last7DaysStats) {
         </svg>
     `;
     
-    const html = `
-        <div style="background: white; border-radius: 16px; border: 1px solid #E5E7EB; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.05);">
-            <h3 style="font-weight: 700; margin-bottom: 20px; font-size: 15px; color: #1F2937;">📈 최근 7일 추이</h3>
-            <div style="overflow-x: auto;">
-                ${svg}
-            </div>
-            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #F0F0F0;">
-                <div style="display: flex; gap: 16px; font-size: 12px; color: #6B7280;">
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <div style="width: 16px; height: 16px; background: #667EEA; border-radius: 3px;"></div>
-                        일일 의뢰량
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.getElementById('last-7days-chart').innerHTML = html;
+    document.getElementById('last-7days-chart').innerHTML = svg;
 }
 
 function renderCustomerAnalysis(ageStats, genderStats, medicalStats) {
@@ -1652,27 +1738,32 @@ function renderCustomerAnalysis(ageStats, genderStats, medicalStats) {
         `;
     });
     
-    const analysisHtml = `
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
-            <div style="background: white; border-radius: 16px; border: 1px solid #E5E7EB; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.05);">
-                <h3 style="font-weight: 700; margin-bottom: 18px; font-size: 14px; color: #1F2937;">👤 연령대</h3>
-                ${ageHtml}
-            </div>
-            
-            <div style="background: white; border-radius: 16px; border: 1px solid #E5E7EB; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.05);">
-                <h3 style="font-weight: 700; margin-bottom: 18px; font-size: 14px; color: #1F2937;">👥 성별</h3>
-                ${genderHtml}
-            </div>
-            
-            <div style="background: white; border-radius: 16px; border: 1px solid #E5E7EB; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.05);">
-                <h3 style="font-weight: 700; margin-bottom: 18px; font-size: 14px; color: #1F2937;">🏥 병력</h3>
-                ${medicalHtml}
-            </div>
+    const ageCardHtml = `
+        <div style="background: white; border-radius: 16px; border: 1px solid #E5E7EB; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.05);">
+            <h3 style="font-weight: 700; margin-bottom: 18px; font-size: 14px; color: #1F2937;">👤 연령대</h3>
+            ${ageHtml}
         </div>
     `;
     
-    document.getElementById('age-analysis-card').innerHTML = analysisHtml;
+    const genderCardHtml = `
+        <div style="background: white; border-radius: 16px; border: 1px solid #E5E7EB; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.05);">
+            <h3 style="font-weight: 700; margin-bottom: 18px; font-size: 14px; color: #1F2937;">👥 성별</h3>
+            ${genderHtml}
+        </div>
+    `;
+    
+    const medicalCardHtml = `
+        <div style="background: white; border-radius: 16px; border: 1px solid #E5E7EB; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.05);">
+            <h3 style="font-weight: 700; margin-bottom: 18px; font-size: 14px; color: #1F2937;">🏥 병력</h3>
+            ${medicalHtml}
+        </div>
+    `;
+    
+    document.getElementById('age-analysis-card').innerHTML = ageCardHtml;
+    document.getElementById('gender-analysis-card').innerHTML = genderCardHtml;
+    document.getElementById('medical-analysis-card').innerHTML = medicalCardHtml;
 }
+
 
 function selectDatePreset(preset) {
     currentDateRange = { preset, startDate: null, endDate: null };
@@ -1755,43 +1846,27 @@ async function loadDashboardData() {
             .gte('created_at', `${sevenDaysAgo}T00:00:00`)
             .lte('created_at', `${today}T23:59:59`);
         
-        const now = new Date();
-        const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const lastDayOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-        const firstDayOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        
-        const { data: previousMonthData } = await supabase
-            .from('requests')
-            .select('*')
-            .eq('planner_id', currentPlannerId)
-            .gte('created_at', firstDayOfLastMonth.toISOString().split('T')[0])
-            .lte('created_at', lastDayOfLastMonth.toISOString().split('T')[0]);
-        
         if (!rangeData) {
             showToast('데이터를 불러올 수 없습니다', 'error');
             return;
         }
         
         const insurerStats = {};
-        const dailyStats = {};
         const ageStats = {};
         const genderStats = {};
         const medicalStats = { '없음': 0, '있음': 0 };
         
         rangeData.forEach(req => {
-            if (req.delivered_insurers && Array.isArray(req.delivered_insurers)) {
+            if (req.delivered_insurers?.length > 0) {
                 req.delivered_insurers.forEach(insurer => {
                     insurerStats[insurer] = (insurerStats[insurer] || 0) + 1;
                 });
             }
             
-            const date = new Date(req.created_at).toISOString().split('T')[0];
-            dailyStats[date] = (dailyStats[date] || 0) + 1;
-            
             if (req.client_birth) {
                 let ageGroup = req.client_birth;
+                const dateMatch = req.client_birth?.match(/^(\d{4})-(\d{2})-(\d{2})$/);
                 
-                const dateMatch = req.client_birth.match(/^(\d{4})-(\d{2})-(\d{2})$/);
                 if (dateMatch) {
                     const [, year, month, day] = dateMatch;
                     const insuranceAge = calculateInsuranceAgeValue(year, month, day);
@@ -1808,7 +1883,6 @@ async function loadDashboardData() {
                         else ageGroup = '80세 이상';
                     }
                 }
-                
                 ageStats[ageGroup] = (ageStats[ageGroup] || 0) + 1;
             }
             
@@ -1816,7 +1890,7 @@ async function loadDashboardData() {
                 genderStats[req.client_gender] = (genderStats[req.client_gender] || 0) + 1;
             }
             
-            if (req.medical_info && req.medical_info.includes('있음')) {
+            if (req.medical_info?.includes('있음')) {
                 medicalStats['있음']++;
             } else if (req.medical_info) {
                 medicalStats['없음']++;
@@ -1830,14 +1904,13 @@ async function loadDashboardData() {
         });
         
         renderSummaryCards(rangeData, insurerStats);
-        renderPieChart(insurerStats);
-        renderRankingTable(insurerStats);
-        renderMonthComparison(rangeData, previousMonthData);
+        /* 삭제: renderPieChart(insurerStats); */
         renderLast7DaysChart(last7DaysStats);
         renderCustomerAnalysis(ageStats, genderStats, medicalStats);
+        renderRankingTable(insurerStats);
         
     } catch (err) {
-        console.error('대시보드 데이터 로드 실패:', err);
+        console.error('❌ 대시보드 데이터 로드 실패:', err);
         showToast('데이터 로드 실패', 'error');
     }
 }
