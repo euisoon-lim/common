@@ -75,14 +75,18 @@ const appState = {
     currentStep: 1,
     formData: {},
     selectedProducts: [],
-    selectedNonlifeInsurers: [],  // 추가: 손해보험 선택 분리
-    selectedLifeInsurers: [],      // 추가: 생명보험 선택 분리
+    selectedNonlifeInsurers: [],
+    selectedLifeInsurers: [],
     selectedInsurers: [],
     generatedTexts: { kakao: '', sms: '' },
     sharedInsurers: []
 };
 
 let currentDateRange = { preset: '7days', startDate: null, endDate: null };
+let currentDetailId = null;
+let currentDetailData = null;
+let selectedOtherInsurers = [];
+let currentOtherInsuranceType = 'nonlife';
 
 document.addEventListener('DOMContentLoaded', async () => {
     initKakao();
@@ -100,6 +104,21 @@ function initKakao() {
     if (typeof Kakao !== 'undefined') {
         if (!Kakao.isInitialized()) {
             Kakao.init('2a2e79669ea6bbbf07f5d68ffa1cc67b');
+            
+            // 팝업으로 열리도록 전역 설정
+            Kakao.Link.createDefaultButton = function() {
+                // 기본 팝업 동작 설정
+                if (window.open) {
+                    const originalOpen = window.open;
+                    window.open = function(url, name, features) {
+                        // 팝업 옵션이 없으면 추가
+                        if (!features) {
+                            features = 'width=500,height=600,scrollbars=yes,resizable=yes';
+                        }
+                        return originalOpen.call(window, url, name || '_blank', features);
+                    };
+                }
+            };
         }
         console.log('✅ Kakao SDK 초기화 성공');
     } else {
@@ -595,7 +614,6 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// 1. switchInsuranceType 함수 - 보험사 선택 초기화 제거
 function switchInsuranceType(type) {
     currentInsuranceType = type;
     
@@ -605,7 +623,6 @@ function switchInsuranceType(type) {
     renderInsurerSelection();
     updateShareButtons();
 }
-
 
 function nextStep(stepNum) {
     if (!validateCurrentStep()) return;
@@ -825,7 +842,6 @@ function updateShareButtons() {
         appState.selectedNonlifeInsurers = Array.from(selectedItems).map(item => item.dataset.insurer);
     }
     
-    // 손해보험 + 생명보험 모두 누적
     appState.selectedInsurers = [...appState.selectedNonlifeInsurers, ...appState.selectedLifeInsurers];
     
     const container = document.getElementById('share-buttons-container');
@@ -843,7 +859,6 @@ function updateShareButtons() {
     
     container.innerHTML = html;
 }
-
 
 async function shareToInsurer(insurerName) {
     if (!appState.selectedInsurers.includes(insurerName)) {
@@ -1069,8 +1084,6 @@ function applyFilters() {
     renderRequestList(filtered);
 }
 
-// renderRequestList 함수 전체 대체
-
 function renderRequestList(requests) {
     const container = document.getElementById('request-list');
     
@@ -1083,14 +1096,11 @@ function renderRequestList(requests) {
     requests.forEach(req => {
         const date = new Date(req.created_at).toLocaleDateString('ko-KR');
         
-        // 상품 정보
         const products = req.products_text?.split(',').slice(0, 2).map(p => p.trim()).join(' · ') || '상품미지정';
         const hasMoreProducts = req.products_text?.split(',').length > 2;
         
-        // 예산
         const budget = `${req.premium_min}~${req.premium_max}만원`;
         
-        // 보험사 로고
         const insurers = req.delivered_insurers || [];
         let logosHtml = '';
         
@@ -1125,7 +1135,6 @@ function renderRequestList(requests) {
     
     container.innerHTML = html;
     
-    // ✅ 이벤트 리스너 추가
     container.querySelectorAll('.request-item').forEach(item => {
         item.addEventListener('click', () => {
             const requestId = item.dataset.requestId;
@@ -1134,11 +1143,6 @@ function renderRequestList(requests) {
     });
 }
 
-// ✅ 추가: 상세보기 관련 전역 변수
-let currentDetailId = null;
-let currentDetailData = null;
-
-// ✅ 추가: 상세보기 함수
 async function showRequestDetail(requestId) {
     currentDetailId = requestId;
     if (!supabase) return;
@@ -1188,12 +1192,6 @@ async function showRequestDetail(requestId) {
         
         html += `<div class="detail-share-buttons">`;
         
-        if (data.delivered_insurers?.length > 0) {
-            data.delivered_insurers.forEach(insurer => {
-                html += `<button class="detail-share-btn" onclick="reshareToInsurer('${insurer}')"><i class="ii ii-kakaotalk"></i> ${insurer}로 재공유</button>`;
-            });
-        }
-        
         html += `
             <button class="detail-other-insurer-btn" onclick="showOtherInsurersModal()">
                 <i class="fi fi-sr-share"></i> 타보험사로 공유
@@ -1219,62 +1217,6 @@ function showRequestList() {
     document.getElementById('header-back-btn').classList.add('hidden-btn');
     previousTab = null;
 }
-
-async function reshareToInsurer(insurerName) {
-    if (!currentDetailData) {
-        showToast('데이터를 불러올 수 없습니다', 'error');
-        return;
-    }
-    
-    if (typeof Kakao === 'undefined' || !Kakao.isInitialized()) {
-        showToast('카카오톡 SDK를 초기화할 수 없습니다', 'error');
-        return;
-    }
-    
-    const data = currentDetailData;
-    const commissionCode = insurerCommissionCodes[insurerName] || '입력안함';
-    
-    let insuranceAge = null;
-    const birthMatch = data.client_birth?.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-    if (birthMatch) {
-        const [, year, month, day] = birthMatch;
-        insuranceAge = calculateInsuranceAgeValue(year, month, day);
-    }
-    
-    let insurerText = `[${insurerName} 설계의뢰입니다]\n\n`;
-    insurerText += `• 고객: ${data.client_name}\n`;
-    insurerText += `• 생년월일/연령대: ${data.client_birth}\n`;
-    
-    if (insuranceAge !== null) {
-        insurerText += `• 보험상령나이: ${insuranceAge}세\n`;
-    }
-    
-    insurerText += `• 담보: ${data.products_text}\n`;
-    insurerText += `• 예산: ${data.premium_min}~${data.premium_max}만원\n`;
-    if (data.medical_info) insurerText += `• ${data.medical_info}\n`;
-    if (data.screening_type) insurerText += `• 심사: ${data.screening_type}\n`;
-    if (data.payment_period || data.coverage_period) insurerText += `• 기간: ${data.payment_period || '-'} / ${data.coverage_period || '-'}\n`;
-    if (data.refund_type) insurerText += `• 환급: ${data.refund_type}\n`;
-    if (data.additional_info) insurerText += `• 추가정보: ${data.additional_info}\n`;
-    insurerText += `\n• 설계사 위촉코드: ${commissionCode}`;
-    
-    try {
-        Kakao.Link.sendDefault({
-            objectType: 'text',
-            text: insurerText,
-            link: {
-                mobileWebUrl: 'https://gaworld.kr/infra',
-                webUrl: 'https://gaworld.kr/infra'
-            }
-        });
-        
-        showToast(`✅ ${insurerName}로 재공유되었습니다!`, 'success');
-    } catch (err) {
-        console.error('재공유 실패:', err);
-        showToast('재공유에 실패했습니다', 'error');
-    }
-}
-
 
 async function loadCredentials() {
     renderNonlifeCredentialsForm();
@@ -1371,9 +1313,6 @@ async function saveAllCredentials(type = 'nonlife') {
     }
 }
 
-// ✅ 심플하고 세련된 Summary Cards 디자인
-// ✅ 최종 완성 코드 - 두 숫자 모두 올라가는 애니메이션
-
 function renderSummaryCards(data, insurerStats) {
     const total = data.length;
     const daysInMonth = new Date(
@@ -1384,7 +1323,6 @@ function renderSummaryCards(data, insurerStats) {
     const avgDaily = (total / daysInMonth).toFixed(1);
     
     const html = `
-        <!-- 이달 총 의뢰 -->
         <div style="background: white; border: 1px solid #E5E7EB; border-radius: 16px; padding: 24px; display: flex; align-items: center; gap: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
             <div style="flex: 1;">
                 <div style="font-size: 13px; color: #6B7280; font-weight: 600; margin-bottom: 4px; letter-spacing: 0.5px;">이달 총 의뢰</div>
@@ -1395,7 +1333,6 @@ function renderSummaryCards(data, insurerStats) {
             </div>
         </div>
         
-        <!-- 일평균 -->
         <div style="background: white; border: 1px solid #E5E7EB; border-radius: 16px; padding: 24px; display: flex; align-items: center; gap: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
             <div style="flex: 1;">
                 <div style="font-size: 13px; color: #6B7280; font-weight: 600; margin-bottom: 4px; letter-spacing: 0.5px;">1일 평균</div>
@@ -1409,45 +1346,37 @@ function renderSummaryCards(data, insurerStats) {
     
     document.getElementById('summary-cards').innerHTML = html;
     
-    // ✅ 애니메이션 실행
     setTimeout(() => {
         animateCounters();
     }, 100);
 }
 
-// ✅ 두 카운터 모두 애니메이션 함수
 function animateCounters() {
-    // 이달 총 의뢰 애니메이션
     animateCounter('.counter-total', true);
-    
-    // 1일 평균 애니메이션
     animateCounter('.counter-average', false);
 }
 
-// ✅ 개별 카운터 애니메이션 함수
 function animateCounter(selector, isInteger) {
     const counterElement = document.querySelector(selector);
     if (!counterElement) return;
     
     const target = parseFloat(counterElement.dataset.target);
-    const duration = 1500; // 1.5초 (조정 가능)
+    const duration = 1500;
     const increment = target / (duration / 16);
     let current = 0;
     
     const timer = setInterval(() => {
         current += increment;
         if (current >= target) {
-            // 최종값: 정수면 Math.floor, 소수면 toFixed(1)
             counterElement.textContent = isInteger ? target : target.toFixed(1);
             clearInterval(timer);
         } else {
-            // 표시값: 정수면 Math.floor, 소수면 toFixed(1)
             counterElement.textContent = isInteger ? Math.floor(current) : current.toFixed(1);
         }
     }, 16);
 }
+
 function renderCustomerAnalysis(ageStats, genderStats, medicalStats) {
-    // ===== 연령대 분석 =====
     const sortedAges = Object.entries(ageStats)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 3);
@@ -1467,7 +1396,6 @@ function renderCustomerAnalysis(ageStats, genderStats, medicalStats) {
         `;
     });
     
-    // ===== 성별 분석 =====
     const totalGender = Object.values(genderStats).reduce((a, b) => a + b, 0) || 1;
     let genderHtml = '';
     Object.entries(genderStats).forEach(([gender, count]) => {
@@ -1483,7 +1411,6 @@ function renderCustomerAnalysis(ageStats, genderStats, medicalStats) {
         `;
     });
     
-    // ===== 병력 분석 =====
     const totalMedical = Object.values(medicalStats).reduce((a, b) => a + b, 0) || 1;
     let medicalHtml = '';
     Object.entries(medicalStats).forEach(([medical, count]) => {
@@ -1500,7 +1427,6 @@ function renderCustomerAnalysis(ageStats, genderStats, medicalStats) {
         `;
     });
     
-    // ===== DOM에 렌더링 =====
     const ageContent = document.getElementById('age-analysis-content');
     const genderContent = document.getElementById('gender-analysis-content');
     const medicalContent = document.getElementById('medical-analysis-content');
@@ -1509,88 +1435,6 @@ function renderCustomerAnalysis(ageStats, genderStats, medicalStats) {
     if (genderContent) genderContent.innerHTML = genderHtml;
     if (medicalContent) medicalContent.innerHTML = medicalHtml;
 }
-
-function renderPieChart(insurerStats) {
-    const total = Object.values(insurerStats).reduce((a, b) => a + b, 0) || 1;
-    let data = Object.entries(insurerStats)
-        .sort((a, b) => b[1] - a[1])
-        .map(([name, value]) => ({
-            name,
-            value,
-            percent: (value / total) * 100
-        }));
-    
-    let otherValue = 0;
-    data = data.filter(item => {
-        if (item.percent < 5) {
-            otherValue += item.value;
-            return false;
-        }
-        return true;
-    });
-    
-    if (otherValue > 0) {
-        data.push({ name: '기타', value: otherValue, percent: (otherValue / total) * 100 });
-    }
-    
-    data = data.slice(0, 10);
-    
-    const colors = ['#4F46E5', '#667EEA', '#818CF8', '#A5B4FC', '#C7D2FE'];
-    
-    const chartTotal = data.reduce((sum, item) => sum + item.value, 0);
-    let currentAngle = -90;
-    let pathData = '';
-    const radius = 80;
-    const centerX = 100;
-    const centerY = 100;
-    
-    data.forEach((item, index) => {
-        const sliceAngle = (item.value / chartTotal) * 360;
-        const startAngle = currentAngle * Math.PI / 180;
-        const endAngle = (currentAngle + sliceAngle) * Math.PI / 180;
-        
-        const x1 = centerX + radius * Math.cos(startAngle);
-        const y1 = centerY + radius * Math.sin(startAngle);
-        const x2 = centerX + radius * Math.cos(endAngle);
-        const y2 = centerY + radius * Math.sin(endAngle);
-        
-        const largeArc = sliceAngle > 180 ? 1 : 0;
-        const path = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} Z`;
-        
-        pathData += `<path d="${path}" fill="${colors[index % colors.length]}" stroke="white" stroke-width="3"/>`;
-        currentAngle += sliceAngle;
-    });
-    
-    let legend = '<div style="margin-top: 20px;">';
-    data.forEach((item, index) => {
-        const percent = ((item.value / chartTotal) * 100).toFixed(1);
-        legend += `
-            <div style="display: flex; align-items: center; margin-bottom: 12px; padding: 8px 0; border-bottom: 1px solid #F0F0F0; font-size: 13px;">
-                <div style="width: 12px; height: 12px; border-radius: 3px; background: ${colors[index % colors.length]}; margin-right: 10px; flex-shrink: 0;"></div>
-                <span style="flex: 1; color: #2c2c2c; font-weight: 500;">${item.name}</span>
-                <span style="font-weight: 700; color: #4F46E5; margin-right: 12px;">${item.value}</span>
-                <span style="color: #9CA3AF; font-size: 12px;">${percent}%</span>
-            </div>
-        `;
-    });
-    legend += '</div>';
-    
-    const html = `
-        <div style="background: white; border-radius: 16px; border: 1px solid #E5E7EB; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.05);">
-            <h3 style="font-weight: 700; margin-bottom: 20px; font-size: 15px; color: #1F2937;">📊 보험사 비중분석</h3>
-            <div style="text-align: center;">
-                <svg width="200" height="200" viewBox="0 0 200 200" style="margin: 0 auto; display: block;">
-                    ${pathData}
-                </svg>
-            </div>
-            ${legend}
-        </div>
-    `;
-    
-    document.getElementById('pie-chart-container').innerHTML = html;
-}
-
-
 
 function renderRankingTable(insurerStats) {
     const sorted = Object.entries(insurerStats)
@@ -1604,7 +1448,6 @@ function renderRankingTable(insurerStats) {
     } else {
         const total = Object.values(insurerStats).reduce((a, b) => a + b, 0) || 1;
         
-        // ✅ 색상 배열 - 4위, 5위는 같은 파란색
         const badgeColors = ['#FFD700', '#C0C0C0', '#CD7F32', '#A5B4FC', '#A5B4FC'];
         const badgeNames = ['1위', '2위', '3위', '4위', '5위'];
         
@@ -1615,12 +1458,10 @@ function renderRankingTable(insurerStats) {
             
             html += `
                 <div style="display: flex; align-items: center; gap: 12px; padding: 16px 0; border-bottom: 1px solid #F0F0F0;">
-                    <!-- 위치 배지 -->
                     <div style="width: 40px; height: 40px; background: ${badgeColors[index]}; color: ${textColor}; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; flex-shrink: 0;">
                         ${badgeNames[index]}
                     </div>
                     
-                    <!-- 보험사 이름 및 바 -->
                     <div style="flex: 1; min-width: 0;">
                         <div style="font-weight: 600; font-size: 14px; color: #1F2937; margin-bottom: 6px;">${item[0]}</div>
                         <div style="height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden;">
@@ -1628,7 +1469,6 @@ function renderRankingTable(insurerStats) {
                         </div>
                     </div>
                     
-                    <!-- 우측 정보: % 강조, 건수 표시 -->
                     <div style="text-align: right; flex-shrink: 0;">
                         <div style="font-weight: 800; font-size: 18px; color: #4F46E5; margin-bottom: 2px;">${percent}%</div>
                         <div style="font-size: 12px; color: #9CA3AF;">${item[1]}건</div>
@@ -1691,7 +1531,6 @@ function renderMonthComparison(currentData, previousData) {
     document.getElementById('month-comparison-card').innerHTML = html;
 }
 
-// ✅ 수정된 함수: renderLast7DaysChart - 세련된 애니메이션 적용
 function renderLast7DaysChart(last7DaysStats) {
     const today = new Date();
     const dates = [];
@@ -1707,7 +1546,6 @@ function renderLast7DaysChart(last7DaysStats) {
     
     const maxCount = Math.max(...data.map(d => d.count), 1);
     
-    // 🔴 수정: 여백 계산 추가
     const chartHeight = 140;
     const chartWidth = 500;
     const padLeft = 40;
@@ -1720,25 +1558,20 @@ function renderLast7DaysChart(last7DaysStats) {
     let barsHtml = '';
     
     data.forEach((item, index) => {
-        // 🔴 수정: x 좌표에 padLeft 추가
         const x = padLeft + index * pointSpacing;
         const y = chartHeight - (item.count / maxCount) * chartHeight;
         
         const barHeight = (item.count / maxCount) * chartHeight;
         
-        // 막대 그래프 - 애니메이션 클래스 추가
         barsHtml += `<rect class="chart-bar" x="${x - 16}" y="${chartHeight - barHeight}" width="32" height="${barHeight}" fill="#667EEA" opacity="0.7" rx="4" style="--bar-height: ${barHeight}px;"/>`;
         
         pointsArray.push({ x, y, index });
         
-        // 포인트 - 애니메이션 클래스 추가
         circlesHtml += `<circle class="chart-point" cx="${x}" cy="${y}" r="5" fill="white" stroke="#4F46E5" stroke-width="2"/>`;
     });
     
-    // 선 그래프 경로 계산
     let pathData = pointsArray.map(p => `${p.x},${p.y}`).join(' ');
     
-    // 선 길이 계산 (dash array용)
     let pathLength = 0;
     for (let i = 0; i < pointsArray.length - 1; i++) {
         const p1 = pointsArray[i];
@@ -1748,13 +1581,11 @@ function renderLast7DaysChart(last7DaysStats) {
         pathLength += Math.sqrt(dx * dx + dy * dy);
     }
     
-    // 날짜 텍스트 - 애니메이션 클래스 추가
     const dateTexts = data.map((item, index) => {
         const x = padLeft + index * pointSpacing;
         return `<text class="chart-text" x="${x}" y="180" text-anchor="middle" font-size="13" fill="#6B7280" font-weight="600">${item.date}</text>`;
     }).join('');
     
-    // 🔴 수정: viewBox 여백 포함, 텍스트 y좌표 조정
     const svg = `
         <svg width="100%" height="220" viewBox="0 0 ${viewBoxWidth} 220" preserveAspectRatio="xMidYMid meet" style="display: block; margin: 0 auto;">
             <defs>
@@ -1850,27 +1681,20 @@ function renderLast7DaysChart(last7DaysStats) {
                 </style>
             </defs>
             
-            <!-- 기준선 -->
             <line x1="${padLeft}" y1="${chartHeight}" x2="${padLeft + chartWidth}" y2="${chartHeight}" stroke="#E5E7EB" stroke-width="1"/>
             
-            <!-- 막대 그래프 -->
             ${barsHtml}
             
-            <!-- 선 그래프 -->
             <polyline class="chart-line" points="${pathData}" fill="none" stroke="#4F46E5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
             
-            <!-- 포인트 -->
             ${circlesHtml}
             
-            <!-- 날짜 텍스트 -->
             ${dateTexts}
         </svg>
     `;
     
     document.getElementById('last-7days-chart').innerHTML = svg;
 }
-
-
 
 function selectDatePreset(preset) {
     currentDateRange = { preset, startDate: null, endDate: null };
@@ -2011,7 +1835,6 @@ async function loadDashboardData() {
         });
         
         renderSummaryCards(rangeData, insurerStats);
-        /* 삭제: renderPieChart(insurerStats); */
         renderLast7DaysChart(last7DaysStats);
         renderCustomerAnalysis(ageStats, genderStats, medicalStats);
         renderRankingTable(insurerStats);
@@ -2032,8 +1855,6 @@ function showToast(message, type = 'info') {
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-let selectedOtherInsurers = [];
-
 function showOtherInsurersModal() {
     if (!currentDetailData) {
         showToast('의뢰 정보를 불러올 수 없습니다', 'error');
@@ -2041,24 +1862,91 @@ function showOtherInsurersModal() {
     }
     
     const deliveredInsurers = currentDetailData.delivered_insurers || [];
-    const availableInsurers = INSURERS.filter(insurer => !deliveredInsurers.includes(insurer));
     
-    if (availableInsurers.length === 0) {
+    const availableNonlifeInsurers = INSURERS.filter(insurer => !deliveredInsurers.includes(insurer));
+    const availableLifeInsurers = LIFE_INSURERS.filter(insurer => !deliveredInsurers.includes(insurer));
+    
+    if (availableNonlifeInsurers.length === 0 && availableLifeInsurers.length === 0) {
         showToast('모든 보험사에 이미 전달되었습니다', 'info');
         return;
     }
     
-    const grid = document.getElementById('other-insurers-grid');
-    let html = '';
-    availableInsurers.forEach(insurer => {
-        const logoUrl = INSURER_LOGOS[insurer] || 'https://via.placeholder.com/200x200';
-        html += `<div class="insurer-logo-item" data-insurer="${insurer}" onclick="toggleOtherInsurer('${insurer}')"><img src="${logoUrl}" alt="${insurer}" class="insurer-logo-img"></div>`;
-    });
-    grid.innerHTML = html;
-    
     selectedOtherInsurers = [];
+    currentOtherInsuranceType = 'nonlife';
+    
+    renderOtherInsurersGrid('nonlife', availableNonlifeInsurers);
+    renderOtherInsurersGrid('life', availableLifeInsurers);
+    
+    document.getElementById('other-nonlife-tab').classList.add('active');
+    document.getElementById('other-nonlife-tab').style.color = '#4F46E5';
+    document.getElementById('other-nonlife-tab').style.borderBottom = '3px solid #4F46E5';
+    
+    document.getElementById('other-life-tab').classList.remove('active');
+    document.getElementById('other-life-tab').style.color = '#9CA3AF';
+    document.getElementById('other-life-tab').style.borderBottom = 'none';
+    
+    document.getElementById('other-nonlife-insurers-grid').style.display = 'grid';
+    document.getElementById('other-life-insurers-grid').style.display = 'none';
+    
     updateOtherShareButtons();
     openSeolmaetalkCompletionModal('other-insurers-modal');
+}
+
+function renderOtherInsurersGrid(type, insurers) {
+    const gridId = type === 'life' ? 'other-life-insurers-grid' : 'other-nonlife-insurers-grid';
+    const logos = type === 'life' ? LIFE_INSURER_LOGOS : INSURER_LOGOS;
+    const grid = document.getElementById(gridId);
+    
+    let html = '';
+    insurers.forEach(insurer => {
+        const logoUrl = logos[insurer] || 'https://via.placeholder.com/200x200';
+        html += `<div class="other-insurer-item" data-insurer="${insurer}" data-type="${type}"><img src="${logoUrl}" alt="${insurer}"></div>`;
+    });
+    
+    if (insurers.length === 0) {
+        html = '<p style="grid-column: 1/-1; text-align: center; color: var(--muted); padding: 40px;">전달 가능한 보험사가 없습니다</p>';
+    }
+    
+    grid.innerHTML = html;
+    
+    grid.querySelectorAll('.other-insurer-item').forEach(item => {
+        item.addEventListener('click', () => {
+            toggleOtherInsurer(item.dataset.insurer);
+        });
+    });
+}
+
+function switchOtherInsuranceType(type) {
+    currentOtherInsuranceType = type;
+    
+    const nonlifeTab = document.getElementById('other-nonlife-tab');
+    const lifeTab = document.getElementById('other-life-tab');
+    const nonlifeGrid = document.getElementById('other-nonlife-insurers-grid');
+    const lifeGrid = document.getElementById('other-life-insurers-grid');
+    
+    if (type === 'nonlife') {
+        nonlifeTab.classList.add('active');
+        nonlifeTab.style.color = '#4F46E5';
+        nonlifeTab.style.borderBottom = '3px solid #4F46E5';
+        
+        lifeTab.classList.remove('active');
+        lifeTab.style.color = '#9CA3AF';
+        lifeTab.style.borderBottom = 'none';
+        
+        nonlifeGrid.style.display = 'grid';
+        lifeGrid.style.display = 'none';
+    } else {
+        lifeTab.classList.add('active');
+        lifeTab.style.color = '#4F46E5';
+        lifeTab.style.borderBottom = '3px solid #4F46E5';
+        
+        nonlifeTab.classList.remove('active');
+        nonlifeTab.style.color = '#9CA3AF';
+        nonlifeTab.style.borderBottom = 'none';
+        
+        lifeGrid.style.display = 'grid';
+        nonlifeGrid.style.display = 'none';
+    }
 }
 
 function closeOtherInsurersModal() {
@@ -2067,10 +1955,12 @@ function closeOtherInsurersModal() {
 }
 
 function toggleOtherInsurer(insurerName) {
-    const items = document.querySelectorAll('#other-insurers-grid .insurer-logo-item');
-    items.forEach(item => {
+    const allItems = document.querySelectorAll('.other-insurer-item');
+    
+    allItems.forEach(item => {
         if (item.dataset.insurer === insurerName) {
             item.classList.toggle('selected');
+            
             if (item.classList.contains('selected')) {
                 if (!selectedOtherInsurers.includes(insurerName)) {
                     selectedOtherInsurers.push(insurerName);
@@ -2094,7 +1984,7 @@ function updateOtherShareButtons() {
     
     let html = '';
     selectedOtherInsurers.forEach(insurer => {
-        html += `<button class="share-btn-insurer" onclick="shareToOneOtherInsurer('${insurer}')" style="margin-bottom: 12px;"><i class="ii ii-kakaotalk" style="margin-right: 8px;"></i> ${insurer} 매니저에게 전달</button>`;
+        html += `<button class="share-btn-insurer" onclick="shareToOneOtherInsurer('${insurer}')"><i class="ii ii-kakaotalk" style="margin-right: 8px;"></i> ${insurer} 매니저에게 전달</button>`;
     });
     
     container.innerHTML = html;
