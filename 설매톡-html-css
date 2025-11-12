@@ -191,6 +191,53 @@ body {
 }
 
 /* ============================================
+   4-1. 상단 텍스트 메뉴 바 (헤더와 container 사이)
+   ============================================ */
+.top-menu-bar {
+    display: none; /* 기본적으로 숨김 */
+    position: sticky;
+    top: 0;
+    background: white;
+    border-bottom: 1px solid #E5E7EB;
+    padding: 0 24px;
+    z-index: 9;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.top-menu-bar.show {
+    display: flex;
+    gap: 0;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.top-menu-item {
+    flex: 1;
+    padding: 14px 16px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.top-menu-item:hover {
+    color: #3a5df4;
+    background: #f8f9fe;
+}
+
+.top-menu-item.active {
+    color: #3a5df4;
+    border-bottom-color: #3a5df4;
+}
+
+/* ============================================
    5. 탭 스타일
    ============================================ */
 .tabs {
@@ -2016,6 +2063,28 @@ body {
     font-weight: bold;
     font-size: 12px;
 }
+
+/* ============================================
+   33-1. Step 2, 3에서 greeting 섹션 숨김
+   ============================================ */
+#step-2:not(.hidden) ~ .greeting-section,
+#step-3:not(.hidden) ~ .greeting-section {
+    display: none;
+}
+
+/* Step이 변경될 때 greeting 섹션 제어 */
+.step-content:not(.hidden) {
+    display: block;
+}
+
+#form-tab .greeting-section {
+    display: flex;
+}
+
+#form-tab:has(#step-2:not(.hidden)) .greeting-section,
+#form-tab:has(#step-3:not(.hidden)) .greeting-section {
+    display: none !important;
+}
     </style>
 
 </head>
@@ -2029,11 +2098,19 @@ body {
             <div style="display: flex; align-items: center; gap: 12px;">
                 <img src="https://cdn.imweb.me/upload/S2016083157c63a62163fa/a1f171943932c.png" alt="설매톡" class="seolmaetalk-header-logo" onclick="goToHome()">
             </div>
+
             <div class="seolmaetalk-header-controls">
                 <button class="seolmaetalk-header-back hidden-btn" id="header-back-btn" onclick="goBack()" title="이전 페이지">←</button>
                 <button class="seolmaetalk-header-close" onclick="closeSeolmaetalkModal()">×</button>
             </div>
         </div>
+
+<div class="top-menu-bar" id="top-menu-bar">
+    <button class="top-menu-item" onclick="goToHomeAndReset()">처음부터</button>
+    <button class="top-menu-item" onclick="switchTabFromMenu('mypage')">의뢰내역</button>
+    <button class="top-menu-item" onclick="switchTabFromMenu('credentials')">위촉코드</button>
+    <button class="top-menu-item" onclick="switchTabFromMenu('dashboard')">판매비중</button>
+</div>
         
         <div class="container">
             
