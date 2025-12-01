@@ -14,22 +14,29 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
  
   <style>
-    /* --- 기존 스타일은 변경 없이 그대로 유지됩니다 --- */
+      /* --- 기존 스타일은 변경 없이 그대로 유지됩니다 --- */
     html, body { width:100%; height:100%; margin:0; padding:0; }
     :root{ --primary-color:#315aff; --accent-warm:#c4552e; --background-color:#f2f2f7; --card:#ffffff; --text:#111; --muted:#4b5563; --border:#e5e7eb; --input:#f3f4f6; --shadow:0 22px 42px rgba(0,0,0,.12); }
     [data-theme="dark"]{ --background-color:#0b0d0f; --card:#15181b; --text:#f5f7fa; --muted:#d1d5db; --border:#2c3136; --input:#1c2024; --shadow:0 22px 42px rgba(0,0,0,.38); }
+
     #gaw-calc-root #gstep-6 .input-group{ display:block!important; width:100%!important; max-width:none!important; flex:1 1 100%!important; margin:0!important; padding:0!important; }
     #gaw-calc-root #gstep-6 #cert-list{ display:flex!important; flex-direction:column!important; gap:12px!important; align-items:stretch!important; width:100%!important; }
     #gaw-calc-root #gstep-6 #cert-list > label.card-check > span{ width:100%!important; max-width:none!important; }
-    #bg-fill{position:fixed; inset:0; z-index:-1;}
-    .bg-gradient{background-size:400% 400%; animation:gradientBG 22s ease infinite;}
-    #bg-fill{ position:fixed; inset:0; z-index:-1; background-size: cover; background-repeat: no-repeat; background-position: center; opacity: 1; }
+
+    #bg-fill{ position:fixed; inset:0; z-index:-1; background-size:cover; background-repeat:no-repeat; background-position:center; opacity:1; }
+    .bg-gradient{ background-size:400% 400%; animation:gradientBG 22s ease infinite; }
     .bg-gradient--light{ background-image: radial-gradient(1000px 800px at 18% 62%, rgba(255,205,173,0.45) 0%, rgba(255,205,173,0) 56%), radial-gradient(950px 780px at 36% 40%, rgba(249,182,201,0.42) 0%, rgba(249,182,201,0) 60%), radial-gradient(1000px 820px at 55% 38%, rgba(212,198,243,0.40) 0%, rgba(212,198,243,0) 62%), radial-gradient(1200px 900px at 86% 20%, rgba(194,233,240,0.46) 0%, rgba(194,233,240,0) 64%), radial-gradient(1150px 880px at 78% 84%, rgba(192,238,242,0.40) 0%, rgba(192,238,242,0) 68%); }
-    .bg-gradient--dark { background: #171a1d; }
+
+    /* ✅ 첫 번째 코드에서 가져온 다크 모드 배경 */
+    .bg-gradient--dark{ background:linear-gradient(135deg,#2b3133,#272a35,#222a36,#1d2a31,#202f26,#2a2922,#2e2623,#2c252c); }
+
     @keyframes gradientBG{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
     #gaw-calc-root{display:flex; justify-content:center; align-items:center; min-height:100svh; width:100%; padding:28px 12px; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Apple SD Gothic Neo","Noto Sans KR","Segoe UI",Roboto,Helvetica,Arial,sans-serif; letter-spacing:-.01em;}
     #gaw-calc-root *, #gaw-calc-root *::before, #gaw-calc-root *::after{ box-sizing:border-box; }
+
     #calculator-container{width:100%; max-width:760px; background:var(--card); color:var(--text); border-radius:24px; border:1px solid var(--border); box-shadow:var(--shadow); padding:46px 48px; position:relative;}
+
     .theme-switch{position:absolute; top:16px; right:16px; z-index:10; display:inline-flex; flex-direction:column; align-items:flex-end; gap:6px;}
     .theme-switch input{display:none;}
     .theme-switch .track{width:96px; height:36px; border-radius:999px; background:var(--input); border:1px solid var(--border); position:relative; box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 1px 2px rgba(0,0,0,.06);}
@@ -40,8 +47,19 @@
     .switch-caption .separator{opacity:.35;} .switch-caption .light,.switch-caption .dark{opacity:.45;}
     .theme-switch input:not(:checked) ~ .switch-caption .light{opacity:1; color:var(--text);}
     .theme-switch input:checked ~ .switch-caption .dark{opacity:1; color:var(--text);}
-    #calculator-container h1 { font-size: 35px; font-weight: 700; text-align: center; background: linear-gradient(90deg, #000000, #000000, #b5b5b5, #000000, #000000); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 20px 0 5px; letter-spacing: -0.02em; }
+
+    /* ✅ 첫 번째 코드에서 가져온 h1 스타일 */
+    #calculator-container h1{
+        text-align:center;
+        font-size:32px;
+        line-height:1.2;
+        font-weight:800;
+        margin:0 0 8px;
+        letter-spacing:-.02em;
+    }
+
     #subtitle{text-align:center; color:var(--muted); margin-bottom:30px;}
+	
     #progress-bar-container{ height:12px; border-radius:999px; overflow:hidden; background:#2f343a; margin:8px 0 28px; }
     #progress-bar{ height:100%; width:0%; background:var(--primary-color); transition:width .35s ease; }
     .gstep{ display:none; animation:fade .52s; } .gstep.active { display: block; padding: 20px 0px 20px 0px; }
@@ -575,7 +593,6 @@
     formData["design-independence"] = +(root.querySelector("#design-independence")?.value || 3);
   }
  
-  // FVI 계산 로직은 기존과 동일합니다.
   function calcFVIandScores(){
     const p = formData;
     let incomeScore = 0;
@@ -656,7 +673,6 @@
     return { FVI, scores: { salesPerf: Math.min(salesPerf, 20), soundness: Math.min(soundness, 20), growth: Math.min(growth, 20), expertise: Math.min(expertise, 20), digital: Math.min(digital, 20), organization: Math.min(organization, 20) } };
   }
  
-  // 레이더 차트 렌더링 함수는 기존과 동일합니다.
   function renderRadarChart(scores) {
     const ctx = document.getElementById('radar-chart')?.getContext('2d');
     if (!ctx) return;
@@ -683,7 +699,6 @@
     return true;
   }
 
-  // --- [새로운 기능] 결과 확인 시 자동으로 호출될 AI 리포트 생성 함수 ---
   async function generateAutomaticReport(fvi, grade, scores, profile) {
     const reportContainer = document.getElementById('automatic-report-container');
     if (!reportContainer) return;
@@ -691,8 +706,9 @@
     reportContainer.style.textAlign = 'center';
     reportContainer.innerHTML = '<div class="loader" style="margin:40px auto"></div><p style="color:var(--muted); font-size:14px;">AI가 맞춤형 종합 리포트를 생성 중입니다...</p>';
 
-    const GEMINI_API_KEY = "AIzaSyBO1RdvcdQP4rXm1EtRAiOY0EE86seTF9Y"; // 주의: 실제 서비스에서는 보안을 위해 서버에서 처리해야 합니다.
-    const GEMINI_MODEL = "gemini-1.5-flash-latest";
+    const GEMINI_API_KEY = "AIzaSyCaklXbjvzZLnytG7B8F_Lx4FhZIUomQVc";
+    // ✅ 모델명 변경: gemini-1.5-flash-latest → gemini-2.0-flash
+    const GEMINI_MODEL = "gemini-2.0-flash";
     const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
 
     const readableProfile = {
@@ -735,20 +751,27 @@ ${Object.entries(readableProfile).map(([key, value]) => `- ${key}: ${value}`).jo
       });
       if (!response.ok) throw new Error(`API 오류: ${response.status}`);
       const data = await response.json();
-      reportContainer.innerHTML = data?.candidates?.[0]?.content?.parts?.[0]?.text || "<p>리포트 생성에 실패했습니다.</p>";
+      
+      let reportText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "<p>리포트 생성에 실패했습니다.</p>";
+      
+      // --- [수정] AI 응답에서 불필요한 코드 형식을 제거하는 부분 ---
+      reportText = reportText.trim().replace(/^```(?:html)?\s*/, '').replace(/```$/, '');
+      
+      reportContainer.innerHTML = reportText;
+
     } catch (error) {
       console.error("AI 자동 리포트 생성 오류:", error);
       reportContainer.innerHTML = `<p>AI 리포트 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</p>`;
     }
   }
  
-  // --- [기존 기능 유지] 'AI 컨설팅 받기' 버튼을 위한 기존 runGemini 함수 ---
   async function runGemini() {
     const aiBtn = document.getElementById("ai-consulting-btn");
     const aiBox = document.getElementById("ai-result-container");
     const aiContent = document.getElementById("ai-result-content");
-    const GEMINI_API_KEY = "AIzaSyBO1RdvcdQP4rXm1EtRAiOY0EE86seTF9Y";
-    const GEMINI_MODEL = "gemini-1.5-flash-latest";
+    const GEMINI_API_KEY = "AIzaSyCaklXbjvzZLnytG7B8F_Lx4FhZIUomQVc";
+    // ✅ 모델명 변경: gemini-1.5-flash-latest → gemini-2.0-flash
+    const GEMINI_MODEL = "gemini-2.0-flash";
     const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
     if (!aiBtn || !aiBox || !aiContent) { console.error("AI 컨설팅 DOM 요소 누락"); return; }
     aiBox.style.display = "block";
@@ -760,8 +783,12 @@ ${Object.entries(readableProfile).map(([key, value]) => `- ${key}: ${value}`).jo
       const response = await fetch(GEMINI_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.7, topK: 40, topP: 0.95, maxOutputTokens: 1024 } }) });
       if (!response.ok) { const errorText = await response.text(); throw new Error(`API 오류: ${response.status} - ${errorText}`); }
       const data = await response.json();
+
       let text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-      text = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/```$/i, "").trim();
+      
+      // --- [수정] 여기에도 동일하게 불필요한 코드 형식 제거 로직 추가 ---
+      text = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/```$/i, "");
+      
       let obj; try { obj = JSON.parse(text); } catch (parseError) { obj = { summary: "AI 분석 결과를 처리하는 중 오류가 발생했습니다.", strengths: ["기본적인 보험 업무 수행 수행"], improvements: ["체계적인 목표 설정이 필요합니다"], action_plan: [ {"period": "1개월", "goal": "현 상황 점검", "action": "월간 실적 분석"}, {"period": "3개월", "goal": "역량 강화", "action": "전문 교육 참여"}, {"period": "6개월", "goal": "성과 개선", "action": "목표 재설정"} ] }; }
       const renderAIResult = (obj) => { const esc = (s) => String(s ?? "").replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m])); const toLI = (arr) => (arr||[]).map(t => `<li>${esc(t)}</li>`).join("") || "<li>분석 내용이 없습니다</li>"; const actions = (obj.action_plan||[]).map(t=>`<li><strong>${esc(t.period||'기간미정')}:</strong> ${esc(t.goal||'목표미정')} - ${esc(t.action||'방안미정')}</li>`).join("") || "<li>실행 계획이 없습니다</li>"; return `<div class="ai-sections"><div class="ai-card"><h4>📊 종합 평가</h4><p style="margin:0;color:var(--muted);line-height:1.7">${esc(obj.summary || '평가 내용이 없습니다')}</p></div><div class="ai-card"><h4>💪 강점</h4><ul style="margin:0;padding-left:20px;line-height:1.8;">${toLI(obj.strengths)}</ul></div><div class="ai-card"><h4>🎯 개선점</h4><ul style="margin:0;padding-left:20px;line-height:1.8;">${toLI(obj.improvements)}</ul></div><div class="ai-card"><h4>📅 실행 계획</h4><ul style="margin:0;padding-left:20px;line-height:1.8;">${actions}</ul></div></div>`; };
       aiContent.innerHTML = renderAIResult(obj);
@@ -782,10 +809,7 @@ ${Object.entries(readableProfile).map(([key, value]) => `- ${key}: ${value}`).jo
       fviScoreEl.textContent = `FVI ${FVI}`;
       gradeText.innerHTML = `등급: <strong>${grade5.label} (${grade5.code}급)</strong> - ${grade5.hint}`;
       renderRadarChart(scores);
-      
-      // --- [변경 사항] 새로운 자동 리포트 생성 함수를 호출합니다 ---
       generateAutomaticReport(FVI, grade5, scores, formData);
-     
       window.__FVI__ = { FVI, grade: grade5.label };
       sendDataToGoogleSheet({ FVI, grade: grade5.label });
       currentStep=RESULT_INDEX;
@@ -819,13 +843,10 @@ ${Object.entries(readableProfile).map(([key, value]) => `- ${key}: ${value}`).jo
     if (window.__FVI__) delete window.__FVI__;
     const selectors = [ { id: "#non-life-ratio", value: "60" }, { id: "#persistency-range", value: "92.5" }, { id: "#managed-clients", value: "3" }, { id: "#referral-rate", value: "40" }, { id: "#household-share", value: "40" }, { id: "#study-hours", value: "5" }, { id: "#seminar-participation", value: "3" }, { id: "#digital-proficiency", value: "3" }, { id: "#mobile-work", value: "3" }, { id: "#organization-position", value: "1" }, { id: "#mentoring-activity", value: "1" }, { id: "#system-development", value: "1" }, { id: "#termination-history", value: "no" }, { id: "#product-selection", value: "3" }, { id: "#design-independence", value: "3" } ];
     selectors.forEach(({ id, value }) => { const element = root.querySelector(id); if (element) element.value = value; });
-    
-    // --- [변경 사항] 새로 추가된 컨테이너와 기존 컨테이너 모두 초기화 ---
     const autoReportContainer = document.getElementById("automatic-report-container");
     if (autoReportContainer) autoReportContainer.innerHTML = "";
     const aiResultContainer = document.getElementById("ai-result-container");
     if (aiResultContainer) aiResultContainer.style.display = "none";
-    
     const canvas = document.getElementById('radar-chart');
     if (canvas) { const ctx = canvas.getContext('2d'); if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height); }
     const cleanUrl = window.location.origin + window.location.pathname;
@@ -834,7 +855,6 @@ ${Object.entries(readableProfile).map(([key, value]) => `- ${key}: ${value}`).jo
     document.getElementById("calculator-container")?.scrollTo({top:0, behavior:"smooth"});
   });
  
-  // --- [기존 기능 유지] 'AI 컨설팅 받기' 버튼에 대한 이벤트 리스너 ---
   document.getElementById("ai-consulting-btn")?.addEventListener("click", runGemini);
  
   function makeShareUrl(FVI, grade){
@@ -869,10 +889,7 @@ ${Object.entries(readableProfile).map(([key, value]) => `- ${key}: ${value}`).jo
         fviScoreEl.textContent = `FVI ${FVI}`;
         gradeText.innerHTML = `등급: <strong>${grade5.label} (${grade5.code}급)</strong> - ${grade5.hint}`;
         setTimeout(() => renderRadarChart(scores), 100);
-        
-        // --- [변경 사항] 공유된 결과에서도 자동 리포트를 생성합니다 ---
         generateAutomaticReport(FVI, grade5, scores, formData);
-        
         window.__FVI__ = { FVI, grade: grade5.label };
         currentStep = RESULT_INDEX; showStep(currentStep);
       } catch (e) { console.error("공유 데이터 로드 실패:", e); showStep(1); }
