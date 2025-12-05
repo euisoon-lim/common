@@ -14,7 +14,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
  
   <style>
-      /* --- 기존 스타일은 변경 없이 그대로 유지됩니다 --- */
     html, body { width:100%; height:100%; margin:0; padding:0; }
     :root{ --primary-color:#315aff; --accent-warm:#c4552e; --background-color:#f2f2f7; --card:#ffffff; --text:#111; --muted:#4b5563; --border:#e5e7eb; --input:#f3f4f6; --shadow:0 22px 42px rgba(0,0,0,.12); }
     [data-theme="dark"]{ --background-color:#0b0d0f; --card:#15181b; --text:#f5f7fa; --muted:#d1d5db; --border:#2c3136; --input:#1c2024; --shadow:0 22px 42px rgba(0,0,0,.38); }
@@ -26,16 +25,14 @@
     #bg-fill{ position:fixed; inset:0; z-index:-1; background-size:cover; background-repeat:no-repeat; background-position:center; opacity:1; }
     .bg-gradient{ background-size:400% 400%; animation:gradientBG 22s ease infinite; }
     .bg-gradient--light{ background-image: radial-gradient(1000px 800px at 18% 62%, rgba(255,205,173,0.45) 0%, rgba(255,205,173,0) 56%), radial-gradient(950px 780px at 36% 40%, rgba(249,182,201,0.42) 0%, rgba(249,182,201,0) 60%), radial-gradient(1000px 820px at 55% 38%, rgba(212,198,243,0.40) 0%, rgba(212,198,243,0) 62%), radial-gradient(1200px 900px at 86% 20%, rgba(194,233,240,0.46) 0%, rgba(194,233,240,0) 64%), radial-gradient(1150px 880px at 78% 84%, rgba(192,238,242,0.40) 0%, rgba(192,238,242,0) 68%); }
-
-    /* ✅ 첫 번째 코드에서 가져온 다크 모드 배경 */
     .bg-gradient--dark{ background:linear-gradient(135deg,#2b3133,#272a35,#222a36,#1d2a31,#202f26,#2a2922,#2e2623,#2c252c); }
 
     @keyframes gradientBG{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 
-    #gaw-calc-root{display:flex; justify-content:center; align-items:center; min-height:100svh; width:100%; padding:28px 12px; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Apple SD Gothic Neo","Noto Sans KR","Segoe UI",Roboto,Helvetica,Arial,sans-serif; letter-spacing:-.01em;}
+    #gaw-calc-root{display:flex; justify-content:center; align-items:center; min-height:100svh; width:100%; padding:14px 12px; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Apple SD Gothic Neo","Noto Sans KR","Segoe UI",Roboto,Helvetica,Arial,sans-serif; letter-spacing:-.01em;}
     #gaw-calc-root *, #gaw-calc-root *::before, #gaw-calc-root *::after{ box-sizing:border-box; }
 
-    #calculator-container{width:100%; max-width:760px; background:var(--card); color:var(--text); border-radius:24px; border:1px solid var(--border); box-shadow:var(--shadow); padding:46px 48px; position:relative;}
+    #calculator-container{width:100%; max-width:760px; background:var(--card); color:var(--text); border-radius:24px; border:1px solid var(--border); box-shadow:var(--shadow); padding:23px 48px; position:relative;}
 
     .theme-switch{position:absolute; top:16px; right:16px; z-index:10; display:inline-flex; flex-direction:column; align-items:flex-end; gap:6px;}
     .theme-switch input{display:none;}
@@ -48,7 +45,6 @@
     .theme-switch input:not(:checked) ~ .switch-caption .light{opacity:1; color:var(--text);}
     .theme-switch input:checked ~ .switch-caption .dark{opacity:1; color:var(--text);}
 
-    /* ✅ 첫 번째 코드에서 가져온 h1 스타일 */
     #calculator-container h1{
         text-align:center;
         font-size:32px;
@@ -58,13 +54,13 @@
         letter-spacing:-.02em;
     }
 
-    #subtitle{text-align:center; color:var(--muted); margin-bottom:30px;}
+    #subtitle{text-align:center; color:var(--muted); margin-bottom:15px;}
 	
-    #progress-bar-container{ height:12px; border-radius:999px; overflow:hidden; background:#2f343a; margin:8px 0 28px; }
+    #progress-bar-container{ height:12px; border-radius:999px; overflow:hidden; background:#2f343a; margin:4px 0 14px; }
     #progress-bar{ height:100%; width:0%; background:var(--primary-color); transition:width .35s ease; }
-    .gstep{ display:none; animation:fade .52s; } .gstep.active { display: block; padding: 20px 0px 20px 0px; }
-    .gstep h2{ font-size:22px; line-height:1.5; font-weight:500; margin:6px 0 32px; }
-    .input-group{ margin-bottom:16px; width:100% !important; }
+    .gstep{ display:none; animation:fade .52s; } .gstep.active { display: block; padding: 10px 0px 10px 0px; }
+    .gstep h2{ font-size:22px; line-height:1.5; font-weight:500; margin:3px 0 16px; }
+    .input-group{ margin-bottom:8px; width:100% !important; }
     .input-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100% !important; }
     @media (max-width:680px){ .input-row{ grid-template-columns:1fr; } }
     label{ display:block; color:var(--muted); font-weight:800; margin-bottom:8px; white-space:nowrap; width:100% !important; }
@@ -91,7 +87,7 @@
     #gaw-calc-root #navigation-buttons button { flex: 1 !important; min-width: 0 !important; }
     #gaw-calc-root * { box-sizing: border-box !important; }
     #gaw-calc-root .input-row > .input-group { min-width: 0 !important; flex: 1 !important; }
-    #navigation-buttons{ margin-top:24px; display:flex; gap:10px; width:100% !important; }
+    #navigation-buttons{ margin-top:12px; display:flex; gap:10px; width:100% !important; }
     button{ height:56px; border-radius:12px; border:none; background:var(--primary-color); color:#fff; font-size:18px; font-weight:900; letter-spacing:-.01em; cursor:pointer; transition:transform .08s, filter .2s; flex:1; width:100% !important; min-width:0 !important; box-sizing:border-box !important; }
     button:active{ transform:translateY(1px); }
     #prev-btn{ background:transparent; color:var(--primary-color); border:1px solid var(--primary-color); flex:1; width:100% !important; }
@@ -487,7 +483,7 @@
           </div>
           
           <div id="automatic-report-container" class="insights" style="min-height: 150px;">
-              </div>
+          </div>
 
           <div style="margin-top:14px; display:flex; gap:10px;">
             <button type="button" id="restart-btn">다시 계산</button>
@@ -512,9 +508,11 @@
 </div>
  
 <script>
-// formatKoreanWon 함수 등 최상단 헬퍼 함수들은 기존과 동일합니다.
 (function(){
   const root=document.getElementById("gaw-calc-root"); if(!root) return;
+
+  // ✅ Supabase Edge Function URL (API 키가 여기에 없음 - 안전!)
+  const GEMINI_PROXY_URL = "https://srydnmonrdgfhyzsxjsn.supabase.co/functions/v1/gemini-proxy";
  
   const bgFill=document.getElementById("bg-fill"); const themeCheckbox=document.getElementById("theme-checkbox");
   function applyBg(theme){ bgFill.classList.add("bg-gradient"); bgFill.classList.remove("bg-gradient--light","bg-gradient--dark"); bgFill.classList.add(theme==="dark"?"bg-gradient--dark":"bg-gradient--light"); }
@@ -676,6 +674,11 @@
   function renderRadarChart(scores) {
     const ctx = document.getElementById('radar-chart')?.getContext('2d');
     if (!ctx) return;
+    
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    const textColor = isDark ? '#f5f7fa' : '#111';
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)';
+    
     new Chart(ctx, {
       type: 'radar',
       data: {
@@ -685,10 +688,35 @@
           data: [scores.salesPerf, scores.soundness, scores.growth, scores.expertise, scores.digital, scores.organization],
           backgroundColor: 'rgba(10, 122, 255, 0.2)',
           borderColor: 'rgba(10, 122, 255, 1)',
-          borderWidth: 2
+          borderWidth: 2,
+          pointBackgroundColor: 'rgba(10, 122, 255, 1)',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2
         }]
       },
-      options: { responsive: true, scales: { r: { min: 0, max: 20, ticks: { stepSize: 5 } } } }
+      options: { 
+        responsive: true, 
+        scales: { 
+          r: { 
+            min: 0, 
+            max: 20, 
+            ticks: { 
+              stepSize: 5,
+              color: textColor,
+              backdropColor: 'transparent'
+            },
+            grid: { color: gridColor },
+            angleLines: { color: gridColor },
+            pointLabels: {
+              color: textColor,
+              font: { size: 12, weight: '600' }
+            }
+          } 
+        },
+        plugins: {
+          legend: { labels: { color: textColor } }
+        }
+      }
     });
   }
  
@@ -699,17 +727,27 @@
     return true;
   }
 
+  // ✅ Supabase Edge Function을 통해 Gemini API 호출 (보안 버전)
+  async function callGeminiProxy(prompt, maxTokens = 2048, temperature = 0.7) {
+    const response = await fetch(GEMINI_PROXY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt, maxTokens, temperature })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`API 오류: ${response.status}`);
+    }
+    
+    return await response.json();
+  }
+
   async function generateAutomaticReport(fvi, grade, scores, profile) {
     const reportContainer = document.getElementById('automatic-report-container');
     if (!reportContainer) return;
 
     reportContainer.style.textAlign = 'center';
     reportContainer.innerHTML = '<div class="loader" style="margin:40px auto"></div><p style="color:var(--muted); font-size:14px;">AI가 맞춤형 종합 리포트를 생성 중입니다...</p>';
-
-    const GEMINI_API_KEY = "AIzaSyCaklXbjvzZLnytG7B8F_Lx4FhZIUomQVc";
-    // ✅ 모델명 변경: gemini-1.5-flash-latest → gemini-2.0-flash
-    const GEMINI_MODEL = "gemini-2.0-flash";
-    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
 
     const readableProfile = {
       "총 FVI 점수": `${fvi}점 (${grade.label} 등급)`, "소득/성과": `${scores.salesPerf.toFixed(1)}/20점`, "영업건전성": `${scores.soundness.toFixed(1)}/20점`,
@@ -730,31 +768,25 @@ ${Object.entries(readableProfile).map(([key, value]) => `- ${key}: ${value}`).jo
 ### 출력할 HTML 형식
 <div style="text-align: left; line-height: 1.8;">
     <h3>📊 ${profile["user-name"]}님을 위한 FVI 종합 리포트</h3>
-    <p><strong>[총평]</strong> (데이터 전반을 아우르는 2~3 문장의 종합적인 평가와 격려의 메시지를 작성합니다. '어떤 부분에서 강점을 보이며, 어떤 잠재력을 가지고 있는지' 등을 요약합니다.)</p>
+    <p><strong>[총평]</strong> (데이터 전반을 아우르는 2~3 문장의 종합적인 평가와 격려의 메시지를 작성합니다.)</p>
     <h4>📈 항목별 심층 분석</h4>
-    <p><strong>1. 소득 및 성과 (${scores.salesPerf.toFixed(1)}점):</strong> (연소득, 계약 건수 데이터를 기반으로 현재 성과의 의미를 분석하고 칭찬할 점을 구체적으로 언급합니다.)</p>
-    <p><strong>2. 영업 건전성 (${scores.soundness.toFixed(1)}점):</strong> (유지율, 소개비율 등을 바탕으로 고객과의 관계, 영업의 안정성을 평가합니다. 높은 유지율은 고객 신뢰의 증거임을 강조합니다.)</p>
-    <p><strong>3. 성장성 (${scores.growth.toFixed(1)}점):</strong> (다양한 영업 방식, 교육 참여도 등을 통해 미래 발전 가능성을 분석합니다. 꾸준한 학습 태도를 칭찬합니다.)</p>
-    <p><strong>4. 전문성 (${scores.expertise.toFixed(1)}점):</strong> (보유 자격증과 설계 독립성을 근거로 전문성의 깊이를 평가합니다. 전문성이 어떻게 고객에게 신뢰를 주는지 연결하여 설명합니다.)</p>
-    <p><strong>5. 디지털/마케팅 (${scores.digital.toFixed(1)}점):</strong> (디지털 도구 활용 능력과 온라인 마케팅 활동을 평가합니다. 현재 수준을 진단하고, 앞으로의 중요성을 강조합니다.)</p>
-    <p><strong>6. 조직력 (${scores.organization.toFixed(1)}점):</strong> (리쿠르팅, 멘토링, 시스템화 노력을 통해 팀과 조직에 기여하는 리더십 잠재력을 평가합니다.)</p>
+    <p><strong>1. 소득 및 성과 (${scores.salesPerf.toFixed(1)}점):</strong> (분석 내용)</p>
+    <p><strong>2. 영업 건전성 (${scores.soundness.toFixed(1)}점):</strong> (분석 내용)</p>
+    <p><strong>3. 성장성 (${scores.growth.toFixed(1)}점):</strong> (분석 내용)</p>
+    <p><strong>4. 전문성 (${scores.expertise.toFixed(1)}점):</strong> (분석 내용)</p>
+    <p><strong>5. 디지털/마케팅 (${scores.digital.toFixed(1)}점):</strong> (분석 내용)</p>
+    <p><strong>6. 조직력 (${scores.organization.toFixed(1)}점):</strong> (분석 내용)</p>
     <h4>🚀 성장을 위한 맞춤 제언</h4>
-    <p><strong>[강점 극대화 방안]</strong> (가장 점수가 높은 1~2개 항목을 선택하여, 이 강점을 어떻게 활용하여 더 큰 성과를 낼 수 있을지 구체적인 아이디어를 1~2가지 제시합니다.)</p>
-    <p><strong>[보완점 개선 전략]</strong> (가장 점수가 낮은 1~2개 항목에 대해, 부담스럽지 않고 실천 가능한 방식으로 역량을 키울 수 있는 구체적인 액션 플랜을 1~2가지 제안합니다.)</p>
+    <p><strong>[강점 극대화 방안]</strong> (구체적인 아이디어 1~2가지)</p>
+    <p><strong>[보완점 개선 전략]</strong> (실천 가능한 액션 플랜 1~2가지)</p>
     <p style="margin-top: 15px; font-size: 13px; opacity: 0.8;">※ 본 리포트는 입력된 데이터를 기반으로 AI가 생성한 분석 결과입니다.</p>
 </div>`;
 
     try {
-      const response = await fetch(GEMINI_URL, {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }})
-      });
-      if (!response.ok) throw new Error(`API 오류: ${response.status}`);
-      const data = await response.json();
+      // ✅ Supabase Edge Function 호출
+      const data = await callGeminiProxy(prompt, 2048, 0.7);
       
       let reportText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "<p>리포트 생성에 실패했습니다.</p>";
-      
-      // --- [수정] AI 응답에서 불필요한 코드 형식을 제거하는 부분 ---
       reportText = reportText.trim().replace(/^```(?:html)?\s*/, '').replace(/```$/, '');
       
       reportContainer.innerHTML = reportText;
@@ -769,30 +801,67 @@ ${Object.entries(readableProfile).map(([key, value]) => `- ${key}: ${value}`).jo
     const aiBtn = document.getElementById("ai-consulting-btn");
     const aiBox = document.getElementById("ai-result-container");
     const aiContent = document.getElementById("ai-result-content");
-    const GEMINI_API_KEY = "AIzaSyCaklXbjvzZLnytG7B8F_Lx4FhZIUomQVc";
-    // ✅ 모델명 변경: gemini-1.5-flash-latest → gemini-2.0-flash
-    const GEMINI_MODEL = "gemini-2.0-flash";
-    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
+    
     if (!aiBtn || !aiBox || !aiContent) { console.error("AI 컨설팅 DOM 요소 누락"); return; }
     aiBox.style.display = "block";
     aiContent.innerHTML = '<div class="loader" style="margin:10px auto"></div>';
     aiBtn.disabled = true; aiBtn.style.opacity = ".5";
-    const readableProfile = { "이름": formData["user-name"] || "익명", "활동 지역": formData["activity-region"] || "정보없음", "경력": `${formData["career-length"] || 0}년`, "연 소득": `${formData["prev-income-man"] || 0}만원`, "월 계약 건수": `${formData["monthly-contracts"] || 0}건`, "월 업적": `${formData["monthly-premium"] || 0}만원`, "손해보험 비중": `${formData["non-life-ratio"] || 0}%`, "유지율": `${formData["persistency"] || 0}%`, "관리 고객수": formData["managed-clients"] ? `${formData["managed-clients"]}단계` : "정보없음", "영업 방식": (formData.salesMethods || []).join(', ') || "정보없음", "자격증": (formData.certList || []).join(', ') || "정보없음", "디지털 역량": (formData.digitalMarketing || []).join(', ') || "정보없음" };
+    
+    const readableProfile = { 
+      "이름": formData["user-name"] || "익명", 
+      "활동 지역": formData["activity-region"] || "정보없음", 
+      "경력": `${formData["career-length"] || 0}년`, 
+      "연 소득": `${formData["prev-income-man"] || 0}만원`, 
+      "월 계약 건수": `${formData["monthly-contracts"] || 0}건`, 
+      "월 업적": `${formData["monthly-premium"] || 0}만원`, 
+      "손해보험 비중": `${formData["non-life-ratio"] || 0}%`, 
+      "유지율": `${formData["persistency"] || 0}%`, 
+      "관리 고객수": formData["managed-clients"] ? `${formData["managed-clients"]}단계` : "정보없음", 
+      "영업 방식": (formData.salesMethods || []).join(', ') || "정보없음", 
+      "자격증": (formData.certList || []).join(', ') || "정보없음", 
+      "디지털 역량": (formData.digitalMarketing || []).join(', ') || "정보없음" 
+    };
+    
     const prompt = `당신은 대한민국 보험업계의 시니어 지점장입니다. 아래 설계사 프로필을 분석하여 JSON 형태로 컨설팅 리포트를 제공해주세요.\n\n프로필:\n${Object.entries(readableProfile).map(([key, value]) => `${key}: ${value}`).join('\n')}\n\n다음 JSON 형식으로 응답해주세요:\n{\n  "summary": "전체적인 평가를 1-2문장으로",\n  "strengths": ["주요 강점 3가지"],\n  "improvements": ["개선이 필요한 부분 3가지"],\n  "action_plan": [\n    {"period": "1개월", "goal": "목표", "action": "구체적 실행방안"},\n    {"period": "3개월", "goal": "목표", "action": "구체적 실행방안"},\n    {"period": "6개월", "goal": "목표", "action": "구체적 실행방안"}\n  ]\n}`;
+    
     try {
-      const response = await fetch(GEMINI_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.7, topK: 40, topP: 0.95, maxOutputTokens: 1024 } }) });
-      if (!response.ok) { const errorText = await response.text(); throw new Error(`API 오류: ${response.status} - ${errorText}`); }
-      const data = await response.json();
+      // ✅ Supabase Edge Function 호출
+      const data = await callGeminiProxy(prompt, 1024, 0.7);
 
       let text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-      
-      // --- [수정] 여기에도 동일하게 불필요한 코드 형식 제거 로직 추가 ---
       text = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/```$/i, "");
       
-      let obj; try { obj = JSON.parse(text); } catch (parseError) { obj = { summary: "AI 분석 결과를 처리하는 중 오류가 발생했습니다.", strengths: ["기본적인 보험 업무 수행 수행"], improvements: ["체계적인 목표 설정이 필요합니다"], action_plan: [ {"period": "1개월", "goal": "현 상황 점검", "action": "월간 실적 분석"}, {"period": "3개월", "goal": "역량 강화", "action": "전문 교육 참여"}, {"period": "6개월", "goal": "성과 개선", "action": "목표 재설정"} ] }; }
-      const renderAIResult = (obj) => { const esc = (s) => String(s ?? "").replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m])); const toLI = (arr) => (arr||[]).map(t => `<li>${esc(t)}</li>`).join("") || "<li>분석 내용이 없습니다</li>"; const actions = (obj.action_plan||[]).map(t=>`<li><strong>${esc(t.period||'기간미정')}:</strong> ${esc(t.goal||'목표미정')} - ${esc(t.action||'방안미정')}</li>`).join("") || "<li>실행 계획이 없습니다</li>"; return `<div class="ai-sections"><div class="ai-card"><h4>📊 종합 평가</h4><p style="margin:0;color:var(--muted);line-height:1.7">${esc(obj.summary || '평가 내용이 없습니다')}</p></div><div class="ai-card"><h4>💪 강점</h4><ul style="margin:0;padding-left:20px;line-height:1.8;">${toLI(obj.strengths)}</ul></div><div class="ai-card"><h4>🎯 개선점</h4><ul style="margin:0;padding-left:20px;line-height:1.8;">${toLI(obj.improvements)}</ul></div><div class="ai-card"><h4>📅 실행 계획</h4><ul style="margin:0;padding-left:20px;line-height:1.8;">${actions}</ul></div></div>`; };
+      let obj; 
+      try { 
+        obj = JSON.parse(text); 
+      } catch (parseError) { 
+        obj = { 
+          summary: "AI 분석 결과를 처리하는 중 오류가 발생했습니다.", 
+          strengths: ["기본적인 보험 업무 수행"], 
+          improvements: ["체계적인 목표 설정이 필요합니다"], 
+          action_plan: [ 
+            {"period": "1개월", "goal": "현 상황 점검", "action": "월간 실적 분석"}, 
+            {"period": "3개월", "goal": "역량 강화", "action": "전문 교육 참여"}, 
+            {"period": "6개월", "goal": "성과 개선", "action": "목표 재설정"} 
+          ] 
+        }; 
+      }
+      
+      const renderAIResult = (obj) => { 
+        const esc = (s) => String(s ?? "").replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m])); 
+        const toLI = (arr) => (arr||[]).map(t => `<li>${esc(t)}</li>`).join("") || "<li>분석 내용이 없습니다</li>"; 
+        const actions = (obj.action_plan||[]).map(t=>`<li><strong>${esc(t.period||'기간미정')}:</strong> ${esc(t.goal||'목표미정')} - ${esc(t.action||'방안미정')}</li>`).join("") || "<li>실행 계획이 없습니다</li>"; 
+        return `<div class="ai-sections"><div class="ai-card"><h4>📊 종합 평가</h4><p style="margin:0;color:var(--muted);line-height:1.7">${esc(obj.summary || '평가 내용이 없습니다')}</p></div><div class="ai-card"><h4>💪 강점</h4><ul style="margin:0;padding-left:20px;line-height:1.8;">${toLI(obj.strengths)}</ul></div><div class="ai-card"><h4>🎯 개선점</h4><ul style="margin:0;padding-left:20px;line-height:1.8;">${toLI(obj.improvements)}</ul></div><div class="ai-card"><h4>📅 실행 계획</h4><ul style="margin:0;padding-left:20px;line-height:1.8;">${actions}</ul></div></div>`; 
+      };
+      
       aiContent.innerHTML = renderAIResult(obj);
-    } catch (error) { console.error("AI 컨설팅 오류:", error); aiContent.innerHTML = `<div style="text-align:center; padding:20px; color:var(--muted);"><p>AI 분석에 일시적인 문제가 발생했습니다.</p><p style="font-size:12px; color:var(--muted); margin-top:15px;">오류 정보: ${error.message}</p></div>`; } finally { aiBtn.disabled = false; aiBtn.style.opacity = "1"; }
+    } catch (error) { 
+      console.error("AI 컨설팅 오류:", error); 
+      aiContent.innerHTML = `<div style="text-align:center; padding:20px; color:var(--muted);"><p>AI 분석에 일시적인 문제가 발생했습니다.</p><p style="font-size:12px; color:var(--muted); margin-top:15px;">오류 정보: ${error.message}</p></div>`; 
+    } finally { 
+      aiBtn.disabled = false; 
+      aiBtn.style.opacity = "1"; 
+    }
   }
  
   function goPrev(){ if(currentStep > 1) { currentStep--; showStep(currentStep); } }
