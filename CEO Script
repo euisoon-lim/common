@@ -26,12 +26,12 @@
         body.ceo-script-page .modal-header,
         body.ceo-script-page .modal-footer,
         body.ceo-script-page .form-control,
-        body.ceo-script-page .btn:not(.ceo-script-container .btn),
+        body.ceo-script-page .btn,
         body.ceo-script-page [class*="imweb"],
         body.ceo-script-page [id*="imweb"],
         body.ceo-script-page input:not(.ceo-search-input),
         body.ceo-script-page select:not(.category-select),
-        body.ceo-script-page textarea:not(.modal-textarea) {
+        body.ceo-script-page textarea:not(.ceo-modal-textarea) {
             background: white !important;
             color: #333 !important;
             border-color: #ddd !important;
@@ -49,9 +49,6 @@
             border-radius: 16px;
             border: 1px solid #333;
             margin-bottom: 20px;
-            position: sticky;
-            top: 20px;
-            z-index: 100;
         }
 
         .header h1 {
@@ -60,6 +57,7 @@
             font-weight: 600;
             margin-bottom: 16px;
             text-align: left;
+            padding: 0 0 20px 0;
         }
 
         .header h1 .user-name {
@@ -70,23 +68,27 @@
         .tabs {
             display: flex;
             gap: 8px;
-            flex-wrap: wrap;
-            justify-content: flex-start;
+            width: 100%;
         }
 
         .tab-btn {
-            padding: 10px 16px;
+            flex: 1;
+            padding: 12px 8px;
             border: 1px solid #333;
             border-radius: 8px;
             font-size: 14px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
             background: transparent;
             color: #888;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 6px;
+            text-align: center;
+            min-height: 44px;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         .tab-btn.active {
@@ -94,19 +96,105 @@
             color: white;
             border-color: transparent;
         }
-
-        .ceo-search-box {
+        
+        /* 헤더 내 검색+카테고리 통합 스타일 */
+        .header-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .header-search-box {
+            width: 100%;
             position: relative;
-            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-search-input {
+            width: 100%;
+            padding: 14px 40px 14px 40px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            font-size: 16px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            font-weight: 400;
+        }
+        
+        .header-search-input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
+        }
+        
+        .header-search-input::placeholder {
+            color: #666;
+        }
+        
+        .header-search-icon {
+            position: absolute;
+            left: 12px;
+            color: #8b5cf6;
+            z-index: 1;
+        }
+        
+        .header-search-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .header-clear-btn {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: #8b5cf6;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .header-clear-btn:hover {
+            background: rgba(139, 92, 246, 0.1);
+        }
+        
+        .header-category-select {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+        
+        .header-category-select:hover,
+        .header-category-select:focus {
+            border-color: #8b5cf6;
+            outline: none;
         }
 
+        .ceo-search-box {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
         .ceo-search-input {
             width: 100%;
             padding: 18px 50px 18px 55px;
             border: 2px solid #333;
             border-radius: 16px;
             font-size: 18px;
-            transition: all 0.3s;
             background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
             color: white;
             font-weight: 500;
@@ -183,6 +271,11 @@
             font-size: 17px;
             cursor: pointer;
             transition: all 0.2s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23888888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
         }
 
         .category-select:hover {
@@ -231,7 +324,6 @@
             border: 1px solid #333;
             margin-bottom: 16px;
             overflow: hidden;
-            transition: all 0.2s;
             cursor: pointer;
         }
 
@@ -369,7 +461,7 @@
             border-top: 1px solid #333;
         }
 
-        .btn {
+        .ceo-btn {
             flex: 1;
             padding: 10px;
             border: 1px solid #333;
@@ -377,7 +469,6 @@
             font-size: 16px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -386,21 +477,22 @@
             color: #ccc;
         }
         
-        .btn svg {
+        .ceo-btn svg {
             flex-shrink: 0;
         }
 
-        .btn-primary {
+        .ceo-btn-primary {
             background: linear-gradient(135deg, #8b5cf6, #7c3aed);
             color: white;
             border: none;
         }
 
-        .btn-primary:hover {
+        .ceo-btn-primary:hover {
             background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: white;
         }
 
-        .btn-secondary {
+        .ceo-btn-secondary {
             background: rgba(139, 92, 246, 0.1);
             color: #8b5cf6;
             border-color: rgba(139, 92, 246, 0.3);
@@ -409,7 +501,7 @@
             position: relative;
         }
         
-        .btn-secondary:hover::after {
+        .ceo-btn-secondary:hover::after {
             content: '나만의 메모';
             position: absolute;
             bottom: 100%;
@@ -426,12 +518,12 @@
             z-index: 1000;
         }
         
-        .btn-secondary svg {
+        .ceo-btn-secondary svg {
             width: 19px;
             height: 19px;
         }
 
-        .btn-tertiary {
+        .ceo-btn-tertiary {
             background: rgba(139, 92, 246, 0.1);
             color: #8b5cf6;
             border-color: rgba(139, 92, 246, 0.3);
@@ -440,7 +532,7 @@
             position: relative;
         }
 
-        .btn-tertiary:hover::after {
+        .ceo-btn-tertiary:hover::after {
             content: '공유하기';
             position: absolute;
             bottom: 100%;
@@ -457,14 +549,37 @@
             z-index: 1000;
         }
         
-        .btn-tertiary svg {
+        .ceo-btn-tertiary svg {
             width: 19px;
             height: 19px;
         }
 
-        .btn-tertiary:hover, .btn-secondary:hover {
+        .ceo-btn-tertiary:hover, .ceo-btn-secondary:hover {
             border-color: #8b5cf6;
             background: rgba(139, 92, 246, 0.2);
+        }
+
+        /* 버튼 그룹 (복사 + AI 답변) */
+        .ceo-btn-group {
+            flex: 1;
+            display: flex;
+            gap: 4px;
+        }
+        
+        .ceo-btn-half {
+            flex: 1;
+            font-size: 14px;
+            padding: 10px 8px;
+        }
+        
+        .ceo-btn-ai {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            border: none;
+        }
+        
+        .ceo-btn-ai:hover {
+            background: linear-gradient(135deg, #4f46e5, #4338ca);
+            color: white;
         }
 
         .heart-btn {
@@ -486,7 +601,7 @@
             transform: scale(1.1);
         }
 
-        .modal {
+        .ceo-modal {
             display: none;
             position: fixed;
             top: 0;
@@ -500,22 +615,10 @@
             justify-content: center;
         }
 
-        .modal.active {
+        .ceo-modal.active {
             display: flex;
         }
 
-        .modal-content {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 16px;
-            padding: 24px;
-            max-width: 500px;
-            width: 100%;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            z-index: 100000;
-            position: relative;
-        }
-        
         .ceo-modal-content {
             background: #1a1a1a;
             border: 1px solid #333;
@@ -528,14 +631,14 @@
             position: relative;
         }
 
-        .modal-title {
+        .ceo-modal-title {
             font-size: 22px;
             font-weight: 700;
             color: #ffffff;
             margin-bottom: 16px;
         }
 
-        .modal-textarea {
+        .ceo-modal-textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid #333;
@@ -548,15 +651,23 @@
             color: white;
         }
 
-        .modal-textarea:focus {
+        .ceo-modal-textarea:focus {
             outline: none;
             border-color: #8b5cf6;
         }
 
-        .modal-actions {
+        .ceo-modal-actions {
             display: flex;
-            gap: 8px;
+            gap: 12px;
             margin-top: 16px;
+        }
+        
+        .ceo-modal-actions .ceo-btn-primary {
+            flex: 6;
+        }
+        
+        .ceo-modal-actions .ceo-btn-tertiary {
+            flex: 4;
         }
 
         .no-results {
@@ -567,43 +678,12 @@
             border: 1px solid #333;
             font-size: 18px;
         }
-
-        .floating-badge {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 24px;
-            font-weight: 600;
-            font-size: 17px;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-            display: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .floating-badge:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
-        }
-
-        .floating-badge.active {
-            display: flex;
-        }
-        
-        .floating-badge svg {
-            flex-shrink: 0;
-        }
     </style>
 </head>
 <body class="ceo-script-page">
     <div class="ceo-script-container">
         <div class="header">
-            <h1><span class="user-name" id="user-name-display">사용자</span>님을 위한 상담 스크립트입니다.</h1>
+            <h1><span class="user-name" id="user-name-display">사용자</span>님을 위한 상담 스크립트</h1>
             
             <div class="tabs">
                 <button class="tab-btn active" data-tab="all">
@@ -614,9 +694,9 @@
                 </button>
                 <button class="tab-btn" data-tab="favorites">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
                     </svg>
-                    즐겨찾기 <span id="fav-count">0</span>
+                    저장 <span id="fav-count">0</span>
                 </button>
                 <button class="tab-btn" data-tab="memos">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -628,35 +708,27 @@
                     </svg>
                     메모 <span id="memo-count">0</span>
                 </button>
-                <button class="tab-btn" data-tab="recent">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12 6 12 12 16 14"></polyline>
-                    </svg>
-                    최근 <span id="recent-count">0</span>
-                </button>
+            </div>
+            
+            <!-- 헤더 내 검색 + 카테고리 통합 -->
+            <div class="header-controls">
+                <div class="header-search-box">
+                    <span class="header-search-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </span>
+                    <input type="text" id="search-input" class="header-search-input" placeholder="검색...">
+                    <button class="header-clear-btn" id="clear-search">×</button>
+                </div>
+                <select class="header-category-select" id="category-select">
+                    <option value="전체">전체</option>
+                </select>
             </div>
         </div>
 
-        <div class="ceo-search-box">
-            <span class="ceo-search-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
-            </span>
-            <input type="text" id="search-input" class="ceo-search-input" placeholder="질문이나 키워드로 검색...">
-            <button class="ceo-clear-btn" id="clear-search">×</button>
-        </div>
-
-        <div class="filter-section">
-            <div class="filter-title">카테고리</div>
-            <select class="category-select" id="category-select">
-                <option value="전체">전체 카테고리</option>
-            </select>
-        </div>
-
-        <div class="results-count" id="results-count">데이터 로딩 중...</div>
+        <div class="results-count" id="results-count">⚡ 데이터를 빠르게 불러오는 중...</div>
         
         <div id="loading" class="loading">
             <div class="skeleton" style="width: 80%;"></div>
@@ -675,661 +747,683 @@
         </div>
     </div>
 
-    <div class="floating-badge" id="floating-badge" onclick="document.querySelector('[data-tab=favorites]').click()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-        </svg>
-        즐겨찾기 <span id="floating-count">0</span>개
-    </div>
-
-    <div class="modal" id="memo-modal">
-        <div class="modal-content ceo-modal-content">
-            <div class="modal-title">메모 작성</div>
-            <textarea class="modal-textarea" id="memo-textarea" placeholder="이 화법에 대한 메모를 작성하세요..."></textarea>
-            <div class="modal-actions">
-                <button class="btn btn-primary" id="save-memo">저장</button>
-                <button class="btn btn-tertiary" id="cancel-memo">취소</button>
+    <div class="ceo-modal" id="memo-modal">
+        <div class="ceo-modal-content">
+            <div class="ceo-modal-title">메모 작성</div>
+            <textarea class="ceo-modal-textarea" id="memo-textarea" placeholder="이 화법에 대한 메모를 작성하세요..."></textarea>
+            <div class="ceo-modal-actions">
+                <button class="ceo-btn ceo-btn-primary" id="save-memo">저장</button>
+                <button class="ceo-btn ceo-btn-tertiary" id="cancel-memo">취소</button>
             </div>
         </div>
     </div>
 
     <script>
-        const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbydvT2MM61I6bN2x1uJ-4_8AlnolmcrzvtMFvtKucNJkhLUPI64gobLe1OoWUNpRMb9YQ/exec';
-        const SUPABASE_URL = 'https://pkxgjylcjophznokhlzb.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBreGdqeWxjam9waHpub2tobHpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEwMTI3MTUsImV4cCI6MjA3NjU4ODcxNX0.QkTqAyOmNG0Gy0nWf82TEj3o-YvbeqIa-REgCJSstk8';
-        const CACHE_KEY = 'CEO_PLAN_SCRIPT_DATA';
-        const CACHE_DURATION = 5 * 60 * 1000;
+        // ✅ IIFE로 스코프 격리 - IMWEB 중복 로드 방지
+        (function() {
+            // 이미 초기화됐으면 중단
+            if (window.__ceoScriptInitialized) {
+                console.log('⚠️ CEO 스크립트가 이미 로드되었습니다');
+                return;
+            }
+            window.__ceoScriptInitialized = true;
+            console.log('✅ CEO 스크립트 초기화 시작');
 
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            // GitHub에서 빠르게 로드 (Google Apps Script 대신)
+            const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/euisoon-lim/orojiedu/refs/heads/main/script-data.json';
+            const SUPABASE_URL = 'https://pkxgjylcjophznokhlzb.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBreGdqeWxjam9waHpub2tobHpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEwMTI3MTUsImV4cCI6MjA3NjU4ODcxNX0.QkTqAyOmNG0Gy0nWf82TEj3o-YvbeqIa-REgCJSstk8';
+            const CACHE_KEY = 'CEO_PLAN_SCRIPT_DATA';
+            const CACHE_DURATION = 2 * 60 * 60 * 1000; // 2시간 (재방문 시 빠른 로딩)
 
-        let scriptData = [];
-        let favorites = [];
-        let recentViewed = [];
-        let memos = {};
-        let activeTab = 'all';
-        let selectedCategory = '전체';
-        let searchTerm = '';
-        let currentMemoId = null;
-        let currentUser = null;
+            // ✅ Supabase 전역 관리 (중복 생성 방지)
+            const supabase = window.__supabaseClient || window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            if (!window.__supabaseClient) {
+                window.__supabaseClient = supabase;
+            }
 
-        async function getUserInfo() {
-            try {
-                // 1. 세션 캐시 확인
-                const sessionUser = sessionStorage.getItem('CEO_PLAN_USER');
-                if (sessionUser && sessionUser !== 'null') {
-                    try {
-                        const userData = JSON.parse(sessionUser);
-                        if (userData.email && userData.name && userData.name !== 'undefined' && 
-                            userData.name !== '관리자' && userData.name !== 'admin' &&
-                            userData.name !== 'Administrator' && userData.name !== '로그인' &&
-                            userData.name !== '사용자' &&
-                            !userData.email.includes('guest_') && !userData.email.includes('error@')) {
-                            console.log('✅ 캐시된 회원 정보:', userData);
-                            return userData;
-                        } else {
-                            console.log('⚠️ 캐시 무효화 (기본값):', userData.name);
-                            sessionStorage.removeItem('CEO_PLAN_USER');
+            let scriptData = [];
+            let favorites = [];
+            let recentViewed = [];
+            let memos = {};
+            let activeTab = 'all';
+            let selectedCategory = '전체';
+            let searchTerm = '';
+            let currentMemoId = null;
+            let currentUser = null;
+            
+            // 무한 스크롤을 위한 페이지네이션 변수
+            let currentPage = 1;
+            let itemsPerPage = 5; // 초기 로딩 속도 개선을 위해 5개로 줄임
+            let isLoading = false;
+
+            async function getUserInfo() {
+                try {
+                    console.log('🔍 사용자 정보 가져오기 시작');
+                    
+                    // 1. 먼저 localStorage 확인 (가장 신뢰할 수 있음)
+                    console.log('📦 localStorage 우선 확인...');
+                    const imwebMember = localStorage.getItem('IMWEB_MEMBER');
+                    
+                    if (imwebMember && imwebMember !== 'null' && imwebMember !== 'false') {
+                        try {
+                            const memberData = JSON.parse(imwebMember);
+                            console.log('📦 localStorage 데이터:', memberData);
+                            
+                            if (memberData.email && memberData.email.includes('@')) {
+                                const userData = {
+                                    email: memberData.email,
+                                    name: memberData.name || memberData.nickname || memberData.email.split('@')[0],
+                                    uid: memberData.uid || memberData.email.split('@')[0]
+                                };
+                                console.log('✅ localStorage로 사용자 정보 획득:', userData);
+                                return userData;
+                            }
+                        } catch (e) {
+                            console.error('❌ localStorage 파싱 오류:', e);
                         }
-                    } catch (e) {
-                        sessionStorage.removeItem('CEO_PLAN_USER');
                     }
-                }
-                
-                // 2. 아임웹 전역 객체 확인 (가장 신뢰할 수 있는 방법)
-                if (window.MEMBER && window.MEMBER.name && window.MEMBER.email) {
-                    const userData = {
-                        email: window.MEMBER.email,
-                        name: window.MEMBER.name || window.MEMBER.nickname || window.MEMBER.email.split('@')[0],
-                        uid: window.MEMBER.member_code || window.MEMBER.email.split('@')[0]
-                    };
-                    sessionStorage.setItem('CEO_PLAN_USER', JSON.stringify(userData));
-                    console.log('✅ window.MEMBER에서 정보 가져옴:', userData);
-                    return userData;
-                }
-                
-                // 3. localStorage 확인
-                const imwebMember = localStorage.getItem('IMWEB_MEMBER');
-                if (imwebMember && imwebMember !== 'null' && imwebMember !== 'undefined') {
+                    
+                    // 2. localStorage 실패 시 fetch 시도
                     try {
-                        const memberData = JSON.parse(imwebMember);
-                        console.log('📦 localStorage IMWEB_MEMBER:', memberData);
+                        console.log('📡 fetch 백업 시도...');
+                        const response = await fetch("/dialog/join.cm", { credentials: "include" });
+                        const html = await response.text();
                         
-                        if (memberData.email && memberData.email.trim() && memberData.email.includes('@')) {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, "text/html");
+                        
+                        // 이름 찾기
+                        const nameInput = doc.querySelector("#join_name") || 
+                                         doc.querySelector('input[name="name"]');
+                        
+                        // 이메일 찾기 (여러 방법 시도)
+                        const emailInput = doc.querySelector("#join_email") || 
+                                          doc.querySelector('input[name="email"]') ||
+                                          doc.querySelector('input[type="email"]');
+                        
+                        console.log('🔍 필드 검색:', {
+                            name: nameInput?.value,
+                            email: emailInput?.value
+                        });
+                        
+                        if (emailInput && emailInput.value && emailInput.value.includes('@')) {
                             let userName = '사용자';
                             
-                            if (memberData.name && memberData.name.trim() && 
-                                memberData.name !== '로그인' && memberData.name !== 'Login' &&
-                                memberData.name !== '관리자') {
-                                userName = memberData.name.trim();
-                            } else if (memberData.nickname && memberData.nickname.trim()) {
-                                userName = memberData.nickname.trim();
+                            if (nameInput && nameInput.value && nameInput.value.trim()) {
+                                userName = nameInput.value.trim();
                             } else {
-                                userName = memberData.email.split('@')[0];
+                                userName = emailInput.value.split('@')[0];
                             }
                             
                             const userData = {
-                                email: memberData.email.trim(),
+                                email: emailInput.value.trim(),
                                 name: userName,
-                                uid: memberData.uid || memberData.member_code || memberData.email.split('@')[0]
+                                uid: emailInput.value.split('@')[0]
                             };
                             
-                            sessionStorage.setItem('CEO_PLAN_USER', JSON.stringify(userData));
-                            console.log('✅ localStorage에서 회원 정보:', userData);
+                            console.log('✅ fetch로 사용자 정보 획득:', userData);
                             return userData;
                         }
-                    } catch (parseError) {
-                        console.error('❌ localStorage 파싱 실패:', parseError);
+                    } catch (fetchError) {
+                        console.warn('⚠️ fetch 실패:', fetchError.message);
                     }
+                    
+                    // 3. 모든 방법 실패 - 로그아웃 상태
+                    console.error('❌ 로그아웃 상태 확인');
+                    sessionStorage.removeItem('CEO_PLAN_USER');
+                    return null;
+                    
+                } catch (error) {
+                    console.error('❌ getUserInfo 전체 오류:', error);
+                    return null;
                 }
-                
-                // 4. 아임웹 API 호출 (/dialog/join.cm)
-                console.log('🔍 아임웹 API 호출 시도...');
-                try {
-                    const response = await fetch("/dialog/join.cm", { 
-                        credentials: "include",
-                        cache: "no-cache"
-                    });
-                    const html = await response.text();
-                    console.log('📄 HTML 응답 길이:', html.length);
-                    
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, "text/html");
-                    
-                    const nameInput = doc.querySelector('#join_name');
-                    const emailInput = doc.querySelector('#join_email');
-                    const uidInput = doc.querySelector('#join_user_id');
-                    
-                    console.log('🔍 폼 필드:', {
-                        name: nameInput?.value,
-                        email: emailInput?.value,
-                        uid: uidInput?.value
-                    });
-                    
-                    if (emailInput && emailInput.value && emailInput.value.includes('@')) {
-                        let userName = '사용자';
-                        
-                        if (nameInput && nameInput.value && nameInput.value.trim()) {
-                            const nameValue = nameInput.value.trim();
-                            if (nameValue !== '로그인' && nameValue !== 'Login' && 
-                                nameValue !== '관리자' && nameValue !== 'admin' &&
-                                nameValue !== 'Administrator') {
-                                userName = nameValue;
-                                console.log('✅ join_name 사용:', userName);
-                            }
-                        }
-                        
-                        if (userName === '사용자' && uidInput && uidInput.value && uidInput.value.trim()) {
-                            userName = uidInput.value.trim();
-                            console.log('✅ join_user_id 사용:', userName);
-                        }
-                        
-                        if (userName === '사용자') {
-                            userName = emailInput.value.split('@')[0];
-                            console.log('✅ 이메일 사용:', userName);
-                        }
-                        
-                        const userData = {
-                            email: emailInput.value.trim(),
-                            name: userName,
-                            uid: uidInput?.value?.trim() || emailInput.value.split('@')[0]
-                        };
-                        
-                        sessionStorage.setItem('CEO_PLAN_USER', JSON.stringify(userData));
-                        console.log('✅ API에서 회원 정보:', userData);
-                        return userData;
-                    }
-                } catch (fetchError) {
-                    console.warn('⚠️ API 호출 실패:', fetchError.message);
-                }
-                
-                console.error('❌ 모든 방법 실패 - 사용자 정보를 찾을 수 없습니다');
-                return null;
-                
-            } catch (error) {
-                console.error('❌ getUserInfo 전체 오류:', error);
-                return null;
             }
-        }
 
-        async function init() {
-            console.log('🚀 앱 초기화 시작');
-            currentUser = await getUserInfo();
-            
-            console.log('👤 현재 사용자:', currentUser);
-            
-            if (!currentUser || !currentUser.email) {
-                console.log('❌ 로그인 필요');
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('cards-container').innerHTML = `
-                    <div style="background: linear-gradient(135deg, #1a1a1a, #2a2a2a); padding: 60px 40px; border-radius: 16px; text-align: center; border: 1px solid #333;">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 24px;">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                        </svg>
-                        <h2 style="font-size: 24px; color: #ffffff; margin-bottom: 16px;">로그인이 필요합니다</h2>
-                        <p style="color: #888; font-size: 16px; line-height: 1.6; margin-bottom: 32px;">
-                            CEO플랜 상담화법을 사용하려면<br>
-                            오로지교육 회원 로그인이 필요합니다.
-                        </p>
-                        <button onclick="location.reload()" style="
-                            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-                            color: white;
-                            border: none;
-                            padding: 14px 32px;
-                            border-radius: 8px;
-                            font-size: 16px;
-                            font-weight: 600;
-                            cursor: pointer;
-                        ">새로고침</button>
-                    </div>
-                `;
-                return;
-            }
-            
-            // 사용자 이름 표시
-            const userNameDisplay = document.getElementById('user-name-display');
-            if (userNameDisplay && currentUser.name) {
-                userNameDisplay.textContent = currentUser.name;
-                console.log('✅ 사용자명 UI 업데이트:', currentUser.name);
-                console.log('📍 DOM 요소:', userNameDisplay);
-            } else {
-                console.error('❌ user-name-display 요소를 찾을 수 없거나 이름이 없음');
-            }
-            
-            await loadScriptData();
-            console.log('📚 스크립트 데이터:', scriptData.length, '개');
-            
-            await loadUserData();
-            console.log('👤 사용자 데이터 로드 완료');
-            
-            renderCategorySelect();
-            console.log('📂 카테고리 선택 렌더링 완료');
-            
-            renderCards();
-            console.log('🎴 카드 렌더링 완료');
-            
-            updateCounts();
-            console.log('📊 카운트 업데이트 완료');
-            
-            setupEventListeners();
-            console.log('🎧 이벤트 리스너 설정 완료');
-            
-            console.log('✅ 앱 초기화 완료');
-        }
-
-        async function loadScriptData() {
-            try {
-                const cached = localStorage.getItem(CACHE_KEY);
-                const cacheTime = localStorage.getItem(CACHE_KEY + '_time');
+            async function init() {
+                console.log('🚀 앱 초기화 시작');
+                currentUser = await getUserInfo();
                 
-                if (cached && cacheTime && (Date.now() - parseInt(cacheTime)) < CACHE_DURATION) {
-                    scriptData = JSON.parse(cached);
-                    console.log('✅ 캐시 데이터 사용:', scriptData.length, '개');
-                    console.log('📋 데이터 샘플:', scriptData[0]);
+                console.log('👤 현재 사용자:', currentUser);
+                
+                if (!currentUser || !currentUser.email) {
+                    console.log('❌ 로그인 필요');
                     document.getElementById('loading').style.display = 'none';
+                    document.getElementById('cards-container').innerHTML = `
+                        <div style="background: linear-gradient(135deg, #1a1a1a, #2a2a2a); padding: 60px 40px; border-radius: 16px; text-align: center; border: 1px solid #333;">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 24px;">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <h2 style="font-size: 24px; color: #ffffff; margin-bottom: 16px;">로그인이 필요합니다</h2>
+                            <p style="color: #888; font-size: 16px; line-height: 1.6; margin-bottom: 32px;">
+                                CEO플랜 상담화법을 사용하려면<br>
+                                오로지교육 회원 로그인이 필요합니다.
+                            </p>
+                            <button onclick="location.reload()" style="
+                                background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+                                color: white;
+                                border: none;
+                                padding: 14px 32px;
+                                border-radius: 8px;
+                                font-size: 16px;
+                                font-weight: 600;
+                                cursor: pointer;
+                            ">새로고침</button>
+                        </div>
+                    `;
                     return;
                 }
                 
-                console.log('🌐 서버에서 데이터 로드 중...');
-                const response = await fetch(GOOGLE_APPS_SCRIPT_URL);
-                const result = await response.json();
-                if (result.success) {
-                    scriptData = result.data;
-                    localStorage.setItem(CACHE_KEY, JSON.stringify(scriptData));
-                    localStorage.setItem(CACHE_KEY + '_time', Date.now().toString());
-                    console.log('✅ 데이터 로드 완료:', scriptData.length, '개');
-                    console.log('📋 데이터 샘플:', scriptData[0]);
-                    document.getElementById('loading').style.display = 'none';
+                // 사용자 이름 표시
+                const userNameDisplay = document.getElementById('user-name-display');
+                if (userNameDisplay && currentUser.name) {
+                    userNameDisplay.textContent = currentUser.name;
+                    console.log('✅ 사용자명 UI 업데이트:', currentUser.name);
                 } else {
-                    console.error('❌ 서버 응답 실패:', result);
+                    console.error('❌ user-name-display 요소를 찾을 수 없거나 이름이 없음');
                 }
-            } catch (error) {
-                console.error('❌ 데이터 로드 실패:', error);
-                document.getElementById('loading').innerHTML = '<div style="color: #ef4444;">데이터 로드 실패</div>';
+                
+                // 병렬 로딩으로 속도 개선 (스크립트 데이터 + 사용자 데이터 동시 로드)
+                console.log('🚀 병렬 데이터 로딩 시작...');
+                const loadStartTime = Date.now();
+                
+                await Promise.all([
+                    loadScriptData(),
+                    loadUserData()
+                ]);
+                
+                const loadEndTime = Date.now();
+                console.log('📚 스크립트 데이터:', scriptData.length, '개');
+                console.log('👤 사용자 데이터 로드 완료');
+                console.log('⚡ 총 로딩 시간:', (loadEndTime - loadStartTime) + 'ms');
+                
+                renderCategorySelect();
+                console.log('📂 카테고리 선택 렌더링 완료');
+                
+                renderCards(true);
+                console.log('🎴 카드 렌더링 완료');
+                
+                updateCounts();
+                console.log('📊 카운트 업데이트 완료');
+                
+                setupEventListeners();
+                console.log('🎧 이벤트 리스너 설정 완료');
+                
+                console.log('✅ 앱 초기화 완료');
             }
-        }
 
-        async function loadUserData() {
-            if (!currentUser || !currentUser.email) return;
-            
-            try {
-                const { data: favData } = await supabase
-                    .from('user_favorites')
-                    .select('script_id')
-                    .eq('user_email', currentUser.email);
-                favorites = favData ? favData.map(f => f.script_id) : [];
+            async function loadScriptData() {
+                try {
+                    const cached = localStorage.getItem(CACHE_KEY);
+                    const cacheTime = localStorage.getItem(CACHE_KEY + '_time');
+                    
+                    if (cached && cacheTime && (Date.now() - parseInt(cacheTime)) < CACHE_DURATION) {
+                        scriptData = JSON.parse(cached);
+                        console.log('✅ 캐시 데이터 사용:', scriptData.length, '개');
+                        document.getElementById('loading').style.display = 'none';
+                        return;
+                    }
+                    
+                    console.log('🚀 GitHub에서 빠른 데이터 로드 중...');
+                    const response = await fetch(GITHUB_DATA_URL);
+                    const result = await response.json();
+                    if (result.success) {
+                        scriptData = result.data;
+                        localStorage.setItem(CACHE_KEY, JSON.stringify(scriptData));
+                        localStorage.setItem(CACHE_KEY + '_time', Date.now().toString());
+                        console.log('✅ 데이터 로드 완료:', scriptData.length, '개');
+                        document.getElementById('loading').style.display = 'none';
+                    } else {
+                        console.error('❌ 서버 응답 실패:', result);
+                    }
+                } catch (error) {
+                    console.error('❌ 데이터 로드 실패:', error);
+                    document.getElementById('loading').innerHTML = '<div style="color: #ef4444;">데이터 로드 실패</div>';
+                }
+            }
 
-                const { data: memoData } = await supabase
-                    .from('user_memos')
-                    .select('*')
-                    .eq('user_email', currentUser.email);
-                memos = {};
-                if (memoData) {
-                    memoData.forEach(m => {
-                        memos[m.script_id] = m.memo_text;
+            async function loadUserData() {
+                if (!currentUser || !currentUser.email) return;
+                
+                try {
+                    const { data: favData } = await supabase
+                        .from('user_favorites')
+                        .select('script_id')
+                        .eq('user_email', currentUser.email);
+                    favorites = favData ? favData.map(f => f.script_id) : [];
+
+                    const { data: memoData } = await supabase
+                        .from('user_memos')
+                        .select('*')
+                        .eq('user_email', currentUser.email);
+                    memos = {};
+                    if (memoData) {
+                        memoData.forEach(m => {
+                            memos[m.script_id] = m.memo_text;
+                        });
+                    }
+
+                    const { data: recentData } = await supabase
+                        .from('user_recent')
+                        .select('script_id')
+                        .eq('user_email', currentUser.email)
+                        .order('viewed_at', { ascending: false })
+                        .limit(10);
+                    recentViewed = recentData ? recentData.map(r => r.script_id) : [];
+                    
+                    console.log('✅ 사용자 데이터:', {
+                        favorites: favorites.length,
+                        memos: Object.keys(memos).length,
+                        recent: recentViewed.length
                     });
+                } catch (error) {
+                    console.error('사용자 데이터 로드 실패:', error);
+                }
+            }
+
+            function renderCategorySelect() {
+                const categories = ['전체', ...new Set(scriptData.map(s => s.category))];
+                const select = document.getElementById('category-select');
+                select.innerHTML = categories.map(cat => 
+                    `<option value="${cat}" ${cat === selectedCategory ? 'selected' : ''}>${cat}</option>`
+                ).join('');
+            }
+
+            function renderCards(reset = true) {
+                const filtered = getFilteredData();
+                const container = document.getElementById('cards-container');
+                const noResults = document.getElementById('no-results');
+
+                if (reset) {
+                    currentPage = 1;
+                    container.innerHTML = '';
                 }
 
-                const { data: recentData } = await supabase
-                    .from('user_recent')
-                    .select('script_id')
-                    .eq('user_email', currentUser.email)
-                    .order('viewed_at', { ascending: false })
-                    .limit(10);
-                recentViewed = recentData ? recentData.map(r => r.script_id) : [];
+                if (filtered.length === 0) {
+                    container.style.display = 'none';
+                    noResults.style.display = 'block';
+                    document.getElementById('results-count').textContent = '0개 화법';
+                    return;
+                }
+
+                container.style.display = 'block';
+                noResults.style.display = 'none';
+                document.getElementById('results-count').textContent = `${filtered.length}개 화법`;
+
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const currentItems = filtered.slice(startIndex, endIndex);
                 
-                console.log('✅ 사용자 데이터:', {
-                    favorites: favorites.length,
-                    memos: Object.keys(memos).length,
-                    recent: recentViewed.length
-                });
-            } catch (error) {
-                console.error('사용자 데이터 로드 실패:', error);
-            }
-        }
-
-        function renderCategorySelect() {
-            const categories = ['전체', ...new Set(scriptData.map(s => s.category))];
-            const select = document.getElementById('category-select');
-            select.innerHTML = categories.map(cat => 
-                `<option value="${cat}" ${cat === selectedCategory ? 'selected' : ''}>${cat}</option>`
-            ).join('');
-        }
-
-        function renderCards() {
-            const filtered = getFilteredData();
-            const container = document.getElementById('cards-container');
-            const noResults = document.getElementById('no-results');
-            
-            console.log('🔍 렌더링:', {
-                전체데이터: scriptData.length,
-                필터링결과: filtered.length,
-                활성탭: activeTab,
-                검색어: searchTerm,
-                카테고리: selectedCategory
-            });
-
-            if (filtered.length === 0) {
-                container.style.display = 'none';
-                noResults.style.display = 'block';
-                document.getElementById('results-count').textContent = '0개 화법';
-                return;
-            }
-
-            container.style.display = 'block';
-            noResults.style.display = 'none';
-            document.getElementById('results-count').textContent = `${filtered.length}개 화법`;
-
-            container.innerHTML = filtered.map(script => {
-                const isFavorite = favorites.includes(script.id);
-                const memo = memos[script.id];
-                
-                return `
-                    <div class="card" data-id="${script.id}">
-                        <div class="card-header" onclick="toggleCard(${script.id})">
-                            <div class="card-header-left">
-                                <div class="card-badges">
-                                    <span class="badge badge-scene">${script.scene}</span>
-                                    <span class="badge badge-category">${script.category}</span>
+                const newCards = currentItems.map(script => {
+                    const isFavorite = favorites.includes(script.id);
+                    const memo = memos[script.id];
+                    
+                    return `
+                        <div class="card" data-id="${script.id}">
+                            <div class="card-header" onclick="window.__ceoToggleCard(${script.id})">
+                                <div class="card-header-left">
+                                    <div class="card-badges">
+                                        <span class="badge badge-scene">${script.scene}</span>
+                                        <span class="badge badge-category">${script.category}</span>
+                                    </div>
+                                    <div class="card-question">${script.question}</div>
                                 </div>
-                                <div class="card-question">${script.question}</div>
-                            </div>
-                            <div style="display: flex; align-items: center;">
-                                <button class="heart-btn" onclick="event.stopPropagation(); toggleFavorite(${script.id})">
-                                    ${isFavorite ? 
-                                        '<svg viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>' : 
-                                        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>'
-                                    }
-                                </button>
-                                <div class="expand-icon">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                    </svg>
+                                <div style="display: flex; align-items: center;">
+                                    <button class="heart-btn" onclick="event.stopPropagation(); window.__ceoToggleFavorite(${script.id})">
+                                        ${isFavorite ? 
+                                            '<svg viewBox="0 0 24 24" fill="#8b5cf6" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>' : 
+                                            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>'
+                                        }
+                                    </button>
+                                    <div class="expand-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="card-answer">${script.answer}</div>
-                            ${memo ? `<div class="memo-box">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                                </svg>
-                                <span>${memo}</span>
-                            </div>` : ''}
-                            <div class="keywords">
-                                ${script.keywords.map(k => `<span class="keyword-tag">#${k}</span>`).join('')}
-                            </div>
-                            <div class="card-actions">
-                                <button class="btn btn-primary" onclick="event.stopPropagation(); copyToClipboard('${script.answer.replace(/"/g, '&quot;').replace(/'/g, "\\'")}', this)">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                    </svg>
-                                    복사
-                                </button>
-                                <button class="btn btn-secondary" onclick="event.stopPropagation(); openMemoModal(${script.id})">
-                                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <div class="card-body">
+                                <div class="card-answer">${script.answer}</div>
+                                ${memo ? `<div class="memo-box">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                                     </svg>
-                                </button>
-                                <button class="btn btn-tertiary" onclick="event.stopPropagation(); shareScript(${script.id})">
-                                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                                    </svg>
-                                </button>
+                                    <span>${memo}</span>
+                                </div>` : ''}
+                                <div class="keywords">
+                                    ${script.keywords.map(k => `<span class="keyword-tag">#${k}</span>`).join('')}
+                                </div>
+                                <div class="card-actions">
+                                    <div class="ceo-btn-group">
+                                        <button class="ceo-btn ceo-btn-primary ceo-btn-half" onclick="event.stopPropagation(); window.__ceoCopyToClipboard('${script.answer.replace(/"/g, '&quot;').replace(/'/g, "\\'")}', this)">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                            </svg>
+                                            복사
+                                        </button>
+                                        <button class="ceo-btn ceo-btn-primary ceo-btn-half ceo-btn-ai" onclick="event.stopPropagation(); window.__ceoOpenAIAnswer('${script.question.replace(/'/g, "\\'")}')">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="5"></circle>
+                                                <path d="m12 1-3 6-6 3 6 3 3 6 3-6 6-3-6-3-3-6z"></path>
+                                            </svg>
+                                            AI 답변
+                                        </button>
+                                    </div>
+                                    <button class="ceo-btn ceo-btn-secondary" onclick="event.stopPropagation(); window.__ceoOpenMemoModal(${script.id})">
+                                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                        </svg>
+                                    </button>
+                                    <button class="ceo-btn ceo-btn-tertiary" onclick="event.stopPropagation(); window.__ceoShareScript(${script.id})">
+                                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `;
-            }).join('');
-        }
+                    `;
+                }).join('');
 
-        function toggleCard(id) {
-            const card = document.querySelector(`.card[data-id="${id}"]`);
-            card.classList.toggle('expanded');
-            if (card.classList.contains('expanded')) {
-                addToRecent(id);
-            }
-        }
-
-        function getFilteredData() {
-            let filtered = [...scriptData];
-
-            // 탭별 필터링
-            if (activeTab === 'all') {
-                // 전체 탭 - 모든 데이터 사용
-                // 카테고리 필터만 적용
-                if (selectedCategory !== '전체') {
-                    filtered = filtered.filter(s => s.category === selectedCategory);
-                }
-            } else if (activeTab === 'favorites') {
-                filtered = filtered.filter(s => favorites.includes(s.id));
-                // 카테고리 필터 적용
-                if (selectedCategory !== '전체') {
-                    filtered = filtered.filter(s => s.category === selectedCategory);
-                }
-            } else if (activeTab === 'recent') {
-                filtered = filtered.filter(s => recentViewed.includes(s.id));
-                filtered.sort((a, b) => recentViewed.indexOf(a.id) - recentViewed.indexOf(b.id));
-                // 카테고리 필터 적용
-                if (selectedCategory !== '전체') {
-                    filtered = filtered.filter(s => s.category === selectedCategory);
-                }
-            } else if (activeTab === 'memos') {
-                filtered = filtered.filter(s => memos[s.id]);
-                // 카테고리 필터 적용
-                if (selectedCategory !== '전체') {
-                    filtered = filtered.filter(s => s.category === selectedCategory);
+                if (reset) {
+                    container.innerHTML = newCards;
+                } else {
+                    container.innerHTML += newCards;
                 }
             }
 
-            // 검색 (모든 탭에 적용)
-            if (searchTerm && searchTerm.trim()) {
-                const term = searchTerm.trim().toLowerCase();
-                filtered = filtered.filter(s => {
-                    try {
-                        const questionMatch = s.question && String(s.question).toLowerCase().includes(term);
-                        const answerMatch = s.answer && String(s.answer).toLowerCase().includes(term);
-                        const keywordMatch = s.keywords && Array.isArray(s.keywords) && 
-                            s.keywords.some(k => k && String(k).toLowerCase().includes(term));
-                        return questionMatch || answerMatch || keywordMatch;
-                    } catch (e) {
-                        console.error('검색 필터 에러:', e, s);
-                        return false;
+            function loadMoreCards() {
+                const filtered = getFilteredData();
+                const maxPages = Math.ceil(filtered.length / itemsPerPage);
+                
+                if (currentPage >= maxPages || isLoading) {
+                    return;
+                }
+                
+                isLoading = true;
+                currentPage++;
+                
+                setTimeout(() => {
+                    renderCards(false);
+                    isLoading = false;
+                }, 100);
+            }
+
+            function toggleCard(id) {
+                const card = document.querySelector(`.card[data-id="${id}"]`);
+                card.classList.toggle('expanded');
+                if (card.classList.contains('expanded')) {
+                    addToRecent(id);
+                }
+            }
+
+            function getFilteredData() {
+                let filtered = [...scriptData];
+
+                if (searchTerm && searchTerm.trim()) {
+                    const term = searchTerm.trim().toLowerCase();
+                    filtered = filtered.filter(s => {
+                        try {
+                            const questionMatch = s.question && String(s.question).toLowerCase().includes(term);
+                            const answerMatch = s.answer && String(s.answer).toLowerCase().includes(term);
+                            const keywordMatch = s.keywords && Array.isArray(s.keywords) && 
+                                s.keywords.some(k => k && String(k).toLowerCase().includes(term));
+                            return questionMatch || answerMatch || keywordMatch;
+                        } catch (e) {
+                            console.error('검색 필터 에러:', e, s);
+                            return false;
+                        }
+                    });
+                    
+                    if (selectedCategory !== '전체') {
+                        filtered = filtered.filter(s => s.category === selectedCategory);
+                    }
+                    
+                    return filtered;
+                }
+
+                if (activeTab === 'all') {
+                    if (selectedCategory !== '전체') {
+                        filtered = filtered.filter(s => s.category === selectedCategory);
+                    }
+                } else if (activeTab === 'favorites') {
+                    filtered = filtered.filter(s => favorites.includes(s.id));
+                    if (selectedCategory !== '전체') {
+                        filtered = filtered.filter(s => s.category === selectedCategory);
+                    }
+                } else if (activeTab === 'recent') {
+                    filtered = filtered.filter(s => recentViewed.includes(s.id));
+                    filtered.sort((a, b) => recentViewed.indexOf(a.id) - recentViewed.indexOf(b.id));
+                    if (selectedCategory !== '전체') {
+                        filtered = filtered.filter(s => s.category === selectedCategory);
+                    }
+                } else if (activeTab === 'memos') {
+                    filtered = filtered.filter(s => memos[s.id]);
+                    if (selectedCategory !== '전체') {
+                        filtered = filtered.filter(s => s.category === selectedCategory);
+                    }
+                }
+
+                return filtered;
+            }
+
+            function updateCounts() {
+                const favCount = favorites.length;
+                const memoCount = Object.keys(memos).length;
+                
+                document.getElementById('fav-count').textContent = favCount;
+                document.getElementById('memo-count').textContent = memoCount;
+            }
+
+            function setupEventListeners() {
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        activeTab = btn.dataset.tab;
+                        
+                        selectedCategory = '전체';
+                        const categorySelect = document.getElementById('category-select');
+                        if (categorySelect) {
+                            categorySelect.value = '전체';
+                        }
+                        
+                        renderCards(true);
+                    });
+                });
+
+                const searchInput = document.getElementById('search-input');
+                const clearBtn = document.getElementById('clear-search');
+                
+                searchInput.addEventListener('input', (e) => {
+                    searchTerm = e.target.value;
+                    clearBtn.style.display = searchTerm ? 'block' : 'none';
+                    renderCards(true);
+                });
+
+                clearBtn.addEventListener('click', () => {
+                    searchTerm = '';
+                    searchInput.value = '';
+                    clearBtn.style.display = 'none';
+                    renderCards(true);
+                });
+
+                document.getElementById('category-select').addEventListener('change', (e) => {
+                    selectedCategory = e.target.value;
+                    
+                    activeTab = 'all';
+                    document.querySelectorAll('.tab-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                        if (btn.dataset.tab === 'all') {
+                            btn.classList.add('active');
+                        }
+                    });
+                    
+                    renderCards(true);
+                });
+
+                document.getElementById('save-memo').addEventListener('click', saveMemo);
+                document.getElementById('cancel-memo').addEventListener('click', closeMemoModal);
+                document.getElementById('memo-modal').addEventListener('click', (e) => {
+                    if (e.target.id === 'memo-modal') closeMemoModal();
+                });
+
+                window.addEventListener('scroll', () => {
+                    if (isLoading) return;
+                    
+                    const scrollHeight = document.documentElement.scrollHeight;
+                    const scrollTop = document.documentElement.scrollTop;
+                    const clientHeight = document.documentElement.clientHeight;
+                    
+                    if (scrollHeight - scrollTop - clientHeight < 200) {
+                        loadMoreCards();
                     }
                 });
             }
 
-            console.log('활성 탭:', activeTab, '/ 검색어:', searchTerm, '/ 결과:', filtered.length);
-            return filtered;
-        }
-
-        function updateCounts() {
-            const favCount = favorites.length;
-            const memoCount = Object.keys(memos).length;
-            const recentCount = recentViewed.length;
-            
-            console.log('📊 카운트 업데이트:', {
-                즐겨찾기: favCount,
-                메모: memoCount,
-                최근: recentCount
-            });
-            
-            document.getElementById('fav-count').textContent = favCount;
-            document.getElementById('memo-count').textContent = memoCount;
-            document.getElementById('recent-count').textContent = recentCount;
-            document.getElementById('floating-count').textContent = favCount;
-            
-            const floatingBadge = document.getElementById('floating-badge');
-            if (favCount > 0) {
-                floatingBadge.classList.add('active');
-            } else {
-                floatingBadge.classList.remove('active');
-            }
-        }
-
-        function setupEventListeners() {
-            // 탭 버튼
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    activeTab = btn.dataset.tab;
-                    renderCards();
-                });
-            });
-
-            // 검색
-            const searchInput = document.getElementById('search-input');
-            const clearBtn = document.getElementById('clear-search');
-            
-            searchInput.addEventListener('input', (e) => {
-                searchTerm = e.target.value;
-                clearBtn.style.display = searchTerm ? 'block' : 'none';
-                console.log('🔍 검색 입력:', searchTerm, '길이:', searchTerm.length);
-                renderCards();
-            });
-
-            clearBtn.addEventListener('click', () => {
-                searchTerm = '';
-                searchInput.value = '';
-                clearBtn.style.display = 'none';
-                console.log('🔍 검색 초기화');
-                renderCards();
-            });
-
-            // 카테고리
-            document.getElementById('category-select').addEventListener('change', (e) => {
-                selectedCategory = e.target.value;
-                renderCards();
-            });
-
-            // 메모 모달
-            document.getElementById('save-memo').addEventListener('click', saveMemo);
-            document.getElementById('cancel-memo').addEventListener('click', closeMemoModal);
-            document.getElementById('memo-modal').addEventListener('click', (e) => {
-                if (e.target.id === 'memo-modal') closeMemoModal();
-            });
-        }
-
-        async function toggleFavorite(id) {
-            if (!currentUser || !currentUser.email) {
-                alert('로그인이 필요합니다.');
-                return;
-            }
-            
-            try {
-                if (favorites.includes(id)) {
-                    await supabase
-                        .from('user_favorites')
-                        .delete()
-                        .eq('user_email', currentUser.email)
-                        .eq('script_id', id);
-                    favorites = favorites.filter(f => f !== id);
-                } else {
-                    await supabase
-                        .from('user_favorites')
-                        .insert({ user_email: currentUser.email, script_id: id });
-                    favorites.push(id);
+            async function toggleFavorite(id) {
+                if (!currentUser || !currentUser.email) {
+                    alert('로그인이 필요합니다.');
+                    return;
                 }
-                updateCounts();
-                renderCards();
-            } catch (error) {
-                console.error('즐겨찾기 오류:', error);
-            }
-        }
-
-        async function addToRecent(id) {
-            if (!currentUser || !currentUser.email) return;
-            
-            try {
-                await supabase
-                    .from('user_recent')
-                    .insert({ user_email: currentUser.email, script_id: id });
                 
-                recentViewed = recentViewed.filter(r => r !== id);
-                recentViewed.unshift(id);
-                recentViewed = recentViewed.slice(0, 10);
-                updateCounts();
-            } catch (error) {
-                console.error('최근 항목 오류:', error);
-            }
-        }
-
-        function copyToClipboard(text, btn) {
-            const decoded = text.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
-            navigator.clipboard.writeText(decoded).then(() => {
-                const originalText = btn.innerHTML;
-                btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> 복사완료';
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                }, 2000);
-            });
-        }
-
-        function shareScript(id) {
-            const script = scriptData.find(s => s.id === id);
-            const text = `${script.question}\n\n${script.answer}`;
-            
-            if (navigator.share) {
-                navigator.share({ title: script.question, text: text });
-            } else {
-                copyToClipboard(text, { innerHTML: '' });
-                alert('클립보드에 복사되었습니다!');
-            }
-        }
-
-        function openMemoModal(id) {
-            if (!currentUser || !currentUser.email) {
-                alert('로그인이 필요합니다.');
-                return;
-            }
-            currentMemoId = id;
-            document.getElementById('memo-textarea').value = memos[id] || '';
-            document.getElementById('memo-modal').classList.add('active');
-        }
-
-        function closeMemoModal() {
-            document.getElementById('memo-modal').classList.remove('active');
-            currentMemoId = null;
-        }
-
-        async function saveMemo() {
-            if (!currentUser || !currentUser.email) return;
-            
-            const memo = document.getElementById('memo-textarea').value.trim();
-            
-            try {
-                if (memo) {
-                    await supabase
-                        .from('user_memos')
-                        .upsert({
-                            user_email: currentUser.email,
-                            script_id: currentMemoId,
-                            memo_text: memo,
-                            updated_at: new Date().toISOString()
-                        }, {
-                            onConflict: 'user_email,script_id'
-                        });
-                    memos[currentMemoId] = memo;
-                } else {
-                    await supabase
-                        .from('user_memos')
-                        .delete()
-                        .eq('user_email', currentUser.email)
-                        .eq('script_id', currentMemoId);
-                    delete memos[currentMemoId];
+                try {
+                    if (favorites.includes(id)) {
+                        await supabase
+                            .from('user_favorites')
+                            .delete()
+                            .eq('user_email', currentUser.email)
+                            .eq('script_id', id);
+                        favorites = favorites.filter(f => f !== id);
+                    } else {
+                        await supabase
+                            .from('user_favorites')
+                            .insert({ user_email: currentUser.email, script_id: id });
+                        favorites.push(id);
+                    }
+                    updateCounts();
+                    renderCards(true);
+                } catch (error) {
+                    console.error('즐겨찾기 오류:', error);
                 }
-                closeMemoModal();
-                updateCounts();
-                renderCards();
-            } catch (error) {
-                console.error('메모 저장 오류:', error);
             }
-        }
 
-        init();
+            async function addToRecent(id) {
+                if (!currentUser || !currentUser.email) return;
+                
+                try {
+                    await supabase
+                        .from('user_recent')
+                        .insert({ user_email: currentUser.email, script_id: id });
+                    
+                    recentViewed = recentViewed.filter(r => r !== id);
+                    recentViewed.unshift(id);
+                    recentViewed = recentViewed.slice(0, 10);
+                    updateCounts();
+                } catch (error) {
+                    console.error('최근 항목 오류:', error);
+                }
+            }
+
+            function copyToClipboard(text, btn) {
+                const decoded = text.replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+                navigator.clipboard.writeText(decoded).then(() => {
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> 복사완료';
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                    }, 2000);
+                });
+            }
+
+            function openAIAnswer(question) {
+                const encodedQuestion = encodeURIComponent(question);
+                const perplexityUrl = `https://www.perplexity.ai/search?q=${encodedQuestion}`;
+                window.open(perplexityUrl, '_blank');
+            }
+
+            function shareScript(id) {
+                const script = scriptData.find(s => s.id === id);
+                if (!script) return;
+                
+                const text = `${script.question}\n\n${script.answer}`;
+                
+                if (navigator.share) {
+                    navigator.share({ 
+                        title: 'CEO플랜 상담화법',
+                        text: text
+                    }).catch(err => {
+                        console.log('공유 취소 또는 실패:', err);
+                    });
+                } else {
+                    copyToClipboard(text, { innerHTML: '' });
+                    alert('클립보드에 복사되었습니다!');
+                }
+            }
+
+            function openMemoModal(id) {
+                if (!currentUser || !currentUser.email) {
+                    alert('로그인이 필요합니다.');
+                    return;
+                }
+                currentMemoId = id;
+                document.getElementById('memo-textarea').value = memos[id] || '';
+                document.getElementById('memo-modal').classList.add('active');
+            }
+
+            function closeMemoModal() {
+                document.getElementById('memo-modal').classList.remove('active');
+                currentMemoId = null;
+            }
+
+            async function saveMemo() {
+                if (!currentUser || !currentUser.email) return;
+                
+                const memo = document.getElementById('memo-textarea').value.trim();
+                
+                try {
+                    if (memo) {
+                        await supabase
+                            .from('user_memos')
+                            .upsert({
+                                user_email: currentUser.email,
+                                script_id: currentMemoId,
+                                memo_text: memo,
+                                updated_at: new Date().toISOString()
+                            }, {
+                                onConflict: 'user_email,script_id'
+                            });
+                        memos[currentMemoId] = memo;
+                    } else {
+                        await supabase
+                            .from('user_memos')
+                            .delete()
+                            .eq('user_email', currentUser.email)
+                            .eq('script_id', currentMemoId);
+                        delete memos[currentMemoId];
+                    }
+                    closeMemoModal();
+                    updateCounts();
+                    renderCards(true);
+                } catch (error) {
+                    console.error('메모 저장 오류:', error);
+                }
+            }
+
+            // ✅ 전역 함수로 노출 (IIFE 외부에서 호출 가능하게)
+            window.__ceoToggleCard = toggleCard;
+            window.__ceoToggleFavorite = toggleFavorite;
+            window.__ceoCopyToClipboard = copyToClipboard;
+            window.__ceoOpenAIAnswer = openAIAnswer;
+            window.__ceoShareScript = shareScript;
+            window.__ceoOpenMemoModal = openMemoModal;
+
+            // 앱 초기화
+            init();
+        })();
     </script>
 </body>
 </html>
