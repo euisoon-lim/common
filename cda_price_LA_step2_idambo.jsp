@@ -1,8 +1,9 @@
-curl 'https://www.lotteins.co.kr/CChannelSvl' \
-  -H 'Accept: application/json, text/javascript, */*; q=0.01' \
+curl 'https://www.lotteins.co.kr/web/C/D/A/cda_price_LA_step2_idambo.jsp' \
+  -X 'POST' \
+  -H 'Accept: text/html, */*; q=0.01' \
   -H 'Accept-Language: ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7' \
   -H 'Connection: keep-alive' \
-  -H 'Content-Type: application/x-www-form-urlencoded;charset=UTF-8' \
+  -H 'Content-Length: 0' \
   -b '_xm_webid_1_=515543474; JSESSIONID=i8SVaR19kcyock18GDIOyY1xhjTQRgaMjQV0ixo0bulvgPTDt0PtnUH5w8ovHAPG.APCM1_servlet_engine2; _fwb=45UmVnVsL8K7L4hRyDAvo3.1772864774429; wcs_bt=7eaf6dcf86f388:1772864870; mp_9c85fda7212d269ea46c3f6a57ba69ca_mixpanel=%7B%22distinct_id%22%3A%20%22%24device%3A19cc6f9a1df741-02f9fd3a060df5-1a525631-147a80-19cc6f9a1df741%22%2C%22%24device_id%22%3A%20%2219cc6f9a1df741-02f9fd3a060df5-1a525631-147a80-19cc6f9a1df741%22%2C%22%24search_engine%22%3A%20%22google%22%2C%22%24initial_referrer%22%3A%20%22https%3A%2F%2Fwww.google.com%2F%22%2C%22%24initial_referring_domain%22%3A%20%22www.google.com%22%2C%22__mps%22%3A%20%7B%7D%2C%22__mpso%22%3A%20%7B%22%24initial_referrer%22%3A%20%22https%3A%2F%2Fwww.google.com%2F%22%2C%22%24initial_referring_domain%22%3A%20%22www.google.com%22%7D%2C%22__mpus%22%3A%20%7B%7D%2C%22__mpa%22%3A%20%7B%7D%2C%22__mpu%22%3A%20%7B%7D%2C%22__mpr%22%3A%20%5B%5D%2C%22__mpap%22%3A%20%5B%5D%7D' \
   -H 'Origin: https://www.lotteins.co.kr' \
   -H 'Referer: https://www.lotteins.co.kr/web/C/D/A/cda_price_LA.jsp?prdtseq=0&Bojcode=LA0674J' \
@@ -13,5 +14,4 @@ curl 'https://www.lotteins.co.kr/CChannelSvl' \
   -H 'X-Requested-With: XMLHttpRequest' \
   -H 'sec-ch-ua: "Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145"' \
   -H 'sec-ch-ua-mobile: ?0' \
-  -H 'sec-ch-ua-platform: "macOS"' \
-  --data-raw 'txcode=transLtrA280&SH_PFM_FNCD=RO&_PAYLOAD_=%7B%22voLtrGdAdInfoInq%22%3A%7B%22stdt%22%3A%2220260307%22%2C%22plFlgcd%22%3A%2201%22%2C%22gdcd%22%3A%22LA0674J001%22%2C%22ceOrgcd%22%3A%22D053000%22%2C%22cePlsno%22%3A%220%22%7D%7D&tc=dfi.c.d.a.cmd.CdaPriceCmd&pageTypeCd=tx&rtnUri=%2Fweb%2FC%2Fcm%2FCJsonResult.jsp&dfiUserId=1060010'
+  -H 'sec-ch-ua-platform: "macOS"'
