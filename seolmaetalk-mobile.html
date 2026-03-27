@@ -44,32 +44,7 @@ body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'S
     position: relative;
 }
 
-/* 4. 헤더 */
-.seolmaetalk-header-wrapper {
-    position: sticky !important;
-    top: 0 !important;
-    background: #ffffff !important;
-    border-bottom: 1px solid #E5E0D8 !important;
-    padding: 14px 16px !important;
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    z-index: 10 !important;
-    flex-shrink: 0 !important;
-}
-.seolmaetalk-header-logo { width: auto; height: 20px; object-fit: contain; cursor: pointer; }
-.seolmaetalk-header-controls { display: flex !important; align-items: center !important; gap: 8px !important; }
-.seolmaetalk-header-back {
-    border: none !important; cursor: pointer !important; padding: 0 !important;
-    width: 36px !important; height: 36px !important;
-    display: flex !important; align-items: center !important; justify-content: center !important;
-    color: #371c1d !important; transition: all 0.2s !important; border-radius: 8px !important;
-    background: rgba(0,0,0,0.1) !important; font-size: 24px !important; opacity: 0.7 !important;
-}
-.seolmaetalk-header-back:hover { background: rgba(0,0,0,0.15) !important; opacity: 1 !important; }
-.seolmaetalk-header-back.hidden-btn { visibility: hidden !important; }
-
-/* 4-1. 상단 메뉴 바 */
+/* 4. 상단 메뉴 바 (헤더 통합) */
 .top-menu-bar {
     display: none;
     position: sticky;
@@ -77,11 +52,21 @@ body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'S
     background: white;
     border-bottom: 1px solid #E5E0D8;
     padding: 0 8px;
-    z-index: 9;
+    z-index: 10;
     flex-shrink: 0;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-.top-menu-bar.show { display: flex; gap: 0; justify-content: space-around; align-items: center; }
+.top-menu-bar.show { display: flex; gap: 0; align-items: center; }
+.seolmaetalk-header-back {
+    border: none !important; cursor: pointer !important; padding: 0 !important;
+    width: 36px !important; height: 36px !important; flex-shrink: 0 !important;
+    display: flex !important; align-items: center !important; justify-content: center !important;
+    color: #371c1d !important; transition: all 0.2s !important; border-radius: 8px !important;
+    background: rgba(0,0,0,0.08) !important; font-size: 22px !important; opacity: 0.7 !important;
+    margin-left: 4px !important; margin-right: 4px !important;
+}
+.seolmaetalk-header-back:hover { background: rgba(0,0,0,0.15) !important; opacity: 1 !important; }
+.seolmaetalk-header-back.hidden-btn { display: none !important; }
 .top-menu-item {
     flex: 1; padding: 12px 8px; background: none; border: none; border-bottom: 3px solid transparent;
     color: #999999; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
@@ -464,20 +449,12 @@ body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'S
      메인 래퍼 (모달 아닌 풀페이지)
      ============================================ -->
 <div id="seolmaetalk-mobile-wrap">
-    <div class="seolmaetalk-header-wrapper" id="mobile-header">
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <img src="https://cdn.imweb.me/upload/S2016083157c63a62163fa/3e2032d82688a.png" alt="설매톡" class="seolmaetalk-header-logo" onclick="goToHome()">
-        </div>
-        <div class="seolmaetalk-header-controls">
-            <button class="seolmaetalk-header-back hidden-btn" id="header-back-btn" onclick="goBack()" title="이전 페이지">&larr;</button>
-        </div>
-    </div>
-
     <div class="top-menu-bar show" id="top-menu-bar">
         <button class="top-menu-item" onclick="goToHomeAndReset()">처음부터</button>
         <button class="top-menu-item" onclick="switchTabFromMenu('mypage')">의뢰내역</button>
         <button class="top-menu-item" onclick="switchTabFromMenu('credentials')">위촉코드</button>
         <button class="top-menu-item" onclick="switchTabFromMenu('dashboard')">판매비중</button>
+        <button class="seolmaetalk-header-back hidden-btn" id="header-back-btn" onclick="goBack()" title="이전 페이지">&larr;</button>
     </div>
 
     <div class="container">
@@ -486,7 +463,7 @@ body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'S
             <div class="greeting-section">
                 <div class="greeting-content-wrapper">
                     <div class="greeting-text-wrapper">
-                        <div class="greeting-text" id="greeting-text">홍길동님,<br>설계톡으로<br>설계요청을 시작해보세요.</div>
+                        <div class="greeting-text" id="greeting-text">홍길동님,<br>안녕하세요!</div>
                     </div>
                     <img src="https://cdn.imweb.me/upload/S2016083157c63a62163fa/6b34f04c9483c.png" alt="설계 시작" class="greeting-image">
                 </div>
@@ -743,7 +720,7 @@ async function initUser(){const memberInfo=await getImwebMemberInfo();if(memberI
 async function loadCommissionCodes(){if(!supabase||!currentPlannerId)return;try{const{data}=await supabase.from('insurer_credentials').select('insurer_name, commission_code').eq('planner_id',currentPlannerId);if(data){insurerCommissionCodes={};data.forEach(item=>{if(item.commission_code)insurerCommissionCodes[item.insurer_name]=item.commission_code;});}}catch(err){}}
 async function getImwebMemberInfo(){try{const response=await fetch('/dialog/join.cm',{credentials:'include'});if(response.ok){const html=await response.text();const parser=new DOMParser();const doc=parser.parseFromString(html,'text/html');const nameInput=doc.querySelector('input[name="name"]');const emailInput=doc.querySelector('input[name="email"]');const uidInput=doc.querySelector('input[name="uid"]');if(nameInput&&nameInput.value.trim()){const uid=uidInput?.value.trim()||null;const name=nameInput.value.trim();let email=emailInput?.value.trim()||(uid?`${uid}@imweb.com`:null);if(email&&email.endsWith('@imweb.com'))email=email.substring(0,email.lastIndexOf('@imweb.com'));if(email){const memberInfo={uid,name,email};localStorage.setItem('IMWEB_MEMBER',JSON.stringify(memberInfo));return memberInfo;}}}}catch(err){}try{const cached=localStorage.getItem('IMWEB_MEMBER');if(cached)return JSON.parse(cached);}catch(err){}return null;}
 function updateMypageTitle(name){const el=document.getElementById('mypage-title');if(el&&name)el.textContent=`${name}님의 설계의뢰 내역`;}
-function updateGreetingText(name){const el=document.getElementById('greeting-text');if(el&&name)el.innerHTML=`${name}님,<br>안녕하세요!<br>설계 요청을 시작해봐요.`;}
+function updateGreetingText(name){const el=document.getElementById('greeting-text');if(el&&name)el.innerHTML=`${name}님,<br>안녕하세요!`;}
 
 // ============================================
 // 네비게이션
