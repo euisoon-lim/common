@@ -187,7 +187,7 @@ body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'S
 .insurer-logo-img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
 /* 13. 위촉코드 */
-.credentials-logo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 20px; }
+.credentials-logo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
 .credentials-item { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .credentials-logo {
     width: 100%; aspect-ratio: 1/1; border: 2px solid var(--line); border-radius: var(--radius);
@@ -753,7 +753,7 @@ function goToHome(){previousTab=null;switchTab('form');}
 function goBack(){const detailView=document.getElementById('mypage-detail-view');if(detailView&&detailView.style.display!=='none'){showRequestList();return;}if(previousTab){switchTab(previousTab);previousTab=null;}else{switchTab('form');}}
 function updateBackButtonVisibility(){const backBtn=document.getElementById('header-back-btn');const currentTab=Array.from(document.querySelectorAll('.tab-content')).find(t=>t.classList.contains('active'))?.id;if(currentTab==='form-tab'&&previousTab===null)backBtn.classList.add('hidden-btn');else backBtn.classList.remove('hidden-btn');}
 function switchTab(tabName){document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));document.getElementById(`${tabName}-tab`).classList.add('active');updateTopMenuBar(tabName);updateBackButtonVisibility();if(tabName==='mypage'){document.getElementById('mypage-list-view').style.display='block';document.getElementById('mypage-detail-view').style.display='none';loadRequests();}else if(tabName==='credentials'){loadCredentials();}else if(tabName==='dashboard'){loadDashboardData();}scrollToTop();}
-function scrollToTop(){var container=document.querySelector('#seolmaetalk-mobile-wrap .container');if(container)container.scrollTop=0;window.scrollTo(0,0);}
+function scrollToTop(){var container=document.querySelector('#seolmaetalk-mobile-wrap .container');if(container)container.scrollTop=0;window.scrollTo({top:0,behavior:'smooth'});document.documentElement.scrollTop=0;document.body.scrollTop=0;}
 function updateTopMenuBar(currentTab){const topMenuBar=document.getElementById('top-menu-bar'),menuItems=document.querySelectorAll('.top-menu-item');topMenuBar.classList.add('show');menuItems.forEach(item=>item.classList.remove('active'));if(currentTab==='mypage')menuItems[1].classList.add('active');else if(currentTab==='credentials')menuItems[2].classList.add('active');else if(currentTab==='dashboard')menuItems[3].classList.add('active');}
 function switchTabFromMenu(tabName){previousTab='form';switchTab(tabName);}
 function goToHomeAndReset(){resetForm();previousTab=null;switchTab('form');}
@@ -851,7 +851,7 @@ async function shareToOneOtherInsurer(insurerName){if(!currentDetailData){showTo
 function showToast(message,type='info'){const toast=document.getElementById('toast');toast.textContent=message;toast.className='toast show';if(type==='error')toast.classList.add('error');else if(type==='success')toast.classList.add('success');setTimeout(()=>toast.classList.remove('show'),3000);}
 </script>
 
-<!-- 스크롤 자동 이동 -->
+<!-- 스크롤 자동 이동 (모바일 풀페이지용 — window 스크롤 + container 스크롤 양쪽 지원) -->
 <script>
 document.addEventListener('DOMContentLoaded', function(){
     setTimeout(function(){
@@ -859,10 +859,37 @@ document.addEventListener('DOMContentLoaded', function(){
         if(!wrap) return;
         var container = wrap.querySelector('.container');
 
+        // 실제 스크롤되는 대상 자동 감지 (container 내부 스크롤 vs window 스크롤)
+        function getScrollTarget(){
+            if(container && container.scrollHeight > container.clientHeight + 10) return container;
+            return null; // window 사용
+        }
+
+        function getScrollTop(){
+            var target = getScrollTarget();
+            if(target) return target.scrollTop;
+            return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        }
+
+        function setScrollTop(val){
+            var target = getScrollTarget();
+            if(target){ target.scrollTop = val; }
+            else { window.scrollTo(0, val); }
+        }
+
+        function getElementTop(element){
+            var target = getScrollTarget();
+            if(target){
+                return element.getBoundingClientRect().top - target.getBoundingClientRect().top + target.scrollTop;
+            } else {
+                return element.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0);
+            }
+        }
+
         function smoothScrollTo(element, offset){
-            if(!container || !element) return;
-            var targetTop = element.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop - (offset || 60);
-            var startTop = container.scrollTop;
+            if(!element) return;
+            var targetTop = getElementTop(element) - (offset || 80);
+            var startTop = getScrollTop();
             var distance = targetTop - startTop;
             if(Math.abs(distance) < 30) return;
             var duration = 700;
@@ -872,7 +899,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 if(!startTime) startTime = currentTime;
                 var elapsed = currentTime - startTime;
                 var progress = Math.min(elapsed / duration, 1);
-                container.scrollTop = startTop + distance * easeInOutQuart(progress);
+                setScrollTop(startTop + distance * easeInOutQuart(progress));
                 if(progress < 1) requestAnimationFrame(animate);
             }
             requestAnimationFrame(animate);
@@ -887,6 +914,7 @@ document.addEventListener('DOMContentLoaded', function(){
             return next;
         }
 
+        // select 변경 → 다음 칸
         wrap.addEventListener('change', function(e){
             if(e.target.tagName !== 'SELECT') return;
             var formGroup = e.target.closest('.form-group');
@@ -895,12 +923,14 @@ document.addEventListener('DOMContentLoaded', function(){
             if(next) setTimeout(function(){ smoothScrollTo(next); }, 250);
         });
 
+        // 텍스트/숫자 입력 완료(blur) → 다음 칸
         wrap.addEventListener('focusout', function(e){
             var tag = e.target.tagName, type = e.target.type;
             if(tag === 'TEXTAREA' || (tag === 'INPUT' && (type === 'text' || type === 'number'))){
                 if(!e.target.value.trim()) return;
                 var formGroup = e.target.closest('.form-group');
                 if(!formGroup) return;
+                // 생년월일: 마지막 칸(일)에서만 스크롤
                 if(e.target.closest('.birth-input-boxes')){
                     if(e.target.id !== 'birth-day') return;
                     if(!e.target.value.trim()) return;
@@ -910,11 +940,13 @@ document.addEventListener('DOMContentLoaded', function(){
             }
         });
 
+        // 라디오 선택 → 다음 칸
         wrap.addEventListener('click', function(e){
             var radioItem = e.target.closest('.radio-item');
             if(!radioItem) return;
             var formGroup = radioItem.closest('.form-group');
             if(!formGroup) return;
+            // 병력 "있음" → 세부입력 칸
             var radio = radioItem.querySelector('input[type="radio"]');
             if(radio && radio.name === 'medical-history' && radio.value === '있음'){
                 setTimeout(function(){
@@ -926,6 +958,18 @@ document.addEventListener('DOMContentLoaded', function(){
             var next = findNextGroup(formGroup);
             if(next) setTimeout(function(){ smoothScrollTo(next); }, 400);
         });
+
+        // 성별 라디오 선택 → 다음 칸 (인라인 라디오)
+        wrap.addEventListener('change', function(e){
+            if(e.target.type !== 'radio') return;
+            if(e.target.name === 'client-gender'){
+                var formGroup = e.target.closest('.form-group');
+                if(!formGroup) return;
+                var next = findNextGroup(formGroup);
+                if(next) setTimeout(function(){ smoothScrollTo(next); }, 300);
+            }
+        });
+
     }, 800);
 });
 </script>
@@ -940,13 +984,24 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     function scrollToField(el){
+        if(!el) return;
         var wrap = document.getElementById('seolmaetalk-mobile-wrap');
-        if(!wrap || !el) return;
+        if(!wrap) return;
         var container = wrap.querySelector('.container');
-        if(!container) return;
         var formGroup = el.closest('.form-group') || el;
-        var targetTop = formGroup.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop - 60;
-        var startTop = container.scrollTop;
+
+        // container 내부 스크롤 vs window 스크롤 자동 감지
+        var useContainer = container && container.scrollHeight > container.clientHeight + 10;
+        var targetTop, startTop;
+
+        if(useContainer){
+            targetTop = formGroup.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop - 80;
+            startTop = container.scrollTop;
+        } else {
+            targetTop = formGroup.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0) - 80;
+            startTop = window.pageYOffset || document.documentElement.scrollTop || 0;
+        }
+
         var distance = targetTop - startTop;
         if(Math.abs(distance) < 20) return;
         var duration = 700;
@@ -956,7 +1011,9 @@ document.addEventListener('DOMContentLoaded', function(){
             if(!startTime) startTime = currentTime;
             var elapsed = currentTime - startTime;
             var progress = Math.min(elapsed / duration, 1);
-            container.scrollTop = startTop + distance * easeInOutQuart(progress);
+            var val = startTop + distance * easeInOutQuart(progress);
+            if(useContainer){ container.scrollTop = val; }
+            else { window.scrollTo(0, val); }
             if(progress < 1) requestAnimationFrame(animate);
             else { if(el.tagName === 'INPUT' || el.tagName === 'SELECT' || el.tagName === 'TEXTAREA') el.focus(); }
         }
