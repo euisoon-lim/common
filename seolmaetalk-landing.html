@@ -1,0 +1,1221 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/toss/tossface/dist/tossface.css">
+
+<style>
+/* ============================================
+   설매톡 랜딩 v3 — Awwwards-grade upgrade
+   ============================================ */
+
+/* — 전역 리셋 & 변수 — */
+#seolmaetalk-landing {
+    --yellow: #FEE500;
+    --dark:   #191919;
+    --bg:     #F5F4F0;
+    --white:  #ffffff;
+    --muted:  #999999;
+    --border: rgba(0,0,0,0.07);
+    --radius: 20px;
+    --shadow-sm:  0 2px 8px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md:  0 8px 32px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+    --shadow-lg:  0 24px 64px rgba(0,0,0,0.10), 0 8px 24px rgba(0,0,0,0.06);
+    --ease-out-expo: cubic-bezier(0.16,1,0.3,1);
+    --ease-bounce: cubic-bezier(0.34,1.56,0.64,1);
+
+    font-family: 'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--dark);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+#seolmaetalk-landing *,
+#seolmaetalk-landing *::before,
+#seolmaetalk-landing *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+#seolmaetalk-landing img { max-width: 100%; display: block; }
+
+/* — Container — */
+#seolmaetalk-landing .stl-container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 28px;
+}
+
+/* — Section — */
+#seolmaetalk-landing .stl-section { padding: 110px 0; }
+
+#seolmaetalk-landing .stl-section-eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+}
+
+#seolmaetalk-landing .stl-section-title {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.25;
+    margin-bottom: 16px;
+}
+
+#seolmaetalk-landing .stl-section-sub {
+    font-size: 17px;
+    color: #777777;
+    line-height: 1.75;
+    margin-bottom: 56px;
+    max-width: 540px;
+}
+
+/* — Card shared — */
+#seolmaetalk-landing .stl-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.45s var(--ease-out-expo),
+                box-shadow 0.45s var(--ease-out-expo);
+}
+
+#seolmaetalk-landing .stl-card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: var(--shadow-lg);
+}
+
+/* ============================================
+   1. HERO
+   ============================================ */
+#seolmaetalk-landing .hero-section {
+    position: relative;
+    padding: 130px 0 110px;
+    overflow: hidden;
+    background: var(--bg);
+}
+
+/* 메쉬 그래디언트 블롭 */
+#seolmaetalk-landing .hero-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    pointer-events: none;
+    z-index: 0;
+}
+#seolmaetalk-landing .hero-blob-1 {
+    width: 520px; height: 520px;
+    background: radial-gradient(circle, rgba(254,229,0,0.22) 0%, transparent 70%);
+    top: -120px; left: -80px;
+}
+#seolmaetalk-landing .hero-blob-2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(160,210,255,0.14) 0%, transparent 70%);
+    bottom: -80px; right: 5%;
+}
+
+#seolmaetalk-landing .hero-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 64px;
+}
+
+#seolmaetalk-landing .hero-text { flex: 1; }
+
+#seolmaetalk-landing .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--yellow);
+    color: var(--dark);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 7px 16px;
+    border-radius: 40px;
+    margin-bottom: 28px;
+    box-shadow: 0 2px 12px rgba(254,229,0,0.35);
+}
+
+/* 텍스트 리빌 컨테이너 */
+#seolmaetalk-landing .hero-headline {
+    font-size: 52px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1.15;
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+
+#seolmaetalk-landing .hero-headline .reveal-line {
+    display: block;
+    overflow: hidden;
+}
+
+#seolmaetalk-landing .hero-headline .reveal-line span {
+    display: block;
+    transform: translateY(110%);
+}
+
+#seolmaetalk-landing .hero-sub {
+    font-size: 18px;
+    color: #666;
+    line-height: 1.8;
+    margin-bottom: 40px;
+    max-width: 440px;
+    opacity: 0;
+}
+
+#seolmaetalk-landing .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--dark);
+    color: var(--yellow);
+    font-size: 16px;
+    font-weight: 700;
+    padding: 17px 36px;
+    border-radius: 14px;
+    text-decoration: none;
+    transition: transform 0.35s var(--ease-bounce),
+                box-shadow 0.35s ease;
+    opacity: 0;
+    border: none;
+    cursor: pointer;
+}
+
+#seolmaetalk-landing .hero-cta:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 12px 32px rgba(25,25,25,0.22);
+}
+
+#seolmaetalk-landing .hero-cta-arrow {
+    transition: transform 0.35s var(--ease-out-expo);
+}
+#seolmaetalk-landing .hero-cta:hover .hero-cta-arrow { transform: translateX(4px); }
+
+/* 히어로 목업 */
+#seolmaetalk-landing .hero-mockup {
+    flex: 1;
+    max-width: 440px;
+    position: relative;
+    opacity: 0;
+}
+
+#seolmaetalk-landing .hero-mockup-box {
+    background: var(--white);
+    border-radius: 28px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg),
+                0 0 0 1px rgba(255,255,255,0.8) inset;
+    overflow: hidden;
+    aspect-ratio: 3/4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+#seolmaetalk-landing .hero-mockup-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#seolmaetalk-landing .hero-mockup-placeholder {
+    color: #cccccc;
+    font-size: 15px;
+}
+
+/* 목업 장식 뱃지 */
+#seolmaetalk-landing .hero-float-badge {
+    position: absolute;
+    background: var(--white);
+    border-radius: 14px;
+    padding: 12px 18px;
+    box-shadow: var(--shadow-md);
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    border: 1px solid var(--border);
+}
+#seolmaetalk-landing .hero-float-badge-1 {
+    top: 10%;
+    right: -32px;
+}
+#seolmaetalk-landing .hero-float-badge-2 {
+    bottom: 12%;
+    left: -36px;
+}
+#seolmaetalk-landing .badge-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #27AE60;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+#seolmaetalk-landing .badge-yellow { background: var(--yellow); }
+
+/* ============================================
+   2. PROBLEM
+   ============================================ */
+#seolmaetalk-landing .problem-section {
+    background: var(--white);
+    position: relative;
+    overflow: hidden;
+}
+
+#seolmaetalk-landing .problem-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 60% 40% at 90% 10%, rgba(254,229,0,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 60% at 5% 80%, rgba(200,200,255,0.05) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+#seolmaetalk-landing .problem-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+#seolmaetalk-landing .problem-card {
+    background: #FAFAF8;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 36px 28px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.45s var(--ease-out-expo), box-shadow 0.45s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#seolmaetalk-landing .problem-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, rgba(254,229,0,0) 0%, rgba(254,229,0,0.6) 50%, rgba(254,229,0,0) 100%);
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+#seolmaetalk-landing .problem-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
+#seolmaetalk-landing .problem-card:hover::before { opacity: 1; }
+
+#seolmaetalk-landing .problem-card .card-emoji {
+    font-family: 'Tossface', sans-serif;
+    font-size: 44px;
+    line-height: 1;
+    margin-bottom: 20px;
+    display: block;
+}
+
+#seolmaetalk-landing .problem-card .card-title {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    line-height: 1.45;
+    letter-spacing: -0.01em;
+}
+
+#seolmaetalk-landing .problem-card .card-desc {
+    font-size: 14.5px;
+    color: #888;
+    line-height: 1.7;
+}
+
+/* ============================================
+   3. SOLUTION
+   ============================================ */
+#seolmaetalk-landing .solution-section {
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+}
+
+#seolmaetalk-landing .solution-section::after {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(254,229,0,0.10) 0%, transparent 65%);
+    top: -150px; right: -150px;
+    pointer-events: none;
+}
+
+#seolmaetalk-landing .solution-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+#seolmaetalk-landing .solution-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 36px 28px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.45s var(--ease-out-expo), box-shadow 0.45s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+#seolmaetalk-landing .solution-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--yellow), #FFD700);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s var(--ease-out-expo);
+}
+
+#seolmaetalk-landing .solution-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
+#seolmaetalk-landing .solution-card:hover::after { transform: scaleX(1); }
+
+#seolmaetalk-landing .solution-card .card-emoji {
+    font-family: 'Tossface', sans-serif;
+    font-size: 44px;
+    line-height: 1;
+    margin-bottom: 20px;
+    display: block;
+}
+
+#seolmaetalk-landing .solution-card .card-title {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    line-height: 1.45;
+    letter-spacing: -0.01em;
+}
+
+#seolmaetalk-landing .solution-card .card-desc {
+    font-size: 14.5px;
+    color: #888;
+    line-height: 1.7;
+}
+
+/* ============================================
+   4. FEATURES
+   ============================================ */
+#seolmaetalk-landing .features-section {
+    background: var(--white);
+}
+
+#seolmaetalk-landing .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+#seolmaetalk-landing .feature-card {
+    background: var(--bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 40px 32px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.45s var(--ease-out-expo), box-shadow 0.45s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+#seolmaetalk-landing .feature-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
+
+#seolmaetalk-landing .feature-card .card-emoji {
+    font-family: 'Tossface', sans-serif;
+    font-size: 44px;
+    line-height: 1;
+    margin-bottom: 20px;
+    display: block;
+}
+
+#seolmaetalk-landing .feature-card .card-title {
+    font-size: 19px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+}
+
+#seolmaetalk-landing .feature-card .card-desc {
+    font-size: 14.5px;
+    color: #888;
+    line-height: 1.7;
+}
+
+/* ============================================
+   5. HOW IT WORKS
+   ============================================ */
+#seolmaetalk-landing .steps-section {
+    background: var(--dark);
+    position: relative;
+    overflow: hidden;
+}
+
+#seolmaetalk-landing .steps-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 50% 80% at 50% -20%, rgba(254,229,0,0.08) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+#seolmaetalk-landing .steps-section .stl-section-title,
+#seolmaetalk-landing .steps-section .stl-section-sub,
+#seolmaetalk-landing .steps-section .stl-section-eyebrow {
+    color: var(--white);
+    text-align: center;
+}
+
+#seolmaetalk-landing .steps-section .stl-section-sub { color: rgba(255,255,255,0.5); margin-left: auto; margin-right: auto; }
+
+#seolmaetalk-landing .steps-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    position: relative;
+    z-index: 1;
+}
+
+#seolmaetalk-landing .step-item {
+    text-align: center;
+    flex: 1;
+    max-width: 220px;
+    position: relative;
+    z-index: 1;
+}
+
+#seolmaetalk-landing .step-number {
+    width: 56px;
+    height: 56px;
+    background: var(--yellow);
+    color: var(--dark);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 900;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 16px rgba(254,229,0,0.4);
+    position: relative;
+    z-index: 2;
+}
+
+#seolmaetalk-landing .step-label {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--white);
+    letter-spacing: -0.01em;
+}
+
+#seolmaetalk-landing .step-desc {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.6;
+}
+
+/* SVG 화살표 — 드로우 애니메이션 */
+#seolmaetalk-landing .step-connector {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 20px;
+    width: 60px;
+}
+
+#seolmaetalk-landing .step-connector svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+#seolmaetalk-landing .step-connector line {
+    stroke: rgba(254,229,0,0.4);
+    stroke-width: 2;
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+}
+
+/* ============================================
+   6. INSURERS LOGO GRID
+   ============================================ */
+#seolmaetalk-landing .insurers-section {
+    background: var(--bg);
+}
+
+#seolmaetalk-landing .insurers-section .stl-section-title,
+#seolmaetalk-landing .insurers-section .stl-section-sub {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#seolmaetalk-landing .insurers-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 18px;
+}
+
+#seolmaetalk-landing .insurers-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 14px;
+    margin-bottom: 48px;
+}
+
+#seolmaetalk-landing .insurer-logo-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.4s var(--ease-bounce), box-shadow 0.4s ease;
+    cursor: default;
+}
+
+#seolmaetalk-landing .insurer-logo-item:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: var(--shadow-md);
+}
+
+#seolmaetalk-landing .insurer-logo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ============================================
+   7. CTA + FOOTER
+   ============================================ */
+#seolmaetalk-landing .cta-footer {
+    background: var(--dark);
+    padding: 100px 0 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+#seolmaetalk-landing .cta-footer::before {
+    content: '';
+    position: absolute;
+    width: 700px; height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(254,229,0,0.07) 0%, transparent 60%);
+    top: -250px; left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+#seolmaetalk-landing .cta-footer .cta-headline {
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--white);
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin-bottom: 14px;
+}
+
+#seolmaetalk-landing .cta-footer .cta-sub {
+    font-size: 17px;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 40px;
+}
+
+#seolmaetalk-landing .cta-footer .footer-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--yellow);
+    color: var(--dark);
+    font-size: 17px;
+    font-weight: 800;
+    padding: 18px 44px;
+    border-radius: 16px;
+    text-decoration: none;
+    transition: transform 0.35s var(--ease-bounce), box-shadow 0.35s ease;
+    border: none;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+}
+
+#seolmaetalk-landing .cta-footer .footer-cta:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 12px 40px rgba(254,229,0,0.3);
+}
+
+#seolmaetalk-landing .cta-footer .footer-copy {
+    margin-top: 64px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.25);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 900px) {
+    #seolmaetalk-landing .stl-section { padding: 80px 0; }
+    #seolmaetalk-landing .hero-section { padding: 90px 0 80px; }
+    #seolmaetalk-landing .hero-inner { flex-direction: column; text-align: center; }
+    #seolmaetalk-landing .hero-headline { font-size: 36px; }
+    #seolmaetalk-landing .hero-sub { margin-left: auto; margin-right: auto; }
+    #seolmaetalk-landing .hero-mockup { max-width: 300px; width: 100%; }
+    #seolmaetalk-landing .hero-float-badge { display: none; }
+    #seolmaetalk-landing .stl-section-title { font-size: 28px; }
+    #seolmaetalk-landing .stl-section-sub { font-size: 15px; }
+    #seolmaetalk-landing .problem-cards,
+    #seolmaetalk-landing .solution-cards { grid-template-columns: 1fr; }
+    #seolmaetalk-landing .features-grid { grid-template-columns: 1fr; }
+    #seolmaetalk-landing .steps-row { flex-direction: column; align-items: center; gap: 12px; }
+    #seolmaetalk-landing .step-connector { transform: rotate(90deg); }
+    #seolmaetalk-landing .insurers-grid { grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    #seolmaetalk-landing .cta-footer { padding: 80px 0 40px; }
+    #seolmaetalk-landing .cta-footer .cta-headline { font-size: 26px; }
+}
+
+/* GSAP 초기 상태 */
+#seolmaetalk-landing .stl-anim {
+    opacity: 0;
+    transform: translateY(50px);
+}
+
+#seolmaetalk-landing .stl-anim-left {
+    opacity: 0;
+    transform: translateX(-40px);
+}
+
+#seolmaetalk-landing .stl-anim-scale {
+    opacity: 0;
+    transform: scale(0.85);
+}
+</style>
+
+<div id="seolmaetalk-landing">
+
+    <!-- ===== 1. HERO ===== -->
+    <section class="hero-section stl-section">
+        <div class="hero-blob hero-blob-1"></div>
+        <div class="hero-blob hero-blob-2"></div>
+        <div class="stl-container">
+            <div class="hero-inner">
+                <div class="hero-text">
+                    <span class="hero-badge" id="stl-hero-badge">
+                        <span>✦</span> GA 설계사 전용 도구
+                    </span>
+                    <h1 class="hero-headline" id="stl-hero-headline">
+                        <span class="reveal-line"><span>설계의뢰,</span></span>
+                        <span class="reveal-line"><span>한 번에 보내세요</span></span>
+                    </h1>
+                    <p class="hero-sub" id="stl-hero-sub">내 카카오톡에 저장된 보험 설계 매니저들에게 설계 요청을 바로 전달. 별도 앱 설치 없이, 클릭 몇 번이면 끝.</p>
+                    <a href="#target-url" class="hero-cta" id="stl-hero-cta">
+                        지금 시작하기
+                        <span class="hero-cta-arrow">→</span>
+                    </a>
+                </div>
+                <div class="hero-mockup" id="stl-hero-mockup">
+                    <!-- 실제 앱 목업 이미지로 교체: <img src="mockup.png" alt="설매톡 앱 화면"> -->
+                    <div class="hero-mockup-box">
+                        <span class="hero-mockup-placeholder">앱 목업 이미지</span>
+                    </div>
+                    <div class="hero-float-badge hero-float-badge-1">
+                        <span class="badge-dot"></span>35개 보험사 연동
+                    </div>
+                    <div class="hero-float-badge hero-float-badge-2">
+                        <span class="badge-dot badge-yellow"></span>카카오톡으로 즉시 전달
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 2. PROBLEM ===== -->
+    <section class="problem-section stl-section">
+        <div class="stl-container">
+            <div class="stl-section-eyebrow stl-anim">Pain Point</div>
+            <h2 class="stl-section-title stl-anim">언제까지 한 명 한 명<br>따로 보내실 건가요?</h2>
+            <p class="stl-section-sub stl-anim">설계 매니저들은 모두 카카오톡을 사용합니다. 그런데 아직도 한 명씩 따로 연락하고 계신가요?</p>
+            <div class="problem-cards">
+                <div class="problem-card" id="pc-1">
+                    <span class="card-emoji">😩</span>
+                    <div class="card-title">같은 내용을 보험사마다 반복 입력</div>
+                    <div class="card-desc">5개 보험사에 의뢰하려면 같은 고객 정보를 5번 따로 작성해야 합니다.</div>
+                </div>
+                <div class="problem-card" id="pc-2">
+                    <span class="card-emoji">📋</span>
+                    <div class="card-title">누구에게 뭘 보냈는지 기억에만 의존</div>
+                    <div class="card-desc">카카오톡 대화를 뒤져봐야 확인할 수 있고, 놓치는 건도 생깁니다.</div>
+                </div>
+                <div class="problem-card" id="pc-3">
+                    <span class="card-emoji">📊</span>
+                    <div class="card-title">내 영업 데이터를 관리할 방법이 없음</div>
+                    <div class="card-desc">어떤 보험사에 많이 의뢰했는지, 고객 패턴이 어떤지 파악이 안 됩니다.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 3. SOLUTION ===== -->
+    <section class="solution-section stl-section">
+        <div class="stl-container">
+            <div class="stl-section-eyebrow stl-anim">Solution</div>
+            <h2 class="stl-section-title stl-anim">한 번에 여러 매니저에게<br>동시 전달하세요</h2>
+            <p class="stl-section-sub stl-anim">설계 매니저가 실제로 필요로 하는 핵심 정보만 클릭 몇 번으로 간편하게 정리해서 보낼 수 있어 응답률과 만족도를 높일 수 있습니다.</p>
+            <div class="solution-cards">
+                <div class="solution-card" id="sc-1">
+                    <span class="card-emoji">✅</span>
+                    <div class="card-title">1회 입력 → 여러 보험사에 동시 전달</div>
+                    <div class="card-desc">고객 정보를 한 번만 입력하면 선택한 보험사 전부에 바로 전달됩니다.</div>
+                </div>
+                <div class="solution-card" id="sc-2">
+                    <span class="card-emoji">💬</span>
+                    <div class="card-title">카카오톡으로 바로 공유</div>
+                    <div class="card-desc">별도 앱 설치나 회원가입 없이, 내 카카오톡에 저장된 매니저에게 바로 전달합니다.</div>
+                </div>
+                <div class="solution-card" id="sc-3">
+                    <span class="card-emoji">👍</span>
+                    <div class="card-title">매니저들이 훨씬 선호하는 포맷</div>
+                    <div class="card-desc">같은 내용이라도 정리된 포맷으로 보내면 매니저 입장에서 빠르게 확인·응대할 수 있습니다.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 4. FEATURES ===== -->
+    <section class="features-section stl-section">
+        <div class="stl-container">
+            <div class="stl-section-eyebrow stl-anim">Features</div>
+            <h2 class="stl-section-title stl-anim">주요 기능</h2>
+            <p class="stl-section-sub stl-anim">설계사의 실제 업무 흐름에 맞춘 4가지 핵심 기능</p>
+            <div class="features-grid">
+                <div class="feature-card" id="fc-1">
+                    <span class="card-emoji">📝</span>
+                    <div class="card-title">설계의뢰 작성</div>
+                    <div class="card-desc">고객정보·보험종류·예산을 한 번에 입력하고 여러 보험사에 동시 전달</div>
+                </div>
+                <div class="feature-card" id="fc-2">
+                    <span class="card-emoji">📂</span>
+                    <div class="card-title">의뢰내역 관리</div>
+                    <div class="card-desc">보낸 모든 의뢰를 자동 저장. 검색·필터·추가 공유까지</div>
+                </div>
+                <div class="feature-card" id="fc-3">
+                    <span class="card-emoji">🔑</span>
+                    <div class="card-title">위촉코드 관리</div>
+                    <div class="card-desc">35개 보험사 전산코드를 한 곳에서 저장하고 의뢰 시 자동 첨부</div>
+                </div>
+                <div class="feature-card" id="fc-4">
+                    <span class="card-emoji">📈</span>
+                    <div class="card-title">판매 분석</div>
+                    <div class="card-desc">TOP5 보험사, 담보별 비중, 고객 분석을 한눈에 보는 대시보드</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 5. HOW IT WORKS ===== -->
+    <section class="steps-section stl-section">
+        <div class="stl-container">
+            <div class="stl-section-eyebrow stl-anim">How It Works</div>
+            <h2 class="stl-section-title stl-anim">이렇게 간단합니다</h2>
+            <p class="stl-section-sub stl-anim">고객 정보 입력부터 카카오톡 전달까지, 단 4단계</p>
+            <div class="steps-row">
+                <div class="step-item stl-anim-scale" id="step-1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">고객 정보 입력</div>
+                    <div class="step-desc">이름, 생년월일, 병력 등 기본 정보</div>
+                </div>
+                <div class="step-connector" id="step-arrow-1">
+                    <svg viewBox="0 0 60 20" height="20">
+                        <line x1="0" y1="10" x2="52" y2="10" id="stl-line-1"/>
+                        <polygon points="52,5 60,10 52,15" fill="rgba(254,229,0,0.4)" id="stl-arrow-1" opacity="0"/>
+                    </svg>
+                </div>
+                <div class="step-item stl-anim-scale" id="step-2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">보험 조건 설정</div>
+                    <div class="step-desc">보험종류, 예산, 심사조건 선택</div>
+                </div>
+                <div class="step-connector" id="step-arrow-2">
+                    <svg viewBox="0 0 60 20" height="20">
+                        <line x1="0" y1="10" x2="52" y2="10" id="stl-line-2"/>
+                        <polygon points="52,5 60,10 52,15" fill="rgba(254,229,0,0.4)" id="stl-arrow-2" opacity="0"/>
+                    </svg>
+                </div>
+                <div class="step-item stl-anim-scale" id="step-3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">보험사 선택</div>
+                    <div class="step-desc">전달할 보험사를 복수 선택</div>
+                </div>
+                <div class="step-connector" id="step-arrow-3">
+                    <svg viewBox="0 0 60 20" height="20">
+                        <line x1="0" y1="10" x2="52" y2="10" id="stl-line-3"/>
+                        <polygon points="52,5 60,10 52,15" fill="rgba(254,229,0,0.4)" id="stl-arrow-3" opacity="0"/>
+                    </svg>
+                </div>
+                <div class="step-item stl-anim-scale" id="step-4">
+                    <div class="step-number">4</div>
+                    <div class="step-label">카카오톡 전달</div>
+                    <div class="step-desc">매니저에게 바로 공유 완료</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 6. INSURERS ===== -->
+    <section class="insurers-section stl-section">
+        <div class="stl-container">
+            <div class="stl-section-eyebrow stl-anim" style="display:block;text-align:center;">Coverage</div>
+            <h2 class="stl-section-title stl-anim">35개 보험사를 지원합니다</h2>
+            <p class="stl-section-sub stl-anim">손해보험 14개사 + 생명보험 21개사</p>
+
+            <div class="insurers-label stl-anim">손해보험 14개사</div>
+            <div class="insurers-grid" id="stl-nonlife-grid"></div>
+
+            <div class="insurers-label stl-anim">생명보험 21개사</div>
+            <div class="insurers-grid" id="stl-life-grid"></div>
+
+            <p class="stl-anim" style="text-align:center;font-size:13.5px;color:#aaa;margin-top:8px;">
+                ※ 카카오톡 전송은 해당 매니저가 내 카카오톡에 저장되어 있어야 합니다.
+            </p>
+        </div>
+    </section>
+
+    <!-- ===== 7. CTA + FOOTER ===== -->
+    <section class="cta-footer">
+        <div class="stl-container">
+            <div class="cta-headline stl-anim">지금 바로 설매톡을<br>시작하세요</div>
+            <div class="cta-sub stl-anim">설계의뢰, 더 이상 따로따로 보내지 마세요.</div>
+            <a href="#target-url" class="footer-cta stl-anim">시작하기 →</a>
+            <div class="footer-copy">© GA WORLD. All rights reserved.</div>
+        </div>
+    </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    /* ─── 보험사 로고 데이터 ─── */
+    var nonlifeLogos = {
+        'KB손해보험':    'https://cdn.imweb.me/thumbnail/20250406/35b1a73f72aa2.png',
+        '흥국화재':      'https://cdn.imweb.me/thumbnail/20250406/36efe9b5439ac.png',
+        '삼성화재':      'https://cdn.imweb.me/thumbnail/20250406/51d6ab2e63cf9.jpg',
+        '메리츠화재':    'https://cdn.imweb.me/thumbnail/20250406/5215bfefda8d1.png',
+        'DB손해보험':    'https://cdn.imweb.me/thumbnail/20250406/ae592ed957eb3.png',
+        '현대해상':      'https://cdn.imweb.me/thumbnail/20250406/8686a18dc6d55.png',
+        '롯데손해보험':  'https://cdn.imweb.me/thumbnail/20250406/5410261c3a32c.jpg',
+        '한화손해보험':  'https://cdn.imweb.me/thumbnail/20250406/dd3a588f03f4a.png',
+        'MG손해보험':    'https://cdn.imweb.me/thumbnail/20250406/c351c4575f774.png',
+        'NH농협손해보험':'https://cdn.imweb.me/thumbnail/20250406/79591f0672108.png',
+        'AIG손해보험':   'https://cdn.imweb.me/thumbnail/20250406/ed22adc06928f.png',
+        '하나손해보험':  'https://cdn.imweb.me/thumbnail/20250406/5950194539602.png',
+        '라이나손보':    'https://cdn.imweb.me/thumbnail/20250406/c6524d3906127.jpg',
+        'AXA손해보험':   'https://cdn.imweb.me/thumbnail/20250406/0022a68d5c762.jpg'
+    };
+
+    var lifeLogos = {
+        '삼성생명':          'https://cdn.imweb.me/thumbnail/20230526/d2d04019860eb.png',
+        '한화생명':          'https://cdn.imweb.me/thumbnail/20230526/ef6b3e6312850.png',
+        '교보생명':          'https://cdn.imweb.me/thumbnail/20230526/6cf4399a3de7f.png',
+        '메트라이프':        'https://cdn.imweb.me/thumbnail/20230526/c884e2ca6f8f4.png',
+        '미래에셋생명':      'https://cdn.imweb.me/thumbnail/20230526/bf7106aa51653.png',
+        'DB생명':            'https://cdn.imweb.me/thumbnail/20230601/d90454c9cf883.jpg',
+        '흥국생명':          'https://cdn.imweb.me/thumbnail/20230526/43efd1b7b8943.png',
+        'NH농협생명':        'https://cdn.imweb.me/thumbnail/20230526/a74a5e41a70df.png',
+        '하나생명':          'https://cdn.imweb.me/thumbnail/20230601/fb7b932cf89f3.jpg',
+        'KB라이프':          'https://cdn.imweb.me/thumbnail/20230719/d1782d52e0a30.jpg',
+        '신한라이프':        'https://cdn.imweb.me/thumbnail/20230526/8664352a9d3c8.png',
+        'iM라이프':          'https://cdn.imweb.me/thumbnail/20240611/7fffa9ef9f92c.jpg',
+        'KDB생명':           'https://cdn.imweb.me/thumbnail/20230526/5b85593a88fba.png',
+        'BNP파리바카디프생명':'https://cdn.imweb.me/thumbnail/20230526/2ede29f63668c.png',
+        '라이나생명':        'https://cdn.imweb.me/thumbnail/20230526/9782ebc4bfb94.png',
+        '동양생명':          'https://cdn.imweb.me/thumbnail/20230526/d54c4f9e68824.png',
+        'ABL생명':           'https://cdn.imweb.me/thumbnail/20230526/d70977f5fdfbb.png',
+        '푸본현대생명':      'https://cdn.imweb.me/thumbnail/20230526/681dd4a8edc12.jpg',
+        'AIA생명':           'https://cdn.imweb.me/thumbnail/20230526/b308e6544a250.jpg',
+        '처브라이프':        'https://cdn.imweb.me/thumbnail/20230526/72476f92ee4fc.jpg',
+        'IBK연금보험':       'https://cdn.imweb.me/thumbnail/20230526/58c4e57f88ee0.jpg'
+    };
+
+    /* ─── 로고 그리드 렌더링 ─── */
+    function renderLogos(containerId, logos) {
+        var grid = document.getElementById(containerId);
+        if (!grid) return;
+        var html = '';
+        for (var name in logos) {
+            html += '<div class="insurer-logo-item" title="' + name + '" data-logo="true">'
+                  + '<img src="' + logos[name] + '" alt="' + name + '" loading="lazy">'
+                  + '</div>';
+        }
+        grid.innerHTML = html;
+    }
+    renderLogos('stl-nonlife-grid', nonlifeLogos);
+    renderLogos('stl-life-grid',    lifeLogos);
+
+    /* ─── Fisher-Yates shuffle ─── */
+    function shuffle(arr) {
+        for (var i = arr.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+        }
+        return arr;
+    }
+
+    /* ─── GSAP 등록 ─── */
+    gsap.registerPlugin(ScrollTrigger);
+
+    /* ════════════════════════════════════════
+       1. HERO — 텍스트 리빌 + 플로팅
+    ════════════════════════════════════════ */
+    var heroTl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+
+    // 뱃지
+    heroTl.to('#stl-hero-badge', { opacity: 1, y: 0, duration: 0.7 }, 0.1);
+
+    // 헤드라인 클립패스 리빌 (line by line)
+    heroTl.to('#stl-hero-headline .reveal-line span', {
+        y: 0,
+        duration: 1.1,
+        stagger: 0.18,
+        ease: 'expo.out'
+    }, 0.3);
+
+    // 서브카피
+    heroTl.to('#stl-hero-sub', { opacity: 1, y: 0, duration: 0.9 }, 0.7);
+
+    // CTA
+    heroTl.to('#stl-hero-cta', { opacity: 1, y: 0, duration: 0.8 }, 0.9);
+
+    // 목업 등장
+    heroTl.to('#stl-hero-mockup', {
+        opacity: 1, x: 0, duration: 1.0, ease: 'power3.out'
+    }, 0.5);
+
+    // 목업 플로팅 (무한 yoyo)
+    gsap.to('#stl-hero-mockup', {
+        y: -18,
+        duration: 3.0,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1,
+        delay: 1.8
+    });
+
+    /* ════════════════════════════════════════
+       2. PROBLEM — 엇박자 Stagger + 이모지 bounce
+    ════════════════════════════════════════ */
+    var problemCards = ['#pc-1', '#pc-2', '#pc-3'];
+
+    ScrollTrigger.create({
+        trigger: '#pc-1',
+        start: 'top 80%',
+        once: true,
+        onEnter: function () {
+            gsap.fromTo(problemCards,
+                { opacity: 0, y: 70 },
+                {
+                    opacity: 1, y: 0,
+                    duration: 0.85,
+                    stagger: { each: 0.22, ease: 'power2.out' },
+                    ease: 'power3.out'
+                }
+            );
+            // 이모지 bounce
+            gsap.fromTo(
+                problemCards.map(function(s){ return document.querySelector(s + ' .card-emoji'); }),
+                { scale: 0, opacity: 0 },
+                {
+                    scale: 1, opacity: 1,
+                    duration: 0.7,
+                    stagger: 0.22,
+                    ease: 'back.out(2.2)',
+                    delay: 0.2
+                }
+            );
+        }
+    });
+
+    /* ════════════════════════════════════════
+       3. SOLUTION — scale + fade stagger
+    ════════════════════════════════════════ */
+    var solutionCards = ['#sc-1', '#sc-2', '#sc-3'];
+    ScrollTrigger.create({
+        trigger: '#sc-1',
+        start: 'top 80%',
+        once: true,
+        onEnter: function () {
+            gsap.fromTo(solutionCards,
+                { opacity: 0, scale: 0.90, y: 40 },
+                {
+                    opacity: 1, scale: 1, y: 0,
+                    duration: 0.8,
+                    stagger: 0.18,
+                    ease: 'back.out(1.4)'
+                }
+            );
+            gsap.fromTo(
+                solutionCards.map(function(s){ return document.querySelector(s + ' .card-emoji'); }),
+                { scale: 0, opacity: 0 },
+                {
+                    scale: 1, opacity: 1,
+                    duration: 0.6,
+                    stagger: 0.18,
+                    ease: 'back.out(2.5)',
+                    delay: 0.15
+                }
+            );
+        }
+    });
+
+    /* ════════════════════════════════════════
+       4. FEATURES — 2x2 diagonal stagger
+    ════════════════════════════════════════ */
+    var featureCards = ['#fc-1', '#fc-2', '#fc-3', '#fc-4'];
+    ScrollTrigger.create({
+        trigger: '#fc-1',
+        start: 'top 80%',
+        once: true,
+        onEnter: function () {
+            gsap.fromTo(featureCards,
+                { opacity: 0, y: 60 },
+                {
+                    opacity: 1, y: 0,
+                    duration: 0.9,
+                    stagger: { each: 0.15, grid: [2, 2], from: 'start' },
+                    ease: 'power3.out'
+                }
+            );
+            gsap.fromTo(
+                featureCards.map(function(s){ return document.querySelector(s + ' .card-emoji'); }),
+                { scale: 0, rotation: -20 },
+                {
+                    scale: 1, rotation: 0,
+                    duration: 0.65,
+                    stagger: 0.15,
+                    ease: 'back.out(2)',
+                    delay: 0.2
+                }
+            );
+        }
+    });
+
+    /* ════════════════════════════════════════
+       5. HOW IT WORKS — 스텝 순차 등장 + 화살표 드로우
+    ════════════════════════════════════════ */
+    ScrollTrigger.create({
+        trigger: '#step-1',
+        start: 'top 75%',
+        once: true,
+        onEnter: function () {
+            var stepTl = gsap.timeline();
+
+            // 스텝 1
+            stepTl.fromTo('#step-1',
+                { opacity: 0, scale: 0.8 },
+                { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.7)' }
+            );
+            // 화살표 1 라인 드로우
+            stepTl.to('#stl-line-1',   { strokeDashoffset: 0, duration: 0.5, ease: 'power2.inOut' }, '-=0.1');
+            stepTl.to('#stl-arrow-1',  { opacity: 1, duration: 0.2 });
+            // 스텝 2
+            stepTl.fromTo('#step-2',
+                { opacity: 0, scale: 0.8 },
+                { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.7)' }, '-=0.1'
+            );
+            // 화살표 2
+            stepTl.to('#stl-line-2',   { strokeDashoffset: 0, duration: 0.5, ease: 'power2.inOut' }, '-=0.1');
+            stepTl.to('#stl-arrow-2',  { opacity: 1, duration: 0.2 });
+            // 스텝 3
+            stepTl.fromTo('#step-3',
+                { opacity: 0, scale: 0.8 },
+                { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.7)' }, '-=0.1'
+            );
+            // 화살표 3
+            stepTl.to('#stl-line-3',   { strokeDashoffset: 0, duration: 0.5, ease: 'power2.inOut' }, '-=0.1');
+            stepTl.to('#stl-arrow-3',  { opacity: 1, duration: 0.2 });
+            // 스텝 4
+            stepTl.fromTo('#step-4',
+                { opacity: 0, scale: 0.8 },
+                { opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.7)' }, '-=0.1'
+            );
+        }
+    });
+
+    /* ════════════════════════════════════════
+       6. 로고 그리드 — 랜덤 순서 stagger
+    ════════════════════════════════════════ */
+    function animateLogoGrid(gridId) {
+        ScrollTrigger.create({
+            trigger: gridId,
+            start: 'top 82%',
+            once: true,
+            onEnter: function () {
+                var items = Array.from(document.querySelectorAll(gridId + ' .insurer-logo-item'));
+                var shuffled = shuffle(items.slice());
+                gsap.set(items, { opacity: 0, scale: 0.75, y: 20 });
+                gsap.to(shuffled, {
+                    opacity: 1,
+                    scale: 1,
+                    y: 0,
+                    duration: 0.55,
+                    stagger: { each: 0.04, ease: 'power1.out' },
+                    ease: 'back.out(1.5)'
+                });
+            }
+        });
+    }
+    animateLogoGrid('#stl-nonlife-grid');
+    animateLogoGrid('#stl-life-grid');
+
+    /* ════════════════════════════════════════
+       공통 .stl-anim 요소 처리
+    ════════════════════════════════════════ */
+    document.querySelectorAll('#seolmaetalk-landing .stl-anim').forEach(function (el) {
+        gsap.fromTo(el,
+            { opacity: 0, y: 50 },
+            {
+                opacity: 1, y: 0,
+                duration: 0.9,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 88%',
+                    toggleActions: 'play none none none'
+                }
+            }
+        );
+    });
+
+    document.querySelectorAll('#seolmaetalk-landing .stl-anim-scale').forEach(function (el) {
+        // steps are handled by the step timeline above — skip them here
+    });
+
+})();
+</script>
