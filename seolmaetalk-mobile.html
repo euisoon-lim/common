@@ -47,35 +47,48 @@ body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'S
 
 /* 4. 상단 메뉴 바 (헤더 통합) */
 .top-menu-bar {
-    display: none;
-    position: sticky;
-    top: 0;
-    background: white;
-    border-bottom: 1px solid #E5E0D8;
-    padding: 0 8px;
-    z-index: 10;
-    flex-shrink: 0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    display: none !important;
+    position: sticky !important;
+    top: 0 !important;
+    background: white !important;
+    border-bottom: 1px solid #E5E0D8 !important;
+    padding: 0 8px !important;
+    z-index: 10 !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+    flex-wrap: nowrap !important;
+    overflow: hidden !important;
 }
-.top-menu-bar.show { display: flex; gap: 0; align-items: center; flex-wrap: nowrap; }
-.seolmaetalk-header-back {
+.top-menu-bar.show {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 0 !important;
+}
+#header-back-btn.seolmaetalk-header-back {
     border: none !important; cursor: pointer !important; padding: 0 !important;
-    width: 36px !important; min-width: 36px !important; height: 36px !important;
-    flex: 0 0 36px !important;
+    width: 36px !important; min-width: 36px !important; max-width: 36px !important; height: 36px !important;
+    flex: 0 0 36px !important; flex-shrink: 0 !important; flex-grow: 0 !important;
     display: flex !important; align-items: center !important; justify-content: center !important;
     color: #371c1d !important; transition: all 0.2s !important; border-radius: 8px !important;
     background: rgba(0,0,0,0.08) !important; font-size: 22px !important; opacity: 0.7 !important;
     margin: 0 6px 0 2px !important;
+    border-bottom: 3px solid transparent !important;
+    order: 5 !important;
 }
-.seolmaetalk-header-back:hover { background: rgba(0,0,0,0.15) !important; opacity: 1 !important; }
-.seolmaetalk-header-back.hidden-btn { display: none !important; }
-.top-menu-item {
-    flex: 1 1 0; min-width: 0; padding: 12px 6px; background: none; border: none; border-bottom: 3px solid transparent;
-    color: #999999; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
-    text-align: center; white-space: nowrap;
+#header-back-btn.seolmaetalk-header-back:hover { background: rgba(0,0,0,0.15) !important; opacity: 1 !important; }
+#header-back-btn.seolmaetalk-header-back.hidden-btn { display: none !important; }
+.top-menu-bar > .top-menu-item {
+    flex: 1 1 0 !important; min-width: 0 !important; padding: 12px 6px !important;
+    background: none !important; border: none !important; border-bottom: 3px solid transparent !important;
+    color: #999999 !important; font-size: 13px !important; font-weight: 600 !important;
+    cursor: pointer !important; transition: all 0.2s !important;
+    text-align: center !important; white-space: nowrap !important;
+    box-sizing: border-box !important;
 }
-.top-menu-item:hover { color: #191919; background: #f8f9fe; }
-.top-menu-item.active { color: #191919; border-bottom-color: #191919; }
+.top-menu-bar > .top-menu-item:hover { color: #191919 !important; background: #f8f9fe !important; }
+.top-menu-bar > .top-menu-item.active { color: #191919 !important; border-bottom-color: #191919 !important; }
 
 /* 5. 컨텐츠 영역 */
 .container {
