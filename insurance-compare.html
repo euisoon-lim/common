@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>단기납종신 환급률 비교</title>
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#007AFF;--blue-light:#E8F2FF;--blue-dark:#0055CC;
+  --gray-50:#F9FAFB;--gray-100:#F3F4F6;--gray-200:#E5E7EB;--gray-300:#D1D5DB;
+  --gray-400:#9CA3AF;--gray-500:#6B7280;--gray-600:#4B5563;--gray-700:#374151;--gray-800:#1F2937;
+  --green:#34C759;--red:#FF3B30;--orange:#FF9500;--yellow:#FFCC00;
+  --radius:12px;--radius-sm:8px;--shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 12px rgba(0,0,0,.1);--shadow-lg:0 10px 30px rgba(0,0,0,.12);
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --max-w:1400px;
+}
+html{font-size:14px;scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--gray-50);color:var(--gray-800);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ===== LAYOUT ===== */
+.app-wrap{max-width:var(--max-w);margin:0 auto;padding:0 16px 120px}
+
+/* ===== HEADER ===== */
+.app-header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--gray-200);padding:14px 0}
+.header-inner{max-width:var(--max-w);margin:0 auto;padding:0 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.header-title{font-size:1.35rem;font-weight:700;color:var(--gray-800)}
+.header-sub{font-size:.82rem;color:var(--gray-500)}
+.header-badges{display:flex;gap:6px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;background:var(--gray-100);border-radius:20px;font-size:.72rem;color:var(--gray-600);white-space:nowrap}
+.badge.blue{background:var(--blue-light);color:var(--blue)}
+
+/* ===== CONTROLS ===== */
+.ctrl-panel{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin:16px 0;display:flex;flex-direction:column;gap:12px}
+.ctrl-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ctrl-label{font-size:.78rem;font-weight:600;color:var(--gray-600);min-width:52px;white-space:nowrap}
+
+/* 세그먼트 버튼 */
+.seg-group{display:flex;flex-wrap:wrap;gap:4px}
+.seg-btn{padding:6px 14px;border:1px solid var(--gray-300);background:#fff;border-radius:20px;font-size:.78rem;color:var(--gray-600);cursor:pointer;transition:all .2s;white-space:nowrap}
+.seg-btn:hover{border-color:var(--blue);color:var(--blue)}
+.seg-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* 검색 & 정렬 */
+.search-input{padding:6px 12px;border:1px solid var(--gray-300);border-radius:var(--radius-sm);font-size:.82rem;width:200px;outline:none;transition:border .2s}
+.search-input:focus{border-color:var(--blue)}
+.sort-select{padding:6px 10px;border:1px solid var(--gray-300);border-radius:var(--radius-sm);font-size:.78rem;background:#fff;outline:none;cursor:pointer}
+
+/* ===== INSIGHT CARDS ===== */
+.insight-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin:12px 0}
+.insight-card{background:#fff;border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);border-left:3px solid var(--blue);transition:transform .2s}
+.insight-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.insight-card .ic-label{font-size:.72rem;color:var(--gray-500);margin-bottom:4px}
+.insight-card .ic-company{font-size:.95rem;font-weight:700;color:var(--gray-800)}
+.insight-card .ic-value{font-size:1.1rem;font-weight:800;color:var(--blue);margin-top:2px}
+.insight-card .ic-sub{font-size:.72rem;color:var(--gray-500);margin-top:3px}
+.insight-card.green{border-left-color:var(--green)}
+.insight-card.orange{border-left-color:var(--orange)}
+.insight-card.red{border-left-color:var(--red)}
+
+/* ===== BRIEFING ===== */
+.briefing-box{background:linear-gradient(135deg,#F0F7FF,#E8F2FF);border-radius:var(--radius);padding:14px 18px;margin:10px 0;font-size:.84rem;color:var(--gray-700);line-height:1.7;position:relative}
+.briefing-box::before{content:'💡';position:absolute;left:18px;top:14px;font-size:1rem}
+.briefing-box .brief-text{padding-left:26px}
+.copy-btn{position:absolute;right:12px;top:12px;padding:4px 10px;border:1px solid var(--gray-300);background:#fff;border-radius:6px;font-size:.72rem;cursor:pointer;color:var(--gray-600);transition:all .2s}
+.copy-btn:hover{border-color:var(--blue);color:var(--blue)}
+
+/* ===== TABLE ===== */
+.table-wrap{overflow-x:auto;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);margin:12px 0}
+.data-table{width:100%;border-collapse:collapse;font-size:.8rem}
+.data-table thead th{position:sticky;top:0;background:var(--gray-50);padding:10px 8px;text-align:left;font-weight:600;color:var(--gray-600);border-bottom:2px solid var(--gray-200);white-space:nowrap;cursor:pointer;user-select:none}
+.data-table thead th:hover{color:var(--blue)}
+.data-table thead th .sort-arrow{margin-left:3px;font-size:.6rem;opacity:.4}
+.data-table thead th.sorted .sort-arrow{opacity:1;color:var(--blue)}
+.data-table tbody tr{border-bottom:1px solid var(--gray-100);transition:background .15s}
+.data-table tbody tr:hover{background:var(--blue-light)}
+.data-table tbody tr.selected{background:#DBEAFE}
+.data-table tbody td{padding:9px 8px;white-space:nowrap}
+.data-table tbody td.wrap{white-space:normal;min-width:120px;max-width:200px;word-break:keep-all}
+.highlight-best{color:var(--blue);font-weight:700}
+.highlight-low{color:var(--green);font-weight:700}
+.tag-usd{display:inline-block;padding:1px 5px;background:#FFF3E0;color:#E65100;border-radius:4px;font-size:.68rem;margin-left:3px}
+.notes-tag{font-size:.7rem;color:var(--gray-500);display:block;margin-top:2px}
+.chk-cell{width:36px;text-align:center}
+.chk-cell input{width:16px;height:16px;accent-color:var(--blue);cursor:pointer}
+.detail-btn{padding:4px 10px;border:1px solid var(--gray-300);background:#fff;border-radius:6px;font-size:.72rem;cursor:pointer;color:var(--gray-600);transition:all .15s;white-space:nowrap}
+.detail-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-light)}
+
+/* ===== COMPARE PANEL ===== */
+.compare-panel{position:fixed;bottom:0;left:0;right:0;z-index:90;background:#fff;border-top:1px solid var(--gray-200);box-shadow:0 -4px 20px rgba(0,0,0,.1);transform:translateY(100%);transition:transform .3s ease}
+.compare-panel.show{transform:translateY(0)}
+.compare-inner{max-width:var(--max-w);margin:0 auto;padding:14px 16px}
+.compare-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.compare-header h3{font-size:.9rem;font-weight:700;color:var(--gray-800)}
+.compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.compare-item{background:var(--gray-50);border-radius:var(--radius-sm);padding:12px;position:relative;border:1px solid var(--gray-200)}
+.compare-item .ci-company{font-size:.82rem;font-weight:700;color:var(--gray-800)}
+.compare-item .ci-product{font-size:.72rem;color:var(--gray-500);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.compare-item .ci-row{display:flex;justify-content:space-between;font-size:.76rem;padding:2px 0}
+.compare-item .ci-row .ci-lbl{color:var(--gray-500)}
+.compare-item .ci-row .ci-val{font-weight:600;color:var(--gray-800)}
+.compare-remove{position:absolute;top:6px;right:8px;width:20px;height:20px;border:none;background:var(--gray-200);border-radius:50%;font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--gray-500);transition:all .15s}
+.compare-remove:hover{background:var(--red);color:#fff}
+.compare-empty{text-align:center;padding:16px;color:var(--gray-400);font-size:.82rem}
+
+/* ===== CHART ===== */
+.chart-section{margin:20px 0}
+.chart-section h3{font-size:1rem;font-weight:700;margin-bottom:12px;color:var(--gray-800)}
+.chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+.chart-box{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+.chart-box h4{font-size:.84rem;font-weight:600;color:var(--gray-700);margin-bottom:12px}
+.bar-chart{display:flex;flex-direction:column;gap:8px}
+.bar-row{display:flex;align-items:center;gap:8px}
+.bar-label{width:80px;font-size:.72rem;color:var(--gray-600);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{flex:1;height:22px;background:var(--gray-100);border-radius:4px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:4px;transition:width .5s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;font-size:.68rem;color:#fff;font-weight:600;min-width:30px}
+.bar-fill.c0{background:var(--blue)}
+.bar-fill.c1{background:#34C759}
+.bar-fill.c2{background:#FF9500}
+
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-box{background:#fff;border-radius:var(--radius);max-width:600px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lg);padding:24px}
+.modal-box h2{font-size:1.1rem;font-weight:700;margin-bottom:4px;color:var(--gray-800)}
+.modal-box .modal-sub{font-size:.8rem;color:var(--gray-500);margin-bottom:16px}
+.modal-close{position:sticky;top:0;float:right;width:28px;height:28px;border:none;background:var(--gray-100);border-radius:50%;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--gray-500);z-index:1}
+.modal-close:hover{background:var(--gray-200)}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.modal-field{padding:8px 10px;background:var(--gray-50);border-radius:var(--radius-sm)}
+.modal-field .mf-label{font-size:.7rem;color:var(--gray-500)}
+.modal-field .mf-value{font-size:.88rem;font-weight:600;color:var(--gray-800)}
+.modal-field.full{grid-column:1/-1}
+.modal-section{margin-top:14px;padding-top:14px;border-top:1px solid var(--gray-200)}
+.modal-section h4{font-size:.84rem;font-weight:600;color:var(--gray-700);margin-bottom:8px}
+
+/* ===== DISCLAIMER ===== */
+.disclaimer{background:#fff;border-radius:var(--radius);padding:16px 20px;margin:20px 0;box-shadow:var(--shadow);border-left:3px solid var(--gray-300)}
+.disclaimer h4{font-size:.84rem;font-weight:600;color:var(--gray-600);margin-bottom:8px}
+.disclaimer ul{list-style:none;padding:0}
+.disclaimer li{font-size:.76rem;color:var(--gray-500);padding:3px 0;padding-left:14px;position:relative}
+.disclaimer li::before{content:'•';position:absolute;left:0;color:var(--gray-400)}
+
+/* ===== MOBILE CARDS ===== */
+@media(max-width:768px){
+  html{font-size:13px}
+  .header-inner{flex-direction:column;align-items:flex-start}
+  .search-input{width:100%}
+  .ctrl-row{flex-direction:column;align-items:flex-start}
+  .seg-group{gap:3px}
+  .seg-btn{padding:5px 10px;font-size:.74rem}
+  .insight-grid{grid-template-columns:1fr 1fr}
+  .chart-grid{grid-template-columns:1fr}
+  /* 모바일 카드 뷰 */
+  .table-wrap.mobile-cards .data-table thead{display:none}
+  .table-wrap.mobile-cards .data-table tbody tr{display:block;border:1px solid var(--gray-200);border-radius:var(--radius-sm);margin:8px 0;padding:12px;background:#fff}
+  .table-wrap.mobile-cards .data-table tbody td{display:flex;justify-content:space-between;padding:4px 0;border:none;white-space:normal}
+  .table-wrap.mobile-cards .data-table tbody td::before{content:attr(data-label);font-weight:600;color:var(--gray-500);font-size:.76rem;margin-right:8px;white-space:nowrap}
+  .table-wrap.mobile-cards .data-table tbody td.chk-cell::before{content:'선택'}
+  .compare-grid{grid-template-columns:1fr}
+  .modal-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .insight-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="app-header">
+  <div class="header-inner">
+    <div>
+      <div class="header-title">단기납종신 환급률 비교</div>
+      <div class="header-sub">설계용 비교 참고 도구</div>
+    </div>
+    <div class="header-badges">
+      <span class="badge blue">2026.3 기준</span>
+      <span class="badge">40세 남성</span>
+      <span class="badge">저해약환급형</span>
+      <span class="badge">참고용 자료</span>
+    </div>
+  </div>
+</header>
+
+<div class="app-wrap">
+
+  <!-- ===== CONTROLS ===== -->
+  <div class="ctrl-panel" id="ctrlPanel">
+    <div class="ctrl-row">
+      <span class="ctrl-label">비교그룹</span>
+      <div class="seg-group" id="groupSeg">
+        <button class="seg-btn active" data-group="3000_5">3천만 5년납</button>
+        <button class="seg-btn" data-group="3000_7">3천만 7년납</button>
+        <button class="seg-btn" data-group="3000_10">3천만 10년납</button>
+        <button class="seg-btn" data-group="5000_5">5천만 5년납</button>
+        <button class="seg-btn" data-group="5000_7">5천만 7년납</button>
+        <button class="seg-btn" data-group="5000_10">5천만 10년납</button>
+      </div>
+    </div>
+    <div class="ctrl-row" id="reviewRow">
+      <span class="ctrl-label">심사유형</span>
+      <div class="seg-group" id="reviewSeg">
+        <button class="seg-btn active" data-review="general">일반심사</button>
+        <button class="seg-btn" data-review="simple">간편심사</button>
+      </div>
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">검색</span>
+      <input type="text" class="search-input" id="searchInput" placeholder="보험사명 또는 상품명 검색">
+      <span class="ctrl-label" style="margin-left:8px">정렬</span>
+      <select class="sort-select" id="sortSelect">
+        <option value="default">기본순</option>
+        <option value="premium_asc">월보험료 낮은순</option>
+        <option value="return10_desc">10년 환급률 높은순</option>
+        <option value="return20_desc">20년 환급률 높은순</option>
+        <option value="death10_desc">10년 사망보장 높은순</option>
+      </select>
+      <span class="ctrl-label" style="margin-left:8px">보기</span>
+      <div class="seg-group" id="viewSeg">
+        <button class="seg-btn active" data-view="balance">균형형</button>
+        <button class="seg-btn" data-view="return">환급률</button>
+        <button class="seg-btn" data-view="cover">보장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BRIEFING ===== -->
+  <div class="briefing-box" id="briefingBox">
+    <button class="copy-btn" id="copyBrief" title="브리핑 복사">복사</button>
+    <div class="brief-text" id="briefText">조건을 선택하면 자동 브리핑이 생성됩니다.</div>
+  </div>
+
+  <!-- ===== INSIGHT CARDS ===== -->
+  <div class="insight-grid" id="insightGrid"></div>
+
+  <!-- ===== MAIN TABLE ===== -->
+  <div class="table-wrap" id="tableWrap">
+    <table class="data-table" id="mainTable">
+      <thead id="tableHead"></thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <!-- ===== CHART ===== -->
+  <div class="chart-section" id="chartSection">
+    <h3>선택 상품 비교 차트</h3>
+    <div class="chart-grid" id="chartGrid">
+      <div class="chart-box"><h4>환급률 비교</h4><div class="bar-chart" id="chartReturn"></div></div>
+      <div class="chart-box"><h4>월보험료 비교</h4><div class="bar-chart" id="chartPremium"></div></div>
+      <div class="chart-box" id="chartDeathBox" style="display:none"><h4>10년 사망보장 비교</h4><div class="bar-chart" id="chartDeath"></div></div>
+    </div>
+    <div id="chartEmpty" style="text-align:center;padding:20px;color:var(--gray-400);font-size:.84rem">상품을 선택하면 차트가 표시됩니다 (최대 3개)</div>
+  </div>
+
+  <!-- ===== DISCLAIMER ===== -->
+  <div class="disclaimer">
+    <h4>⚠ 유의사항</h4>
+    <ul>
+      <li>환급금 및 환급률은 연령, 성별, 보험료, 가입금액에 따라 달라질 수 있습니다.</li>
+      <li>본 자료는 상품 이해를 위한 참고자료이며, 실제 가입 조건과 차이가 있을 수 있습니다.</li>
+      <li>고객 안내 시 반드시 실제 설계 후 가입설계서를 기준으로 정확한 정보를 안내하시기 바랍니다.</li>
+      <li>종신보험은 보장성보험이므로 초기에 해지 시 환급금이 적거나 없을 수 있습니다.</li>
+      <li>해약환급금 일부지급형은 일반형에 비해 납입기간 내 해지 시 해약환급금이 적을 수 있습니다.</li>
+      <li>상품유형, 납입기간 등에 따라 중도인출이 제한될 수 있습니다.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== COMPARE PANEL ===== -->
+<div class="compare-panel" id="comparePanel">
+  <div class="compare-inner">
+    <div class="compare-header">
+      <h3>선택 비교 (<span id="compareCount">0</span>/3)</h3>
+    </div>
+    <div id="compareBody">
+      <div class="compare-empty">체크박스로 상품을 선택하세요 (최대 3개)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box" id="modalBox">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   DATA LAYER — PDF에서 추출한 실제 데이터
+   ========================================================== */
+
+/* 개요 메타 정보 */
+const overviewMeta = {
+  "ABL생명":{product:"THE드림종신보험",changeMonth:"2601",rateInfo:"3.0%, 10년후 2.0%",type:"체증형",withdrawal:"완납후(옵션)",extraPay:"가능",extraRate:"2.5%",extraCost:"2/0%",prepay:"12개월분"},
+  "처브라이프":{product:"New 수(秀) 종신보험",changeMonth:"2601",rateInfo:"3.3%, 7년후 2.3%",type:"체감/체증형",withdrawal:"-",extraPay:"가능",extraRate:"예정이율",extraCost:"없음",prepay:"12개월분"},
+  "DB생명":{product:"뉴알차고행복한+종신보험",changeMonth:"2601",rateInfo:"2.75%, 10년후 1.75%",type:"체증형",withdrawal:"-",extraPay:"가능",extraRate:"공시이율",extraCost:"1/0.5%",prepay:"12개월분"},
+  "IM라이프":{product:"당당한인생종신보험",changeMonth:"2601",rateInfo:"2.25%, 10년후 1.0%",type:"체증형",withdrawal:"-",extraPay:"-",extraRate:"-",extraCost:"-",prepay:"6개월분"},
+  "KB라이프":{product:"약속플러스종신보험",changeMonth:"2601",rateInfo:"2.7%, 10년후 1.5%",type:"체증형",withdrawal:"완납후",extraPay:"가능",extraRate:"예정이율",extraCost:"-",prepay:"12개월분"},
+  "KDB생명":{product:"더블찬스종신보험(비납면형)",changeMonth:"2601",rateInfo:"2.5%, 10년후 1.5%",type:"체증형",withdrawal:"-",extraPay:"-",extraRate:"-",extraCost:"-",prepay:"12개월분"},
+  "메트라이프":{product:"백만인을위한종신보험Plus",changeMonth:"2601",rateInfo:"3.25%, 10년후 1.0%",type:"체증형",withdrawal:"완납후",extraPay:"-",extraRate:"-",extraCost:"-",prepay:"12개월분"},
+  "메트라이프(달러)":{product:"백만인을위한달러종신Plus",changeMonth:"2601",rateInfo:"3.25%, 10년후 1.0%",type:"체증형",withdrawal:"-",extraPay:"-",extraRate:"-",extraCost:"-",prepay:"6개월분"},
+  "교보생명":{product:"K-실속종신보험",changeMonth:"2601",rateInfo:"5/15↓/15↑=2.25/1.75/1.0%",type:"체증형",withdrawal:"-",extraPay:"가능",extraRate:"공시이율",extraCost:"3%",prepay:"6개월분"},
+  "동양생명":{product:"알뜰플러스종신보험",changeMonth:"2601",rateInfo:"2.75%, 10년후 2.0%",type:"평준형/325형",withdrawal:"-",extraPay:"가능",extraRate:"공시이율",extraCost:"1/0.5%",prepay:"12개월분"},
+  "미래에셋생명":{product:"미래를선택하는종신보험",changeMonth:"2601",rateInfo:"2.75%, 10년후 1.75%",type:"체증형",withdrawal:"-",extraPay:"-",extraRate:"-",extraCost:"-",prepay:"3개월분"},
+  "라이나생명":{product:"THE채우는종신보험(체증형)",changeMonth:"2601",rateInfo:"2.25%",type:"체증형",withdrawal:"-",extraPay:"-",extraRate:"-",extraCost:"-",prepay:"6개월분"},
+  "삼성생명":{product:"행복종신보험",changeMonth:"2601",rateInfo:"2.5%, 10년후 1.3%",type:"체증형",withdrawal:"납기+3년",extraPay:"가능",extraRate:"공시이율",extraCost:"3/0.5%",prepay:"6개월분"},
+  "신한라이프(1)":{product:"모아더드림종신보험",changeMonth:"2601",rateInfo:"2.6%, 10년후 1.3%",type:"체증형",withdrawal:"납기후",extraPay:"가능",extraRate:"공시이율",extraCost:"3/0.5%",prepay:"6개월분"},
+  "신한라이프(2)":{product:"모아더드림Plus종신보험",changeMonth:"2603",rateInfo:"2.6%, 10년후 1.3%",type:"체증형",withdrawal:"-",extraPay:"-",extraRate:"-",extraCost:"-",prepay:"12개월분"},
+  "푸본현대생명":{product:"MAX종신보험원픽",changeMonth:"2601",rateInfo:"2.5%, 10년후 1.5%",type:"일반형",withdrawal:"-",extraPay:"가능",extraRate:"예정이율",extraCost:"2.0%",prepay:"12개월분"},
+  "하나생명":{product:"하나로THE연결된종신보험",changeMonth:"2601",rateInfo:"2.75%, 10년후 1.75%",type:"일반형",withdrawal:"-",extraPay:"가능",extraRate:"예정이율",extraCost:"-",prepay:"12개월분"},
+  "한화생명":{product:"THE H 종신보험(기본)",changeMonth:"2601",rateInfo:"2.5%, 10년후 1.0%",type:"기본형",withdrawal:"-",extraPay:"가능",extraRate:"예정이율",extraCost:"-",prepay:"12개월분"}
+};
+
+/* ===== 3천만원 5년납 — 일반심사 ===== */
+const data_3000_5_general = [
+  {company:"메트라이프(달러)",product:"백만인을위한달러종신Plus",rateInfo:"3.25%, 10년후1.0%",monthlyPremium:643.80,returnAtBase:98.3,returnAt10:124.9,returnAt20:135.0,currency:"USD"},
+  {company:"KB라이프",product:"약속플러스종신보험",rateInfo:"2.7%, 10년후1.5%",monthlyPremium:675300,returnAtBase:99.9,returnAt10:121.0,returnAt20:123.3,currency:"KRW"},
+  {company:"ABL생명",product:"THE드림종신보험",rateInfo:"3.0%, 10년후2.0%",monthlyPremium:599700,returnAtBase:98.2,returnAt10:120.5,returnAt20:139.2,currency:"KRW"},
+  {company:"하나생명",product:"하나로THE연결된종신보험",rateInfo:"2.75%, 10년후1.75%",monthlyPremium:472200,returnAtBase:96.0,returnAt10:120.5,returnAt20:140.8,currency:"KRW"},
+  {company:"신한라이프(2)",product:"모아더드림Plus종신보험",rateInfo:"2.6%, 10년후1.3%",monthlyPremium:905520,returnAtBase:90.0,returnAt10:120.5,returnAt20:134.4,currency:"KRW"},
+  {company:"푸본현대생명",product:"MAX종신보험원픽",rateInfo:"2.5%, 10년후1.5%",monthlyPremium:498600,returnAtBase:96.9,returnAt10:120.5,returnAt20:129.2,currency:"KRW"},
+  {company:"IM라이프",product:"당당한인생종신보험",rateInfo:"2.25%, 10년후1.0%",monthlyPremium:598500,returnAtBase:99.7,returnAt10:120.4,returnAt20:129.7,currency:"KRW"},
+  {company:"메트라이프",product:"백만인을위한종신보험Plus",rateInfo:"3.25%, 10년후1.0%",monthlyPremium:645600,returnAtBase:93.7,returnAt10:120.3,returnAt20:129.9,currency:"KRW"},
+  {company:"교보생명",product:"K-실속종신보험(1종)",rateInfo:"5/15↓/15↑=2.25/1.75/1.0%",monthlyPremium:383700,returnAtBase:99.5,returnAt10:120.2,returnAt20:132.0,currency:"KRW"},
+  {company:"한화생명",product:"THE H 종신보험(기본)",rateInfo:"2.5%, 10년후1.0%",monthlyPremium:756300,returnAtBase:99.3,returnAt10:120.0,returnAt20:130.9,currency:"KRW"},
+  {company:"삼성생명",product:"행복종신보험",rateInfo:"2.4%, 10년후1.3%",monthlyPremium:709500,returnAtBase:96.0,returnAt10:120.0,returnAt20:132.0,currency:"KRW"},
+  {company:"신한라이프(1)",product:"모아더드림종신보험",rateInfo:"2.6%, 10년후1.3%",monthlyPremium:964650,returnAtBase:99.9,returnAt10:118.5,returnAt20:131.5,currency:"KRW"},
+  {company:"KDB생명",product:"더블찬스종신보험(비납면형)",rateInfo:"2.5%, 10년후1.5%",monthlyPremium:804000,returnAtBase:95.8,returnAt10:117.7,returnAt20:129.9,currency:"KRW"}
+];
+
+/* ===== 3천만원 5년납 — 간편심사 ===== */
+const data_3000_5_simple = [
+  {company:"메트라이프(달러)",product:"백만인을위한달러종신Plus",rateInfo:"3.25%, 10년후1.0%",monthlyPremium:654.30,returnAtBase:98.3,returnAt10:122.0,returnAt20:131.6,currency:"USD"},
+  {company:"KB라이프",product:"약속플러스종신보험",rateInfo:"2.7%, 10년후1.5%",monthlyPremium:690900,returnAtBase:99.9,returnAt10:120.9,returnAt20:123.2,currency:"KRW"},
+  {company:"IM라이프",product:"당당한인생종신보험",rateInfo:"2.25%, 10년후1.0%",monthlyPremium:612900,returnAtBase:99.7,returnAt10:120.5,returnAt20:129.7,currency:"KRW"},
+  {company:"ABL생명",product:"THE드림종신보험",rateInfo:"3.0%, 10년후2.0%",monthlyPremium:648600,returnAtBase:98.2,returnAt10:120.5,returnAt20:138.2,currency:"KRW"},
+  {company:"하나생명",product:"하나로THE연결된종신보험",rateInfo:"2.75%, 10년후1.75%",monthlyPremium:502200,returnAtBase:95.9,returnAt10:120.5,returnAt20:140.3,currency:"KRW"},
+  {company:"신한라이프(2)",product:"모아더드림Plus종신보험",rateInfo:"2.6%, 10년후1.3%",monthlyPremium:932280,returnAtBase:90.0,returnAt10:120.5,returnAt20:133.0,currency:"KRW"},
+  {company:"푸본현대생명",product:"MAX종신보험원픽",rateInfo:"2.5%, 10년후1.5%",monthlyPremium:513900,returnAtBase:96.9,returnAt10:120.5,returnAt20:129.2,currency:"KRW"},
+  {company:"교보생명",product:"K-실속종신보험(1종)",rateInfo:"5/15↓/15↑=2.25/1.75/1.0%",monthlyPremium:436800,returnAtBase:97.9,returnAt10:119.4,returnAt20:128.6,currency:"KRW"},
+  {company:"신한라이프(1)",product:"모아더드림종신보험",rateInfo:"2.6%, 10년후1.3%",monthlyPremium:999000,returnAtBase:99.9,returnAt10:118.6,returnAt20:131.6,currency:"KRW"},
+  {company:"삼성생명",product:"행복종신보험",rateInfo:"2.5%, 10년후1.3%",monthlyPremium:742500,returnAtBase:96.0,returnAt10:118.5,returnAt20:129.9,currency:"KRW"},
+  {company:"한화생명",product:"THE H 종신보험(기본)",rateInfo:"2.5%, 10년후1.0%",monthlyPremium:797400,returnAtBase:99.2,returnAt10:118.2,returnAt20:129.1,currency:"KRW"},
+  {company:"KDB생명",product:"더블찬스종신보험(비납면형)",rateInfo:"2.5%, 10년후1.5%",monthlyPremium:820800,returnAtBase:95.8,returnAt10:117.8,returnAt20:130.1,currency:"KRW"},
+  {company:"메트라이프",product:"백만인을위한종신보험Plus",rateInfo:"3.25%, 10년후1.0%",monthlyPremium:656400,returnAtBase:93.7,returnAt10:117.3,returnAt20:126.5,currency:"KRW"}
+];
+
+/* ===== 3천만원 7년납 — 일반심사 ===== */
+const data_3000_7_general = [
+  {company:"메트라이프(달러)",product:"백만인을위한달러종신Plus",rateInfo:"3.25%, 10년후1.0%",monthlyPremium:476.40,returnAtBase:99.6,returnAt10:124.8,returnAt20:134.9,currency:"USD"},
+  {company:"처브라이프(2)",product:"New수(秀)종신보험(체감)",rateInfo:"3.3%, 7년후2.3%",monthlyPremium:553800,returnAtBase:100.0,returnAt10:120.0,returnAt20:148.4,currency:"KRW"},
+  {company:"동양생명",product:"알뜰플러스종신보험",rateInfo:"2.75%, 10년후2.0%",monthlyPremium:321000,returnAtBase:100.0,returnAt10:119.0,returnAt20:140.1,currency:"KRW"},
+  {company:"처브라이프(1)",product:"New수(秀)종신보험",rateInfo:"3.3%, 7년후2.3%",monthlyPremium:428400,returnAtBase:100.0,returnAt10:117.6,returnAt20:145.6,currency:"KRW"},
+  {company:"ABL생명",product:"THE드림종신보험",rateInfo:"3.0%, 10년후2.0%",monthlyPremium:443100,returnAtBase:100.0,returnAt10:117.6,returnAt20:135.9,currency:"KRW"},
+  {company:"하나생명",product:"하나로THE연결된종신보험",rateInfo:"2.75%, 10년후1.75%",monthlyPremium:355500,returnAtBase:100.0,returnAt10:117.6,returnAt20:137.6,currency:"KRW"},
+  {company:"신한라이프(2)",product:"모아더드림Plus종신보험",rateInfo:"2.6%, 10년후1.3%",monthlyPremium:674940,returnAtBase:90.0,returnAt10:117.6,returnAt20:132.8,currency:"KRW"},
+  {company:"라이나생명",product:"THE채우는종신보험(체증형)",rateInfo:"2.25%",monthlyPremium:426900,returnAtBase:99.9,returnAt10:117.6,returnAt20:137.0,currency:"KRW"},
+  {company:"푸본현대생명",product:"MAX종신보험원픽",rateInfo:"2.5%, 10년후1.5%",monthlyPremium:372900,returnAtBase:100.0,returnAt10:117.6,returnAt20:126.3,currency:"KRW"},
+  {company:"메트라이프",product:"백만인을위한종신보험Plus",rateInfo:"3.25%, 10년후1.0%",monthlyPremium:476400,returnAtBase:95.6,returnAt10:117.5,returnAt20:126.9,currency:"KRW"},
+  {company:"IM라이프",product:"당당한인생종신보험",rateInfo:"2.25%, 10년후1.0%",monthlyPremium:441300,returnAtBase:99.8,returnAt10:117.4,returnAt20:126.5,currency:"KRW"},
+  {company:"신한라이프(1)",product:"모아더드림종신보험",rateInfo:"2.6%, 10년후1.3%",monthlyPremium:729570,returnAtBase:100.0,returnAt10:117.3,returnAt20:129.5,currency:"KRW"},
+  {company:"한화생명",product:"THE H 종신보험(기본)",rateInfo:"2.5%, 10년후1.0%",monthlyPremium:448080,returnAtBase:100.0,returnAt10:117.2,returnAt20:128.0,currency:"KRW"},
+  {company:"삼성생명",product:"행복종신보험",rateInfo:"2.5%, 10년후1.3%",monthlyPremium:525300,returnAtBase:100.0,returnAt10:117.0,returnAt20:128.7,currency:"KRW"},
+  {company:"교보생명",product:"K-실속종신보험(1종)",rateInfo:"5/15↓/15↑=2.25/1.75/1.0%",monthlyPremium:279900,returnAtBase:100.0,returnAt10:117.0,returnAt20:128.5,currency:"KRW"},
+  {company:"KB라이프",product:"약속플러스종신보험",rateInfo:"2.7%, 10년후1.5%",monthlyPremium:483600,returnAtBase:99.9,returnAt10:116.9,returnAt20:119.5,currency:"KRW"},
+  {company:"DB생명",product:"뉴알차고행복한+종신보험",rateInfo:"2.75%, 10년후1.75%",monthlyPremium:436200,returnAtBase:99.9,returnAt10:116.5,returnAt20:129.6,currency:"KRW"},
+  {company:"미래에셋생명",product:"미래를선택하는종신보험",rateInfo:"2.75%, 10년후1.75%",monthlyPremium:438300,returnAtBase:93.0,returnAt10:108.1,returnAt20:123.7,currency:"KRW"},
+  {company:"KDB생명",product:"더블찬스종신보험(비납면형)",rateInfo:"2.5%, 10년후1.5%",monthlyPremium:574500,returnAtBase:99.0,returnAt10:114.4,returnAt20:125.9,currency:"KRW"}
+];
+
+/* ===== 3천만원 7년납 — 간편심사 ===== */
+const data_3000_7_simple = [
+  {company:"메트라이프(달러)",product:"백만인을위한달러종신Plus",rateInfo:"3.25%, 10년후1.0%",monthlyPremium:484.50,returnAtBase:99.6,returnAt10:121.8,returnAt20:131.6,currency:"USD"},
+  {company:"처브라이프(2)",product:"New수(秀)종신보험(체감)",rateInfo:"3.3%, 7년후2.3%",monthlyPremium:595800,returnAtBase:100.0,returnAt10:120.0,returnAt20:147.9,currency:"KRW"},
+  {company:"ABL생명",product:"THE드림종신보험",rateInfo:"3.0%, 10년후2.0%",monthlyPremium:480300,returnAtBase:100.0,returnAt10:117.6,returnAt20:135.0,currency:"KRW"},
+  {company:"처브라이프(1)",product:"New수(秀)종신보험",rateInfo:"3.3%, 7년후2.3%",monthlyPremium:461100,returnAtBase:100.0,returnAt10:117.6,returnAt20:145.2,currency:"KRW"},
+  {company:"하나생명",product:"하나로THE연결된종신보험",rateInfo:"2.75%, 10년후1.75%",monthlyPremium:378600,returnAtBase:100.0,returnAt10:117.6,returnAt20:137.0,currency:"KRW"},
+  {company:"라이나생명(335)",product:"THE채우는종신보험(체증형)",rateInfo:"2.25%",monthlyPremium:459000,returnAtBase:99.9,returnAt10:117.6,returnAt20:137.0,currency:"KRW"},
+  {company:"신한라이프(2)",product:"모아더드림Plus종신보험",rateInfo:"2.6%, 10년후1.3%",monthlyPremium:696300,returnAtBase:90.0,returnAt10:117.6,returnAt20:131.4,currency:"KRW"},
+  {company:"푸본현대생명",product:"MAX종신보험원픽",rateInfo:"2.5%, 10년후1.5%",monthlyPremium:384600,returnAtBase:100.0,returnAt10:117.6,returnAt20:126.3,currency:"KRW"},
+  {company:"IM라이프",product:"당당한인생종신보험",rateInfo:"2.25%, 10년후1.0%",monthlyPremium:451800,returnAtBase:99.7,returnAt10:117.5,returnAt20:126.5,currency:"KRW"},
+  {company:"교보생명",product:"K-실속종신보험(1종)",rateInfo:"5/15↓/15↑=2.25/1.75/1.0%",monthlyPremium:318300,returnAtBase:99.9,returnAt10:117.4,returnAt20:126.5,currency:"KRW"},
+  {company:"신한라이프(1)",product:"모아더드림종신보험",rateInfo:"2.6%, 10년후1.3%",monthlyPremium:753540,returnAtBase:100.0,returnAt10:117.3,returnAt20:129.6,currency:"KRW"},
+  {company:"KB라이프",product:"약속플러스종신보험",rateInfo:"2.7%, 10년후1.5%",monthlyPremium:495600,returnAtBase:99.9,returnAt10:116.8,returnAt20:119.3,currency:"KRW"},
+  {company:"DB생명",product:"뉴알차고행복한+종신보험",rateInfo:"2.75%, 10년후1.75%",monthlyPremium:456300,returnAtBase:99.9,returnAt10:116.3,returnAt20:129.3,currency:"KRW"},
+  {company:"삼성생명",product:"행복종신보험",rateInfo:"2.5%, 10년후1.3%",monthlyPremium:549900,returnAtBase:100.0,returnAt10:116.2,returnAt20:127.3,currency:"KRW"},
+  {company:"동양생명(325)",product:"알뜰플러스종신보험",rateInfo:"2.75%, 10년후2.0%",monthlyPremium:348000,returnAtBase:100.0,returnAt10:116.0,returnAt20:136.0,currency:"KRW"},
+  {company:"한화생명",product:"THE H 종신보험(기본)",rateInfo:"2.5%, 10년후1.0%",monthlyPremium:591900,returnAtBase:100.0,returnAt10:115.3,returnAt20:126.0,currency:"KRW"},
+  {company:"메트라이프",product:"백만인을위한종신보험Plus",rateInfo:"3.25%, 10년후1.0%",monthlyPremium:484500,returnAtBase:95.7,returnAt10:114.5,returnAt20:123.5,currency:"KRW"},
+  {company:"미래에셋생명",product:"미래를선택하는종신보험",rateInfo:"2.75%, 10년후1.75%",monthlyPremium:459300,returnAtBase:93.0,returnAt10:108.0,returnAt20:123.5,currency:"KRW"},
+  {company:"KDB생명",product:"더블찬스종신보험(비납면형)",rateInfo:"2.5%, 10년후1.5%",monthlyPremium:586800,returnAtBase:99.0,returnAt10:114.3,returnAt20:126.0,currency:"KRW"}
+];
+
+/* ===== 3천만원 10년납 — 일반심사 ===== */
+const data_3000_10_general = [
+  {company:"메트라이프(달러)",product:"백만인을위한달러종신Plus",rateInfo:"3.25%, 10년후1.0%",monthlyPremium:347.10,returnAtBase:36.1,returnAt10:120.8,returnAt20:130.7,currency:"USD"},
+  {company:"동양생명(2)",product:"알뜰플러스종신보험(체감)",rateInfo:"2.75%, 10년후2.0%",monthlyPremium:354000,returnAtBase:42.9,returnAt10:117.3,returnAt20:138.0,currency:"KRW"},
+  {company:"처브라이프(2)",product:"New수(秀)종신보험(체감)",rateInfo:"3.3%, 7년후2.3%",monthlyPremium:421500,returnAtBase:35.6,returnAt10:116.0,returnAt20:143.5,currency:"KRW"},
+  {company:"하나생명",product:"하나로THE연결된종신보험",rateInfo:"2.75%, 10년후1.75%",monthlyPremium:257711,returnAtBase:41.9,returnAt10:114.9,returnAt20:136.4,currency:"KRW"},
+  {company:"라이나생명",product:"THE채우는종신보험",rateInfo:"2.25%",monthlyPremium:312000,returnAtBase:41.5,returnAt10:113.5,returnAt20:132.3,currency:"KRW"},
+  {company:"동양생명(1)",product:"알뜰플러스종신보험",rateInfo:"2.75%, 10년후2.0%",monthlyPremium:237000,returnAtBase:39.6,returnAt10:113.5,returnAt20:133.7,currency:"KRW"},
+  {company:"신한라이프",product:"모아더드림Plus종신보험",rateInfo:"2.6%, 10년후1.3%",monthlyPremium:487710,returnAtBase:38.7,returnAt10:113.5,returnAt20:129.3,currency:"KRW"},
+  {company:"처브라이프(1)",product:"New수(秀)종신보험",rateInfo:"3.3%, 7년후2.3%",monthlyPremium:310200,returnAtBase:32.6,returnAt10:113.4,returnAt20:140.4,currency:"KRW"},
+  {company:"삼성생명",product:"행복종신보험",rateInfo:"2.5%, 10년후1.3%",monthlyPremium:379500,returnAtBase:40.0,returnAt10:113.3,returnAt20:124.6,currency:"KRW"},
+  {company:"메트라이프",product:"백만인을위한종신보험Plus",rateInfo:"3.25%, 10년후1.0%",monthlyPremium:347100,returnAtBase:36.0,returnAt10:113.2,returnAt20:122.3,currency:"KRW"},
+  {company:"교보생명",product:"K-실속종신보험(2종)",rateInfo:"5/15↓/15↑=2.25/1.75/1.0%",monthlyPremium:177300,returnAtBase:40.4,returnAt10:112.8,returnAt20:130.1,currency:"KRW"},
+  {company:"KB라이프",product:"약속플러스종신보험",rateInfo:"2.7%, 10년후1.5%",monthlyPremium:343200,returnAtBase:42.8,returnAt10:112.7,returnAt20:115.7,currency:"KRW"},
+  {company:"ABL생명",product:"THE드림종신보험",rateInfo:"3.0%, 10년후2.0%",monthlyPremium:309600,returnAtBase:41.8,returnAt10:112.5,returnAt20:129.8,currency:"KRW"},
+  {company:"DB생명",product:"뉴알차고행복한+종신보험",rateInfo:"2.75%, 10년후1.75%",monthlyPremium:305100,returnAtBase:39.4,returnAt10:110.3,returnAt20:122.2,currency:"KRW"},
+  {company:"미래에셋생명",product:"미래를선택하는종신보험",rateInfo:"2.75%, 10년후1.75%",monthlyPremium:312000,returnAtBase:43.0,returnAt10:108.5,returnAt20:125.2,currency:"KRW"},
+  {company:"KDB생명",product:"더블찬스종신보험(비납면형)",rateInfo:"2.5%, 10년후1.5%",monthlyPremium:405300,returnAtBase:41.4,returnAt10:109.7,returnAt20:120.4,currency:"KRW"}
+];
+
+/* ===== 3천만원 10년납 — 간편심사 ===== */
+const data_3000_10_simple = [
+  {company:"메트라이프(달러)",product:"백만인을위한달러종신Plus",rateInfo:"3.25%, 10년후1.0%",monthlyPremium:352.80,returnAtBase:36.1,returnAt10:117.8,returnAt20:127.4,currency:"USD"},
+  {company:"처브라이프(2)",product:"New수(秀)종신보험(체감)",rateInfo:"3.3%, 7년후2.3%",monthlyPremium:453300,returnAtBase:35.7,returnAt10:116.0,returnAt20:143.1,currency:"KRW"},
+  {company:"하나생명",product:"하나로THE연결된종신보험",rateInfo:"2.75%, 10년후1.75%",monthlyPremium:275100,returnAtBase:41.5,returnAt10:114.9,returnAt20:135.5,currency:"KRW"},
+  {company:"동양생명(2)(325)",product:"알뜰플러스종신보험(체감)",rateInfo:"2.75%, 10년후2.0%",monthlyPremium:381000,returnAtBase:42.5,returnAt10:114.3,returnAt20:133.8,currency:"KRW"},
+  {company:"라이나생명(335)",product:"THE채우는종신보험",rateInfo:"2.25%",monthlyPremium:334800,returnAtBase:40.6,returnAt10:113.5,returnAt20:132.3,currency:"KRW"},
+  {company:"신한라이프",product:"모아더드림Plus종신보험",rateInfo:"2.6%, 10년후1.3%",monthlyPremium:504930,returnAtBase:37.8,returnAt10:113.5,returnAt20:127.8,currency:"KRW"},
+  {company:"처브라이프(1)",product:"New수(秀)종신보험",rateInfo:"3.3%, 7년후2.3%",monthlyPremium:333900,returnAtBase:32.7,returnAt10:113.4,returnAt20:140.0,currency:"KRW"},
+  {company:"KB라이프",product:"약속플러스종신보험",rateInfo:"2.7%, 10년후1.5%",monthlyPremium:352500,returnAtBase:42.7,returnAt10:112.5,returnAt20:115.4,currency:"KRW"},
+  {company:"삼성생명",product:"행복종신보험",rateInfo:"2.5%, 10년후1.3%",monthlyPremium:398700,returnAtBase:40.7,returnAt10:112.2,returnAt20:123.0,currency:"KRW"},
+  {company:"ABL생명",product:"THE드림종신보험",rateInfo:"3.0%, 10년후2.0%",monthlyPremium:336600,returnAtBase:41.4,returnAt10:111.6,returnAt20:127.9,currency:"KRW"},
+  {company:"교보생명",product:"K-실속종신보험(2종)",rateInfo:"5/15↓/15↑=2.25/1.75/1.0%",monthlyPremium:202800,returnAtBase:41.2,returnAt10:111.1,returnAt20:125.5,currency:"KRW"},
+  {company:"동양생명(1)(325)",product:"알뜰플러스종신보험",rateInfo:"2.75%, 10년후2.0%",monthlyPremium:258000,returnAtBase:38.9,returnAt10:110.5,returnAt20:129.6,currency:"KRW"},
+  {company:"메트라이프",product:"백만인을위한종신보험Plus",rateInfo:"3.25%, 10년후1.0%",monthlyPremium:352800,returnAtBase:36.1,returnAt10:110.2,returnAt20:119.0,currency:"KRW"},
+  {company:"DB생명",product:"뉴알차고행복한+종신보험",rateInfo:"2.75%, 10년후1.75%",monthlyPremium:320100,returnAtBase:39.2,returnAt10:109.9,returnAt20:121.7,currency:"KRW"},
+  {company:"미래에셋생명",product:"미래를선택하는종신보험",rateInfo:"2.75%, 10년후1.75%",monthlyPremium:327300,returnAtBase:42.8,returnAt10:108.2,returnAt20:124.7,currency:"KRW"},
+  {company:"KDB생명",product:"더블찬스종신보험(비납면형)",rateInfo:"2.5%, 10년후1.5%",monthlyPremium:414000,returnAtBase:41.4,returnAt10:109.5,returnAt20:120.5,currency:"KRW"}
+];
+
+/* ===== 5천만원 5년납 ===== */
+const data_5000_5 = [
+  {company:"ABL생명",product:"THE드림종신보험",monthlyPremium:999500,death5:9422,death10:12856,death20:12856,death30:12856,death40:12856,surr5:5889,surr10:7226,surr20:8346,surr30:9547,surr40:10689,ret5:98.2,ret10:120.5,ret20:139.2,ret30:159.2,ret40:178.2,currency:"KRW"},
+  {company:"신한라이프(1)",product:"모아더드림종신보험",monthlyPremium:1607750,death5:9646,death10:11550,death20:12816,death30:14252,death40:15866,surr5:9636,surr10:11436,surr20:12689,surr30:14111,surr40:15709,ret5:99.0,ret10:118.5,ret20:131.5,ret30:146.2,ret40:162.8,currency:"KRW"},
+  {company:"신한라이프(2)",product:"모아더드림Plus종신보험",monthlyPremium:1509200,death5:9055,death10:11020,death20:12292,death30:13197,death40:14210,surr5:8149,surr10:10911,surr20:12170,surr30:13066,surr40:14069,ret5:90.0,ret10:120.5,ret20:134.4,ret30:144.3,ret40:155.3,currency:"KRW"},
+  {company:"삼성생명",product:"행복종신보험",monthlyPremium:1182500,death5:7280,death10:10058,death20:12558,death30:12558,death40:12258,surr5:6811,surr10:8515,surr20:9368,surr30:10247,surr40:11057,ret5:96.0,ret10:120.0,ret20:132.0,ret30:144.4,ret40:155.8,currency:"KRW"},
+  {company:"한화생명",product:"THE H 종신보험(기본)",monthlyPremium:1260500,death5:9000,death10:10000,death20:10006,death30:10934,death40:11943,surr5:7513,surr10:9080,surr20:9907,surr30:10826,surr40:11825,ret5:99.3,ret10:120.0,ret20:130.9,ret30:143.1,ret40:156.3,currency:"KRW"},
+  {company:"메트라이프",product:"백만인을위한종신보험Plus",monthlyPremium:1076000,death5:7668,death10:9632,death20:9856,death30:10235,death40:10374,surr5:6049,surr10:7768,surr20:8387,surr30:9040,surr40:9687,ret5:93.7,ret10:120.3,ret20:129.9,ret30:140.0,ret40:150.0,currency:"KRW"},
+  {company:"KDB생명",product:"더블찬스종신보험(비납면형)",monthlyPremium:1340000,death5:8040,death10:9500,death20:10542,death30:11682,death40:12984,surr5:7706,surr10:9470,surr20:10446,surr30:11576,surr40:12867,ret5:95.8,ret10:118.9,ret20:112.9,ret30:143.9,ret40:160.0,currency:"KRW"},
+  {company:"KB라이프",product:"약속플러스종신보험",monthlyPremium:1125500,death5:7184,death10:9233,death20:9233,death30:9233,death40:9233,surr5:6746,surr10:8169,surr20:8326,surr30:8476,surr40:8525,ret5:99.9,ret10:121.0,ret20:123.3,ret30:125.5,ret40:126.2,currency:"KRW"},
+  {company:"하나생명",product:"하나로THE연결된종신보험",monthlyPremium:794500,death5:6247,death10:8319,death20:8863,death30:9125,death40:9433,surr5:4576,surr10:5852,surr20:6684,surr30:7520,surr40:8386,ret5:95.2,ret10:122.7,ret20:140.2,ret30:157.7,ret40:175.9,currency:"KRW"},
+  {company:"IM라이프",product:"당당한인생종신보험",monthlyPremium:997500,death5:5000,death10:7500,death20:7500,death30:7500,death40:7500,surr5:5967,surr10:7205,surr20:7764,surr30:8347,surr40:8916,ret5:99.7,ret10:120.4,ret20:129.7,ret30:139.5,ret40:149.0,currency:"KRW"},
+  {company:"푸본현대생명",product:"MAX종신보험원픽",monthlyPremium:831000,death5:5728,death10:7179,death20:7473,death30:7670,death40:7898,surr5:4831,surr10:6008,surr20:6445,surr30:6927,surr40:7424,ret5:96.9,ret10:120.5,ret20:129.2,ret30:138.9,ret40:148.9,currency:"KRW"},
+  {company:"교보생명",product:"K-실속종신보험(1종)",monthlyPremium:639500,death5:5748,death10:5748,death20:5748,death30:5754,death40:6270,surr5:3818,surr10:4610,surr20:5063,surr30:5569,surr40:6137,ret5:99.5,ret10:120.2,ret20:132.0,ret30:145.2,ret40:160.0,currency:"KRW"},
+  {company:"메트라이프(달러)",product:"백만인을위한달러Plus(5만달러)",monthlyPremium:1073.0,death5:79485,death10:99079,death20:101598,death30:104381,death40:107455,surr5:63299,surr10:64380,surr20:86914,surr30:93761,surr40:100584,ret5:98.3,ret10:124.9,ret20:135.0,ret30:145.6,ret40:156.2,currency:"USD"}
+];
+
+/* ===== 5천만원 7년납 ===== */
+const data_5000_7 = [
+  {company:"ABL생명",product:"THE드림종신보험",monthlyPremium:738500,death7:10279,death10:12990,death20:12990,death30:12990,death40:12990,surr7:6203,surr10:7295,surr20:8428,surr30:9642,surr40:10798,ret7:100.0,ret10:117.6,ret20:135.9,ret30:155.4,ret40:174.1,currency:"KRW"},
+  {company:"신한라이프(2)",product:"모아더드림Plus종신보험",monthlyPremium:1124900,death7:9449,death10:11223,death20:12677,death30:13841,death40:14935,surr7:8504,surr10:11112,surr20:12552,surr30:13500,surr40:14562,ret7:90.0,ret10:117.6,ret20:132.8,ret30:142.8,ret40:154.1,currency:"KRW"},
+  {company:"신한라이프(1)",product:"모아더드림종신보험",monthlyPremium:1215950,death7:10213,death10:10213,death20:13369,death30:15107,death40:16749,surr7:10213,surr10:11987,surr20:13236,surr30:14652,surr40:16245,ret7:100.0,ret10:117.3,ret20:129.5,ret30:143.4,ret40:159.0,currency:"KRW"},
+  {company:"삼성생명",product:"행복종신보험",monthlyPremium:875500,death7:7597,death10:10183,death20:12683,death30:12683,death40:12683,surr7:7354,surr10:8604,surr20:9464,surr30:10351,surr40:11169,ret7:100.0,ret10:117.0,ret20:128.7,ret30:140.7,ret40:151.8,currency:"KRW"},
+  {company:"처브라이프",product:"New수(秀)종신보험",monthlyPremium:714000,death7:8581,death10:10110,death20:13277,death30:14113,death40:15164,surr7:5997,surr10:7053,surr20:8734,surr30:10689,surr40:12845,ret7:100.0,ret10:117.6,ret20:145.6,ret30:178.2,ret40:214.2,currency:"KRW"},
+  {company:"라이나생명",product:"THE채우는종신보험(체증형)",monthlyPremium:711500,death7:10000,death10:10000,death20:10000,death30:10000,death40:10988,surr7:1839,surr10:7028,surr20:8193,surr30:9533,surr40:10988,ret7:43.0,ret10:117.6,ret20:137.0,ret30:159.5,ret40:183.8,currency:"KRW"},
+  {company:"한화생명",product:"THE H 종신보험(기본)",monthlyPremium:933500,death7:10000,death10:10000,death20:10138,death30:11080,death40:12104,surr7:7841,surr10:9196,surr20:10038,surr30:10971,surr40:11984,ret7:100.0,ret10:117.2,ret20:128.0,ret30:139.9,ret40:152.8,currency:"KRW"},
+  {company:"KDB생명",product:"더블찬스종신보험(비납면형)",monthlyPremium:957500,death7:8043,death10:9500,death20:10223,death30:11312,death40:12556,surr7:7968,surr10:9201,surr20:10130,surr30:11210,surr40:12443,ret7:99.0,ret10:114.4,ret20:125.9,ret30:139.3,ret40:154.7,currency:"KRW"},
+  {company:"메트라이프",product:"백만인을위한종신보험Plus",monthlyPremium:794000,death7:7883,death10:9453,death20:9933,death30:10188,death40:10469,surr7:6381,surr10:7838,surr20:8465,surr30:9126,surr40:9782,ret7:95.6,ret10:117.5,ret20:126.9,ret30:136.8,ret40:146.8,currency:"KRW"},
+  {company:"DB생명",product:"뉴알차고행복한+종신보험",monthlyPremium:727000,death7:7558,death10:9334,death20:9681,death30:10094,death40:10586,surr7:6100,surr10:7114,surr20:7913,surr30:8808,surr40:9763,ret7:99.9,ret10:116.5,ret20:129.6,ret30:144.2,ret40:159.9,currency:"KRW"},
+  {company:"KB라이프",product:"약속플러스종신보험",monthlyPremium:806000,death7:8233,death10:9045,death20:9045,death30:9045,death40:9045,surr7:6763,surr10:7916,surr20:8091,surr30:8262,surr40:8334,ret7:99.9,ret10:116.9,ret20:119.5,ret30:122.0,ret40:123.1,currency:"KRW"},
+  {company:"미래에셋생명",product:"미래를선택하는종신보험",monthlyPremium:725500,death7:6807,death10:8513,death20:11013,death30:11263,death40:11263,surr7:5707,surr10:6627,surr20:7583,surr30:8597,surr40:9595,ret7:93.7,ret10:108.8,ret20:124.4,ret30:141.1,ret40:157.4,currency:"KRW"},
+  {company:"하나생명",product:"하나로THE연결된종신보험",monthlyPremium:592000,death7:6967,death10:8409,death20:9040,death30:9332,death40:9679,surr7:4972,surr10:5946,surr20:6859,surr30:7727,surr40:8633,ret7:100.0,ret10:119.5,ret20:137.9,ret30:155.4,ret40:173.6,currency:"KRW"},
+  {company:"동양생명",product:"알뜰플러스종신보험",monthlyPremium:535000,death7:6842,death10:8162,death20:8917,death30:9227,death40:9606,surr7:4494,surr10:5347,surr20:6299,surr30:7364,surr40:8453,ret7:100.0,ret10:119.0,ret20:140.1,ret30:163.8,ret40:188.1,currency:"KRW"},
+  {company:"IM라이프",product:"당당한인생종신보험",monthlyPremium:735500,death7:6500,death10:7500,death20:7500,death30:7500,death40:7500,surr7:6159,surr10:7253,surr20:7818,surr30:8407,surr40:8982,ret7:99.7,ret10:117.4,ret20:126.5,ret30:136.1,ret40:145.4,currency:"KRW"},
+  {company:"푸본현대생명",product:"MAX종신보험원픽",monthlyPremium:621500,death7:6231,death10:7310,death20:7626,death30:7847,death40:8103,surr7:5220,surr10:6139,surr20:6597,surr30:7104,surr40:7629,ret7:100.0,ret10:117.6,ret20:126.3,ret30:136.0,ret40:146.1,currency:"KRW"},
+  {company:"교보생명",product:"K-실속종신보험(1종)",monthlyPremium:466300,death7:5711,death10:5711,death20:5711,death30:5717,death40:6232,surr7:3918,surr10:4585,surr20:5035,surr30:5538,surr40:6104,ret7:100.0,ret10:117.0,ret20:128.5,ret30:141.3,ret40:155.8,currency:"KRW"},
+  {company:"메트라이프(달러)",product:"백만인을위한달러Plus(5만달러)",monthlyPremium:794.0,death7:81502,death10:99402,death20:104716,death30:107825,death40:111260,surr7:66481,surr10:83253,surr20:90032,surr30:97205,surr40:104389,ret7:99.6,ret10:124.8,ret20:134.9,ret30:145.7,ret40:156.5,currency:"USD"}
+];
+
+/* ===== 5천만원 10년납 ===== */
+const data_5000_10 = [
+  {company:"ABL생명",product:"THE드림종신보험",monthlyPremium:516000,death5:7500,death10:12352,death20:12352,death30:12352,death40:12352,surr5:1293,surr10:6967,surr20:8038,surr30:9187,surr40:10280,ret5:41.8,ret10:112.5,ret20:129.8,ret30:148.4,ret40:166.0,currency:"KRW"},
+  {company:"삼성생명",product:"행복종신보험",monthlyPremium:632500,death5:5000,death10:10178,death20:12678,death30:12678,death40:12678,surr5:1521,surr10:8601,surr20:9461,surr30:10348,surr40:11165,ret5:40.0,ret10:113.3,ret20:124.6,ret30:136.3,ret40:147.1,currency:"KRW"},
+  {company:"처브라이프",product:"New수(秀)종신보험",monthlyPremium:517000,death5:7470,death10:10092,death20:13254,death30:14085,death40:15128,surr5:1011,surr10:7035,surr20:8711,surr30:10660,surr40:12810,ret5:32.6,ret10:113.4,ret20:140.4,ret30:171.8,ret40:206.5,currency:"KRW"},
+  {company:"라이나생명",product:"THE채우는종신보험(체증형)",monthlyPremium:520000,death5:9000,death10:10000,death20:10000,death30:10000,death40:11094,surr5:1295,surr10:7082,surr20:8261,surr30:9617,surr40:11094,ret5:41.5,ret10:113.5,ret20:132.3,ret30:154.1,ret40:177.7,currency:"KRW"},
+  {company:"KDB생명",product:"더블찬스종신보험(비납면형)",monthlyPremium:675500,death5:7000,death10:9500,death20:10000,death30:10881,death40:12057,surr5:1681,surr10:8892,surr20:9762,surr30:10783,surr40:11948,ret5:41.4,ret10:109.7,ret20:120.4,ret30:133.0,ret40:147.4,currency:"KRW"},
+  {company:"신한라이프",product:"모아더드림Plus종신보험",monthlyPremium:812850,death5:5000,death10:9170,death20:9961,death30:10219,death40:10503,surr5:1253,surr10:7860,surr20:8493,surr30:9157,surr40:9816,ret5:36.1,ret10:113.2,ret20:122.3,ret30:131.9,ret40:141.4,currency:"KRW"},
+  {company:"KB라이프",product:"약속플러스종신보험",monthlyPremium:572000,death5:6500,death10:8982,death20:8982,death30:8982,death40:8982,surr5:1468,surr10:7736,surr20:7941,surr30:8144,surr40:8252,ret5:42.8,ret10:112.7,ret20:115.7,ret30:118.7,ret40:120.2,currency:"KRW"},
+  {company:"메트라이프",product:"백만인을위한종신보험Plus",monthlyPremium:578500,death5:5000,death10:8974,death20:8429,death30:9086,death40:10425,surr5:1253,surr10:7802,surr20:8429,surr30:9086,surr40:9738,ret5:36.8,ret10:114.6,ret20:123.8,ret30:133.5,ret40:143.1,currency:"KRW"},
+  {company:"DB생명",product:"뉴알차고행복한+종신보험",monthlyPremium:508000,death5:5500,death10:8952,death20:9227,death30:9554,death40:9943,surr5:1203,surr10:6732,surr20:7459,surr30:8268,surr40:9120,ret5:39.4,ret10:110.3,ret20:122.2,ret30:135.5,ret40:149.5,currency:"KRW"},
+  {company:"미래에셋생명",product:"미래를선택하는종신보험",monthlyPremium:515500,death5:6000,death10:8763,death20:11360,death30:11610,death40:11610,surr5:1342,surr10:6761,surr20:7802,surr30:8851,surr40:9883,ret5:43.4,ret10:109.3,ret20:126.1,ret30:143.1,ret40:159.8,currency:"KRW"},
+  {company:"하나생명",product:"하나로THE연결된종신보험",monthlyPremium:429500,death5:6000,death10:8389,death20:9214,death30:9534,death40:9925,surr5:1081,surr10:5926,surr20:7033,surr30:7934,surr40:8879,ret5:49.5,ret10:114.2,ret20:136.4,ret30:153.9,ret40:172.2,currency:"KRW"},
+  {company:"동양생명",product:"알뜰플러스종신보험",monthlyPremium:395000,death5:5750,death10:8194,death20:8956,death30:9275,death40:9664,surr5:942,surr10:5379,surr20:6338,surr30:7412,surr40:8511,ret5:39.7,ret10:113.5,ret20:133.7,ret30:156.3,ret40:179.5,currency:"KRW"},
+  {company:"교보생명",product:"K-실속종신보험(2종)",monthlyPremium:295500,death5:5000,death10:5687,death20:5687,death30:5687,death40:5999,surr5:748,surr10:3999,surr20:4612,surr30:5187,surr40:5861,ret5:42.2,ret10:112.8,ret20:130.1,ret30:146.3,ret40:165.3,currency:"KRW"},
+  {company:"메트라이프(달러)",product:"백만인을위한달러Plus(5만달러)",monthlyPremium:578.5,death5:50000,death10:96979,death20:105443,death30:108628,death40:112146,surr5:12532,surr10:83878,surr20:90759,surr30:98008,surr40:105275,ret5:36.1,ret10:120.8,ret20:130.7,ret30:141.1,ret40:151.6,currency:"USD"}
+];
+
+/* ==========================================================
+   APPLICATION LOGIC
+   ========================================================== */
+const STATE = {
+  group: '3000_5',
+  review: 'general',
+  search: '',
+  sort: 'default',
+  view: 'balance',
+  selected: [] // {group, review, idx, data}
+};
+
+/* 데이터 맵 */
+const DATA_MAP = {
+  '3000_5_general': data_3000_5_general,
+  '3000_5_simple': data_3000_5_simple,
+  '3000_7_general': data_3000_7_general,
+  '3000_7_simple': data_3000_7_simple,
+  '3000_10_general': data_3000_10_general,
+  '3000_10_simple': data_3000_10_simple,
+  '5000_5': data_5000_5,
+  '5000_7': data_5000_7,
+  '5000_10': data_5000_10
+};
+
+/* 헬퍼 함수들 */
+function fmt(n, cur){
+  if(n==null||n==='') return '-';
+  if(cur==='USD') return '$'+Number(n).toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1});
+  return Number(n).toLocaleString('ko-KR');
+}
+function fmtPct(n){ return n!=null? n.toFixed(1)+'%':'-'; }
+function is5000(){ return STATE.group.startsWith('5000'); }
+function getDataKey(){
+  if(is5000()) return STATE.group;
+  return STATE.group+'_'+STATE.review;
+}
+function getCurrentData(){
+  let data = (DATA_MAP[getDataKey()]||[]).slice();
+  /* 검색 */
+  if(STATE.search){
+    const q=STATE.search.toLowerCase();
+    data=data.filter(d=>(d.company+d.product).toLowerCase().includes(q));
+  }
+  /* 정렬 */
+  const s=STATE.sort;
+  if(s==='premium_asc') data.sort((a,b)=>premNum(a)-premNum(b));
+  else if(s==='return10_desc') data.sort((a,b)=>(ret10Val(b))-(ret10Val(a)));
+  else if(s==='return20_desc') data.sort((a,b)=>(ret20Val(b))-(ret20Val(a)));
+  else if(s==='death10_desc' && is5000()){
+    const dk=STATE.group==='5000_5'?'death10':'death10';
+    data.sort((a,b)=>(b[dk]||0)-(a[dk]||0));
+  }
+  return data;
+}
+function premNum(d){ return d.currency==='USD'?d.monthlyPremium*1400:d.monthlyPremium; }
+function ret10Val(d){ return is5000()? (d.ret10||0) : (d.returnAt10||0); }
+function ret20Val(d){ return is5000()? (d.ret20||0) : (d.returnAt20||0); }
+
+/* 자동 notes 생성 */
+function generateNotes(item, allData){
+  const notes=[];
+  const krwItems=allData.filter(d=>d.currency!=='USD');
+  if(!krwItems.length) return notes;
+
+  const r10=is5000()? item.ret10 : item.returnAt10;
+  const r20=is5000()? item.ret20 : item.returnAt20;
+  const allR10=krwItems.map(d=>is5000()?d.ret10:d.returnAt10).filter(v=>v);
+  const allR20=krwItems.map(d=>is5000()?d.ret20:d.returnAt20).filter(v=>v);
+  const allPrem=krwItems.map(d=>d.monthlyPremium).filter(v=>v);
+
+  if(allR10.length){
+    allR10.sort((a,b)=>b-a);
+    if(r10>=allR10[Math.min(2,allR10.length-1)]) notes.push('10년 환급률 상위권');
+  }
+  if(allPrem.length && item.currency!=='USD'){
+    allPrem.sort((a,b)=>a-b);
+    const th=allPrem[Math.floor(allPrem.length*0.3)];
+    if(item.monthlyPremium<=th) notes.push('보험료 부담 낮은 편');
+  }
+  if(allR20.length){
+    allR20.sort((a,b)=>b-a);
+    if(r20>=allR20[Math.min(2,allR20.length-1)]) notes.push('장기 환급률 강점');
+  }
+  if(is5000()){
+    const dk='death10';
+    const allDeath=krwItems.map(d=>d[dk]).filter(v=>v);
+    if(allDeath.length){
+      allDeath.sort((a,b)=>b-a);
+      if((item[dk]||0)>=allDeath[Math.min(2,allDeath.length-1)]) notes.push('보장 강점');
+    }
+  }
+  if(!notes.length){
+    const rBase=is5000()? (item['ret'+basePeriod()]||0) : (item.returnAtBase||0);
+    if(rBase<95 && r20>130) notes.push('초기보다 장기 효율형');
+    else notes.push('보장·환급 밸런스형');
+  }
+  return notes;
+}
+function basePeriod(){
+  const g=STATE.group;
+  if(g.endsWith('_5')) return '5';
+  if(g.endsWith('_7')) return '7';
+  return '5';
+}
+
+/* ==========================================================
+   RENDERING
+   ========================================================== */
+function render(){
+  const data=getCurrentData();
+  renderInsights(data);
+  renderTable(data);
+  renderCompare();
+  renderCharts();
+  renderBriefing(data);
+  toggleReviewRow();
+  toggleMobileCards();
+}
+
+function toggleReviewRow(){
+  document.getElementById('reviewRow').style.display=is5000()?'none':'flex';
+}
+
+function toggleMobileCards(){
+  const w=document.getElementById('tableWrap');
+  if(window.innerWidth<=768) w.classList.add('mobile-cards');
+  else w.classList.remove('mobile-cards');
+}
+
+/* ===== 인사이트 카드 ===== */
+function renderInsights(data){
+  const grid=document.getElementById('insightGrid');
+  if(!data.length){grid.innerHTML='<div style="color:var(--gray-400);padding:12px">데이터가 없습니다.</div>';return;}
+
+  const krw=data.filter(d=>d.currency!=='USD');
+  if(!krw.length){grid.innerHTML='';return;}
+
+  /* 10년 환급률 1위 */
+  const best10=krw.reduce((a,b)=>ret10Val(b)>ret10Val(a)?b:a, krw[0]);
+  /* 보험료 최저 */
+  const cheapest=krw.reduce((a,b)=>b.monthlyPremium<a.monthlyPremium?b:a, krw[0]);
+  /* 장기(20년) 환급률 1위 */
+  const best20=krw.reduce((a,b)=>ret20Val(b)>ret20Val(a)?b:a, krw[0]);
+  /* 보장 강점 (5천만) */
+  let bestDeath=null;
+  if(is5000()){
+    bestDeath=krw.reduce((a,b)=>(b.death10||0)>(a.death10||0)?b:a, krw[0]);
+  }
+  /* 밸런스 추천 */
+  const scores=krw.map(d=>{
+    const r10n=ret10Val(d), r20n=ret20Val(d);
+    const allR10=krw.map(x=>ret10Val(x)),allR20=krw.map(x=>ret20Val(x)),allP=krw.map(x=>x.monthlyPremium);
+    const s= (r10n/Math.max(...allR10))*.35 + (r20n/Math.max(...allR20))*.35 + (Math.min(...allP)/d.monthlyPremium)*.3;
+    return {d,s};
+  });
+  scores.sort((a,b)=>b.s-a.s);
+  const balance=scores[0]?.d;
+
+  let html='';
+  html+=insightHTML('🏆 10년 환급률 1위','',best10.company, fmtPct(ret10Val(best10)), best10.product);
+  html+=insightHTML('💰 월보험료 최저','green',cheapest.company, fmt(cheapest.monthlyPremium,cheapest.currency)+'원', cheapest.product);
+  html+=insightHTML('📈 장기 환급률 강점','orange',best20.company, fmtPct(ret20Val(best20)), best20.product);
+  if(bestDeath) html+=insightHTML('🛡 보장 강점','red',bestDeath.company, fmt(bestDeath.death10)+'만원 (10년)', bestDeath.product);
+  if(balance) html+=insightHTML('⚖ 밸런스 추천','',balance.company, '종합점수 상위', balance.product);
+
+  grid.innerHTML=html;
+}
+function insightHTML(label,cls,company,value,sub){
+  return `<div class="insight-card ${cls}"><div class="ic-label">${label}</div><div class="ic-company">${company}</div><div class="ic-value">${value}</div><div class="ic-sub">${sub}</div></div>`;
+}
+
+/* ===== 브리핑 ===== */
+function renderBriefing(data){
+  const krw=data.filter(d=>d.currency!=='USD');
+  if(krw.length<2){document.getElementById('briefText').textContent='데이터가 부족하여 브리핑을 생성할 수 없습니다.';return;}
+  const best10=krw.reduce((a,b)=>ret10Val(b)>ret10Val(a)?b:a, krw[0]);
+  const cheapest=krw.reduce((a,b)=>b.monthlyPremium<a.monthlyPremium?b:a, krw[0]);
+  const best20=krw.reduce((a,b)=>ret20Val(b)>ret20Val(a)?b:a, krw[0]);
+  const groupLabel=STATE.group.replace('3000','3천만').replace('5000','5천만').replace('_',' ').replace('5','5년납').replace('7','7년납').replace('10','10년납');
+
+  let txt=`현재 조건(${groupLabel}) 기준, ${best10.company}이(가) 10년 환급률 ${fmtPct(ret10Val(best10))}로 상위권이며, `;
+  txt+=`${cheapest.company}은(는) 월보험료 ${fmt(cheapest.monthlyPremium,cheapest.currency)}원으로 부담이 낮은 편입니다. `;
+  txt+=`장기 환급률은 ${best20.company}이(가) ${fmtPct(ret20Val(best20))}로 강점을 보입니다.`;
+  document.getElementById('briefText').textContent=txt;
+}
+
+/* ===== 테이블 ===== */
+function renderTable(data){
+  const thead=document.getElementById('tableHead');
+  const tbody=document.getElementById('tableBody');
+
+  if(is5000()) renderTable5000(data,thead,tbody);
+  else renderTable3000(data,thead,tbody);
+
+  /* 최고값 강조 */
+  highlightBest(data);
+}
+
+function renderTable3000(data,thead,tbody){
+  const baseLabel=STATE.group.endsWith('_5')?'5년':STATE.group.endsWith('_7')?'7년':'완납';
+  thead.innerHTML=`<tr>
+    <th class="chk-cell"></th>
+    <th>회사명</th>
+    <th class="wrap">상품명</th>
+    <th>적용이율</th>
+    <th data-sort="premium">월보험료 <span class="sort-arrow">▼</span></th>
+    <th data-sort="base">${baseLabel} 환급률 <span class="sort-arrow">▼</span></th>
+    <th data-sort="r10">10년 환급률 <span class="sort-arrow">▼</span></th>
+    <th data-sort="r20">20년 환급률 <span class="sort-arrow">▼</span></th>
+    <th>설명 포인트</th>
+    <th></th>
+  </tr>`;
+
+  tbody.innerHTML=data.map((d,i)=>{
+    const notes=generateNotes(d,data);
+    const uid=getDataKey()+'_'+i;
+    const sel=STATE.selected.find(s=>s.uid===uid);
+    return `<tr class="${sel?'selected':''}" data-uid="${uid}">
+      <td class="chk-cell" data-label="선택"><input type="checkbox" ${sel?'checked':''} onchange="toggleSelect('${uid}',${i})"></td>
+      <td data-label="회사명"><strong>${d.company}</strong>${d.currency==='USD'?'<span class="tag-usd">USD</span>':''}</td>
+      <td class="wrap" data-label="상품명">${d.product}</td>
+      <td data-label="적용이율" style="font-size:.74rem">${d.rateInfo||'-'}</td>
+      <td data-label="월보험료"><strong>${d.currency==='USD'?'$'+d.monthlyPremium.toLocaleString('en-US',{minimumFractionDigits:1}):fmt(d.monthlyPremium)}</strong></td>
+      <td data-label="${baseLabel} 환급률">${fmtPct(d.returnAtBase)}</td>
+      <td data-label="10년 환급률" class="r10-cell"><strong>${fmtPct(d.returnAt10)}</strong></td>
+      <td data-label="20년 환급률" class="r20-cell"><strong>${fmtPct(d.returnAt20)}</strong></td>
+      <td data-label="설명"><span class="notes-tag">${notes.join(' / ')}</span></td>
+      <td><button class="detail-btn" onclick="openModal('${uid}',${i})">상세</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderTable5000(data,thead,tbody){
+  const bp=STATE.group==='5000_5'?'5년':STATE.group==='5000_7'?'7년':'5년';
+  thead.innerHTML=`<tr>
+    <th class="chk-cell"></th>
+    <th>회사명</th>
+    <th class="wrap">상품명</th>
+    <th data-sort="premium">월보험료 <span class="sort-arrow">▼</span></th>
+    <th>10년 사망보장</th>
+    <th>20년 사망보장</th>
+    <th data-sort="r10">10년 환급률 <span class="sort-arrow">▼</span></th>
+    <th data-sort="r20">20년 환급률 <span class="sort-arrow">▼</span></th>
+    <th>40년 환급률</th>
+    <th>설명 포인트</th>
+    <th></th>
+  </tr>`;
+
+  tbody.innerHTML=data.map((d,i)=>{
+    const notes=generateNotes(d,data);
+    const uid=getDataKey()+'_'+i;
+    const sel=STATE.selected.find(s=>s.uid===uid);
+    const dKey10='death10';
+    const dKey20='death20';
+    return `<tr class="${sel?'selected':''}" data-uid="${uid}">
+      <td class="chk-cell" data-label="선택"><input type="checkbox" ${sel?'checked':''} onchange="toggleSelect('${uid}',${i})"></td>
+      <td data-label="회사명"><strong>${d.company}</strong>${d.currency==='USD'?'<span class="tag-usd">USD</span>':''}</td>
+      <td class="wrap" data-label="상품명">${d.product}</td>
+      <td data-label="월보험료"><strong>${d.currency==='USD'?'$'+d.monthlyPremium.toLocaleString('en-US',{minimumFractionDigits:1}):fmt(d.monthlyPremium)+'원'}</strong></td>
+      <td data-label="10년 사망보장">${d.currency==='USD'?'$'+fmt(d[dKey10]):fmt(d[dKey10])+'만원'}</td>
+      <td data-label="20년 사망보장">${d.currency==='USD'?'$'+fmt(d[dKey20]):fmt(d[dKey20])+'만원'}</td>
+      <td data-label="10년 환급률" class="r10-cell"><strong>${fmtPct(d.ret10)}</strong></td>
+      <td data-label="20년 환급률" class="r20-cell"><strong>${fmtPct(d.ret20)}</strong></td>
+      <td data-label="40년 환급률">${fmtPct(d.ret40)}</td>
+      <td data-label="설명"><span class="notes-tag">${notes.join(' / ')}</span></td>
+      <td><button class="detail-btn" onclick="openModal('${uid}',${i})">상세</button></td>
+    </tr>`;
+  }).join('');
+}
+
+/* 최고값 강조 */
+function highlightBest(data){
+  if(!data.length) return;
+  const krw=data.filter(d=>d.currency!=='USD');
+  if(!krw.length) return;
+
+  const maxR10=Math.max(...krw.map(d=>ret10Val(d)));
+  const maxR20=Math.max(...krw.map(d=>ret20Val(d)));
+  const minPrem=Math.min(...krw.map(d=>d.monthlyPremium));
+
+  document.querySelectorAll('#tableBody tr').forEach(tr=>{
+    const uid=tr.dataset.uid;
+    if(!uid) return;
+    const idx=parseInt(uid.split('_').pop());
+    const d=data[idx];
+    if(!d||d.currency==='USD') return;
+    const r10cells=tr.querySelectorAll('.r10-cell');
+    const r20cells=tr.querySelectorAll('.r20-cell');
+    r10cells.forEach(c=>{if(ret10Val(d)===maxR10) c.classList.add('highlight-best')});
+    r20cells.forEach(c=>{if(ret20Val(d)===maxR20) c.classList.add('highlight-best')});
+    /* 최저 보험료 강조 */
+    if(d.monthlyPremium===minPrem){
+      const premTd=tr.querySelector('td:nth-child(5)');
+      if(premTd) premTd.classList.add('highlight-low');
+    }
+  });
+}
+
+/* ===== 선택 비교 ===== */
+function toggleSelect(uid, idx){
+  const existing=STATE.selected.findIndex(s=>s.uid===uid);
+  if(existing>=0){
+    STATE.selected.splice(existing,1);
+  } else {
+    if(STATE.selected.length>=3){
+      alert('최대 3개까지 선택 가능합니다.');
+      render();return;
+    }
+    const data=getCurrentData();
+    STATE.selected.push({uid, idx, data:data[idx], group:STATE.group, review:STATE.review});
+  }
+  render();
+}
+
+function renderCompare(){
+  const panel=document.getElementById('comparePanel');
+  const body=document.getElementById('compareBody');
+  const cnt=document.getElementById('compareCount');
+  cnt.textContent=STATE.selected.length;
+
+  if(!STATE.selected.length){
+    panel.classList.remove('show');
+    body.innerHTML='<div class="compare-empty">체크박스로 상품을 선택하세요 (최대 3개)</div>';
+    return;
+  }
+  panel.classList.add('show');
+
+  body.innerHTML='<div class="compare-grid">'+STATE.selected.map((s,i)=>{
+    const d=s.data;
+    const isG5=s.group.startsWith('5000');
+    const r10=isG5?d.ret10:d.returnAt10;
+    const r20=isG5?d.ret20:d.returnAt20;
+    let rows=`
+      <div class="ci-row"><span class="ci-lbl">월보험료</span><span class="ci-val">${d.currency==='USD'?'$'+d.monthlyPremium:fmt(d.monthlyPremium)+'원'}</span></div>
+      <div class="ci-row"><span class="ci-lbl">10년 환급률</span><span class="ci-val">${fmtPct(r10)}</span></div>
+      <div class="ci-row"><span class="ci-lbl">20년 환급률</span><span class="ci-val">${fmtPct(r20)}</span></div>`;
+    if(isG5){
+      rows+=`<div class="ci-row"><span class="ci-lbl">10년 사망보장</span><span class="ci-val">${d.currency==='USD'?'$'+fmt(d.death10):fmt(d.death10)+'만원'}</span></div>`;
+    }
+    return `<div class="compare-item">
+      <button class="compare-remove" onclick="removeCompare(${i})">✕</button>
+      <div class="ci-company">${d.company}</div>
+      <div class="ci-product">${d.product}</div>
+      ${rows}
+    </div>`;
+  }).join('')+'</div>';
+}
+function removeCompare(i){
+  STATE.selected.splice(i,1);
+  render();
+}
+
+/* ===== 차트 ===== */
+function renderCharts(){
+  const section=document.getElementById('chartSection');
+  const empty=document.getElementById('chartEmpty');
+  const chartReturn=document.getElementById('chartReturn');
+  const chartPremium=document.getElementById('chartPremium');
+  const chartDeath=document.getElementById('chartDeath');
+  const deathBox=document.getElementById('chartDeathBox');
+
+  if(!STATE.selected.length){
+    chartReturn.innerHTML='';chartPremium.innerHTML='';chartDeath.innerHTML='';
+    empty.style.display='block';deathBox.style.display='none';
+    return;
+  }
+  empty.style.display='none';
+
+  const items=STATE.selected.map(s=>s.data);
+  const isG5=STATE.selected[0]?.group.startsWith('5000');
+
+  /* 환급률 차트 */
+  const maxR=Math.max(...items.map(d=>isG5?d.ret10:d.returnAt10));
+  chartReturn.innerHTML=items.map((d,i)=>{
+    const v=isG5?d.ret10:d.returnAt10;
+    const w=maxR?(v/maxR*100):0;
+    return barRow(d.company, fmtPct(v), w, i);
+  }).join('');
+
+  /* 보험료 차트 */
+  const krwP=items.filter(d=>d.currency!=='USD');
+  if(krwP.length){
+    const maxP=Math.max(...krwP.map(d=>d.monthlyPremium));
+    chartPremium.innerHTML=krwP.map((d,i)=>{
+      const w=maxP?(d.monthlyPremium/maxP*100):0;
+      return barRow(d.company, fmt(d.monthlyPremium)+'원', w, i);
+    }).join('');
+  } else {
+    chartPremium.innerHTML='<div style="color:var(--gray-400);font-size:.8rem">달러 상품만 선택됨</div>';
+  }
+
+  /* 사망보장 차트 */
+  if(isG5){
+    deathBox.style.display='block';
+    const krwD=items.filter(d=>d.currency!=='USD');
+    const maxD=Math.max(...krwD.map(d=>d.death10||0));
+    chartDeath.innerHTML=krwD.map((d,i)=>{
+      const w=maxD?((d.death10||0)/maxD*100):0;
+      return barRow(d.company, fmt(d.death10)+'만원', w, i);
+    }).join('');
+  } else {
+    deathBox.style.display='none';
+    chartDeath.innerHTML='';
+  }
+}
+function barRow(label, valText, widthPct, colorIdx){
+  return `<div class="bar-row">
+    <div class="bar-label">${label}</div>
+    <div class="bar-track"><div class="bar-fill c${colorIdx%3}" style="width:${Math.max(widthPct,8)}%">${valText}</div></div>
+  </div>`;
+}
+
+/* ===== 모달 ===== */
+function openModal(uid, idx){
+  const data=getCurrentData();
+  const d=data[idx];
+  if(!d) return;
+
+  const isG5=is5000();
+  const companyKey=d.company.replace(/\(.*\)/,'').replace('(달러)','').trim();
+  const meta=overviewMeta[companyKey]||overviewMeta[d.company]||{};
+
+  let html=`<h2>${d.company}</h2><div class="modal-sub">${d.product}</div>`;
+  html+='<div class="modal-grid">';
+  html+=mf('변경월',meta.changeMonth||'-');
+  html+=mf('적용이율',d.rateInfo||meta.rateInfo||'-');
+  html+=mf('유형',meta.type||'-');
+  html+=mf('월보험료',d.currency==='USD'?'$'+d.monthlyPremium:fmt(d.monthlyPremium)+'원');
+
+  if(isG5){
+    html+=mf('10년 환급률',fmtPct(d.ret10));
+    html+=mf('20년 환급률',fmtPct(d.ret20));
+    html+=mf('40년 환급률',fmtPct(d.ret40));
+    html+=mf('10년 사망보장',d.currency==='USD'?'$'+fmt(d.death10):fmt(d.death10)+'만원');
+    html+=mf('20년 사망보장',d.currency==='USD'?'$'+fmt(d.death20):fmt(d.death20)+'만원');
+    html+=mf('10년 환급금',d.currency==='USD'?'$'+fmt(d.surr10):fmt(d.surr10)+'만원');
+    html+=mf('20년 환급금',d.currency==='USD'?'$'+fmt(d.surr20):fmt(d.surr20)+'만원');
+  } else {
+    html+=mf('기준시점 환급률',fmtPct(d.returnAtBase));
+    html+=mf('10년 환급률',fmtPct(d.returnAt10));
+    html+=mf('20년 환급률',fmtPct(d.returnAt20));
+  }
+  html+='</div>';
+
+  html+='<div class="modal-section"><h4>상품 상세 정보</h4><div class="modal-grid">';
+  html+=mf('중도인출',meta.withdrawal||'-');
+  html+=mf('추가납입',meta.extraPay||'-');
+  html+=mf('추가납입 적용이율',meta.extraRate||'-');
+  html+=mf('추가납입 비용',meta.extraCost||'-');
+  html+=mf('선납기간',meta.prepay||'-');
+  html+='</div></div>';
+
+  const notes=generateNotes(d, data);
+  html+='<div class="modal-section"><h4>설계사 설명 포인트</h4>';
+  html+=`<div style="font-size:.84rem;color:var(--gray-700);line-height:1.7">${notes.map(n=>'• '+n).join('<br>')}</div></div>`;
+
+  document.getElementById('modalContent').innerHTML=html;
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function mf(label,value){
+  return `<div class="modal-field"><div class="mf-label">${label}</div><div class="mf-value">${value}</div></div>`;
+}
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+/* ==========================================================
+   EVENT HANDLERS
+   ========================================================== */
+
+/* 그룹 세그먼트 */
+document.querySelectorAll('#groupSeg .seg-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('#groupSeg .seg-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    STATE.group=this.dataset.group;
+    STATE.selected=[];
+    render();
+  });
+});
+
+/* 심사유형 */
+document.querySelectorAll('#reviewSeg .seg-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('#reviewSeg .seg-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    STATE.review=this.dataset.review;
+    STATE.selected=[];
+    render();
+  });
+});
+
+/* 보기모드 */
+document.querySelectorAll('#viewSeg .seg-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('#viewSeg .seg-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    STATE.view=this.dataset.view;
+    render();
+  });
+});
+
+/* 검색 */
+document.getElementById('searchInput').addEventListener('input',function(){
+  STATE.search=this.value;
+  render();
+});
+
+/* 정렬 */
+document.getElementById('sortSelect').addEventListener('change',function(){
+  STATE.sort=this.value;
+  render();
+});
+
+/* 테이블 헤더 클릭 정렬 */
+document.getElementById('tableHead').addEventListener('click',function(e){
+  const th=e.target.closest('th');
+  if(!th) return;
+  const s=th.dataset.sort;
+  if(!s) return;
+  if(s==='premium') STATE.sort=STATE.sort==='premium_asc'?'default':'premium_asc';
+  else if(s==='r10') STATE.sort=STATE.sort==='return10_desc'?'default':'return10_desc';
+  else if(s==='r20') STATE.sort=STATE.sort==='return20_desc'?'default':'return20_desc';
+  else if(s==='base') STATE.sort='default';
+  document.getElementById('sortSelect').value=STATE.sort;
+  render();
+});
+
+/* 모달 닫기 */
+document.getElementById('modalClose').addEventListener('click',closeModal);
+document.getElementById('modalOverlay').addEventListener('click',function(e){
+  if(e.target===this) closeModal();
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') closeModal();
+});
+
+/* 브리핑 복사 */
+document.getElementById('copyBrief').addEventListener('click',function(){
+  const txt=document.getElementById('briefText').textContent;
+  navigator.clipboard.writeText(txt).then(()=>{
+    this.textContent='복사됨!';
+    setTimeout(()=>this.textContent='복사',1500);
+  });
+});
+
+/* 반응형 감지 */
+window.addEventListener('resize', toggleMobileCards);
+
+/* ===== 초기 렌더링 ===== */
+render();
+</script>
+</body>
+</html>
