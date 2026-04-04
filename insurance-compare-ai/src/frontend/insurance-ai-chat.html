@@ -1,0 +1,726 @@
+<!-- 보험상품 비교 AI 어시스턴트 - 아임웹 삽입용 -->
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+/* ===== 보험비교AI 전용 스타일 (ic- prefix) ===== */
+:root{
+  --ic-blue:#007AFF;--ic-blue-light:#E8F2FF;--ic-blue-dark:#0055CC;
+  --ic-gray-50:#F9FAFB;--ic-gray-100:#F3F4F6;--ic-gray-200:#E5E7EB;
+  --ic-gray-300:#D1D5DB;--ic-gray-400:#9CA3AF;--ic-gray-500:#6B7280;
+  --ic-gray-600:#4B5563;--ic-gray-700:#374151;--ic-gray-800:#1F2937;
+  --ic-green:#34C759;--ic-red:#FF3B30;--ic-orange:#FF9500;
+  --ic-radius:12px;--ic-radius-sm:8px;
+  --ic-shadow:0 1px 3px rgba(0,0,0,.08);--ic-shadow-md:0 4px 12px rgba(0,0,0,.1);
+  --ic-font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+}
+.ic-chat-container{max-width:900px;margin:0 auto;font-family:var(--ic-font);color:var(--ic-gray-800);display:flex;flex-direction:column;height:calc(100vh - 60px);min-height:600px;background:#fff;border-radius:var(--ic-radius);box-shadow:var(--ic-shadow-md);overflow:hidden;position:relative}
+.ic-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:#fff;border-bottom:1px solid var(--ic-gray-200);flex-shrink:0}
+.ic-header-title{font-size:1.15rem;font-weight:700;color:var(--ic-gray-800)}
+.ic-header-sub{font-size:.75rem;color:var(--ic-gray-500);margin-top:2px}
+.ic-header-btn{padding:6px 14px;border:1px solid var(--ic-gray-300);background:#fff;border-radius:20px;font-size:.78rem;color:var(--ic-gray-600);cursor:pointer;transition:all .2s}
+.ic-header-btn:hover{border-color:var(--ic-blue);color:var(--ic-blue)}
+
+/* Filter Bar */
+.ic-filter-bar{display:flex;gap:12px;padding:10px 20px;background:var(--ic-gray-50);border-bottom:1px solid var(--ic-gray-200);overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch}
+.ic-filter-bar::-webkit-scrollbar{height:0}
+.ic-filter-group{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.ic-filter-label{font-size:.72rem;font-weight:600;color:var(--ic-gray-500);margin-right:2px;white-space:nowrap}
+.ic-filter-chip{padding:5px 12px;border:1px solid var(--ic-gray-300);background:#fff;border-radius:20px;font-size:.76rem;color:var(--ic-gray-600);cursor:pointer;transition:all .2s;white-space:nowrap}
+.ic-filter-chip:hover{border-color:var(--ic-blue);color:var(--ic-blue)}
+.ic-filter-chip.active{background:var(--ic-blue);color:#fff;border-color:var(--ic-blue)}
+
+/* Chat Area */
+.ic-chat-area{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px}
+.ic-msg{display:flex;gap:8px;max-width:95%}
+.ic-msg-user{align-self:flex-end;flex-direction:row-reverse}
+.ic-msg-bot{align-self:flex-start}
+.ic-msg-content{max-width:100%}
+.ic-msg-text{padding:10px 16px;border-radius:16px;font-size:.88rem;line-height:1.6;word-break:break-word}
+.ic-msg-user .ic-msg-text{background:var(--ic-blue);color:#fff;border-bottom-right-radius:4px}
+.ic-msg-bot .ic-msg-text{background:var(--ic-gray-100);color:var(--ic-gray-800);border-bottom-left-radius:4px}
+
+/* Result Card */
+.ic-result-card{background:#fff;border:1px solid var(--ic-gray-200);border-radius:var(--ic-radius);overflow:hidden;margin-top:4px}
+.ic-interpretation{background:var(--ic-blue-light);padding:12px 16px;font-size:.8rem;color:var(--ic-blue-dark);line-height:1.6}
+.ic-interpretation strong{font-weight:700}
+.ic-conclusion{padding:14px 16px;font-size:.95rem;font-weight:700;color:var(--ic-gray-800);border-bottom:1px solid var(--ic-gray-200);line-height:1.5}
+
+/* Comparison Table */
+.ic-table-section{padding:12px 16px}
+.ic-table-title{font-size:.82rem;font-weight:700;color:var(--ic-gray-700);margin-bottom:8px}
+.ic-table-wrap{overflow-x:auto;border:1px solid var(--ic-gray-200);border-radius:var(--ic-radius-sm)}
+.ic-compare-table{width:100%;border-collapse:collapse;font-size:.78rem;white-space:nowrap}
+.ic-compare-table thead th{position:sticky;top:0;background:var(--ic-gray-50);padding:8px 10px;text-align:center;font-weight:600;color:var(--ic-gray-600);border-bottom:2px solid var(--ic-gray-200)}
+.ic-compare-table thead th:first-child{text-align:left;min-width:100px}
+.ic-compare-table tbody td{padding:7px 10px;text-align:center;border-bottom:1px solid var(--ic-gray-100)}
+.ic-compare-table tbody td:first-child{text-align:left;font-weight:500;color:var(--ic-gray-700)}
+.ic-compare-table tbody tr:hover{background:var(--ic-blue-light)}
+.ic-compare-table .ic-product-row td{font-size:.72rem;color:var(--ic-gray-500);font-style:italic;background:var(--ic-gray-50)}
+.ic-cell-best{background:#ECFDF5!important;color:#065F46;font-weight:700}
+.ic-cell-worst{background:#FFF7ED!important;color:#9A3412}
+
+/* Highlights */
+.ic-highlights{padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.ic-highlight-item{padding:10px 14px;border-radius:var(--ic-radius-sm);font-size:.82rem;line-height:1.5;border-left:3px solid var(--ic-blue)}
+.ic-highlight-item.rec{background:var(--ic-blue-light);border-left-color:var(--ic-blue)}
+.ic-highlight-item.diff{background:#F0FDF4;border-left-color:var(--ic-green)}
+.ic-highlight-item.best{background:#FEF3C7;border-left-color:var(--ic-orange)}
+.ic-highlight-label{font-size:.7rem;font-weight:700;color:var(--ic-gray-500);text-transform:uppercase;margin-bottom:3px}
+
+/* Warnings */
+.ic-warnings{padding:10px 16px;background:#FFFBEB;border-top:1px solid #FEF3C7}
+.ic-warning-item{font-size:.76rem;color:#92400E;line-height:1.5;padding:2px 0}
+
+/* Sources */
+.ic-sources{padding:10px 16px;background:var(--ic-gray-50);border-top:1px solid var(--ic-gray-200);font-size:.72rem;color:var(--ic-gray-500)}
+
+/* Chips */
+.ic-chips-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.ic-quick-chip{padding:6px 14px;border:1px solid var(--ic-gray-300);background:#fff;border-radius:20px;font-size:.78rem;color:var(--ic-gray-600);cursor:pointer;transition:all .2s}
+.ic-quick-chip:hover{border-color:var(--ic-blue);color:var(--ic-blue);background:var(--ic-blue-light)}
+
+/* Sample Questions */
+.ic-sample-questions{margin-top:12px}
+.ic-sample-label{font-size:.76rem;color:var(--ic-gray-500);margin-bottom:8px;font-weight:600}
+.ic-sample-btn{display:block;width:100%;text-align:left;padding:10px 14px;margin-bottom:6px;border:1px solid var(--ic-gray-200);background:#fff;border-radius:var(--ic-radius-sm);font-size:.82rem;color:var(--ic-gray-700);cursor:pointer;transition:all .2s;line-height:1.4}
+.ic-sample-btn:hover{border-color:var(--ic-blue);background:var(--ic-blue-light);color:var(--ic-blue)}
+
+/* Typing Indicator */
+.ic-typing{display:flex;align-items:center;gap:4px;padding:10px 16px}
+.ic-typing-dot{width:8px;height:8px;background:var(--ic-gray-400);border-radius:50%;animation:icBounce 1.4s infinite both}
+.ic-typing-dot:nth-child(2){animation-delay:.16s}
+.ic-typing-dot:nth-child(3){animation-delay:.32s}
+@keyframes icBounce{0%,80%,100%{transform:scale(0);opacity:.4}40%{transform:scale(1);opacity:1}}
+
+/* Input Area */
+.ic-input-area{padding:12px 20px;background:#fff;border-top:1px solid var(--ic-gray-200);flex-shrink:0}
+.ic-input-wrap{display:flex;gap:8px;align-items:center}
+.ic-input{flex:1;padding:10px 16px;border:1px solid var(--ic-gray-300);border-radius:24px;font-size:.88rem;outline:none;transition:border .2s;font-family:var(--ic-font);color:var(--ic-gray-800)}
+.ic-input:focus{border-color:var(--ic-blue);box-shadow:0 0 0 3px rgba(0,122,255,.1)}
+.ic-input::placeholder{color:var(--ic-gray-400)}
+.ic-send-btn{width:40px;height:40px;border:none;background:var(--ic-blue);color:#fff;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;flex-shrink:0}
+.ic-send-btn:hover{background:var(--ic-blue-dark)}
+.ic-send-btn:disabled{background:var(--ic-gray-300);cursor:not-allowed}
+
+/* Mobile */
+@media(max-width:640px){
+  .ic-chat-container{height:calc(100vh - 20px);border-radius:0;box-shadow:none}
+  .ic-header{padding:10px 14px}
+  .ic-header-title{font-size:1rem}
+  .ic-filter-bar{padding:8px 14px;gap:8px}
+  .ic-chat-area{padding:12px 14px}
+  .ic-input-area{padding:10px 14px}
+  .ic-msg{max-width:100%}
+  .ic-compare-table{font-size:.72rem}
+  .ic-compare-table thead th,.ic-compare-table tbody td{padding:5px 6px}
+  .ic-table-section{padding:8px 12px}
+  .ic-interpretation,.ic-conclusion,.ic-highlights,.ic-warnings,.ic-sources{padding:8px 12px}
+}
+</style>
+
+<!-- HTML 구조 -->
+<div class="ic-chat-container" id="ic-app">
+  <div class="ic-header">
+    <div>
+      <div class="ic-header-title">보험상품 비교 AI</div>
+      <div class="ic-header-sub" id="ic-data-month">데이터 로딩 중...</div>
+    </div>
+    <div>
+      <button class="ic-header-btn" onclick="icResetChat()">새 대화</button>
+    </div>
+  </div>
+
+  <div class="ic-filter-bar" id="ic-filter-bar">
+    <div class="ic-filter-group">
+      <span class="ic-filter-label">성별</span>
+      <button class="ic-filter-chip" data-field="gender" data-value="남" onclick="icToggleFilter(this)">남성</button>
+      <button class="ic-filter-chip" data-field="gender" data-value="여" onclick="icToggleFilter(this)">여성</button>
+    </div>
+    <div class="ic-filter-group">
+      <span class="ic-filter-label">나이</span>
+      <button class="ic-filter-chip" data-field="age" data-value="30" onclick="icToggleFilter(this)">30세</button>
+      <button class="ic-filter-chip" data-field="age" data-value="40" onclick="icToggleFilter(this)">40세</button>
+      <button class="ic-filter-chip" data-field="age" data-value="50" onclick="icToggleFilter(this)">50세</button>
+    </div>
+    <div class="ic-filter-group">
+      <span class="ic-filter-label">유형</span>
+      <button class="ic-filter-chip" data-field="insuranceType" data-value="일반형" onclick="icToggleFilter(this)">일반형</button>
+      <button class="ic-filter-chip" data-field="insuranceType" data-value="무해약형" onclick="icToggleFilter(this)">무해약형</button>
+    </div>
+  </div>
+
+  <div class="ic-chat-area" id="ic-chat-area">
+    <div class="ic-msg ic-msg-bot" id="ic-welcome">
+      <div class="ic-msg-content">
+        <div class="ic-msg-text">
+          안녕하세요! 보험상품 비교 AI입니다.<br>
+          궁금한 보험 상품을 자유롭게 질문해 주세요.
+        </div>
+        <div class="ic-sample-questions" id="ic-samples">
+          <div class="ic-sample-label">이런 질문을 해보세요</div>
+          <button class="ic-sample-btn" onclick="icAskSample(this)">40세 남성 암진단비 보험사별 비교</button>
+          <button class="ic-sample-btn" onclick="icAskSample(this)">암보험 보험료 가장 저렴한 곳은?</button>
+          <button class="ic-sample-btn" onclick="icAskSample(this)">유사암 납입면제 되는 보험사 알려줘</button>
+          <button class="ic-sample-btn" onclick="icAskSample(this)">삼성화재 vs DB손보 암보험 비교</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ic-input-area">
+    <div class="ic-input-wrap">
+      <input type="text" class="ic-input" id="ic-input" placeholder="보험 상품에 대해 질문하세요..." autocomplete="off">
+      <button class="ic-send-btn" id="ic-send-btn" onclick="icSendMessage()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   보험상품 비교 AI - 클라이언트 로직
+   ============================================================ */
+
+// ===== 설정 (사용 전 반드시 수정) =====
+const IC_CONFIG = {
+    SUPABASE_URL: '',      // 예: 'https://xxxx.supabase.co'
+    SUPABASE_ANON_KEY: '', // Supabase anon public key
+};
+
+// ===== 상태 =====
+let icSupabase = null;
+let icFilters = {};
+let icIsProcessing = false;
+
+// ===== 초기화 =====
+document.addEventListener('DOMContentLoaded', function() {
+    icInit();
+    document.getElementById('ic-input').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); icSendMessage(); }
+    });
+});
+
+function icInit() {
+    if (!IC_CONFIG.SUPABASE_URL || !IC_CONFIG.SUPABASE_ANON_KEY) {
+        document.getElementById('ic-data-month').textContent = 'Supabase 설정 필요 (IC_CONFIG)';
+        return;
+    }
+    icSupabase = supabase.createClient(IC_CONFIG.SUPABASE_URL, IC_CONFIG.SUPABASE_ANON_KEY);
+    icLoadLatestMonth();
+}
+
+async function icLoadLatestMonth() {
+    if (!icSupabase) return;
+    try {
+        var res = await icSupabase.from('documents').select('year_month').eq('status','active').order('year_month',{ascending:false}).limit(1).single();
+        if (res.data) {
+            var ym = res.data.year_month;
+            var parts = ym.split('-');
+            document.getElementById('ic-data-month').textContent = parts[0] + '년 ' + parseInt(parts[1]) + '월 기준';
+        }
+    } catch(e) { console.warn('월차 로딩 실패', e); }
+}
+
+// ===== 필터 제어 =====
+function icToggleFilter(el) {
+    var field = el.getAttribute('data-field');
+    var value = el.getAttribute('data-value');
+    var group = el.parentElement;
+    var chips = group.querySelectorAll('.ic-filter-chip');
+    chips.forEach(function(c) { c.classList.remove('active'); });
+    if (icFilters[field] === value) {
+        delete icFilters[field];
+    } else {
+        el.classList.add('active');
+        icFilters[field] = field === 'age' ? parseInt(value) : value;
+    }
+}
+
+// ===== 메시지 전송 =====
+function icSendMessage() {
+    if (icIsProcessing) return;
+    var input = document.getElementById('ic-input');
+    var text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    var samples = document.getElementById('ic-samples');
+    if (samples) samples.style.display = 'none';
+    icAddMessage('user', text);
+    icShowTyping();
+    icIsProcessing = true;
+    document.getElementById('ic-send-btn').disabled = true;
+    icProcessQuestion(text).then(function(resp) {
+        icHideTyping();
+        icRenderResponse(resp);
+        icIsProcessing = false;
+        document.getElementById('ic-send-btn').disabled = false;
+    }).catch(function(err) {
+        icHideTyping();
+        icAddMessage('bot', '처리 중 오류가 발생했습니다: ' + err.message);
+        icIsProcessing = false;
+        document.getElementById('ic-send-btn').disabled = false;
+    });
+}
+
+function icAskSample(btn) {
+    document.getElementById('ic-input').value = btn.textContent;
+    icSendMessage();
+}
+
+// ===== 메시지 UI =====
+function icAddMessage(type, content) {
+    var area = document.getElementById('ic-chat-area');
+    var div = document.createElement('div');
+    div.className = 'ic-msg ic-msg-' + type;
+    div.innerHTML = '<div class="ic-msg-content"><div class="ic-msg-text">' + icEscape(content) + '</div></div>';
+    area.appendChild(div);
+    area.scrollTop = area.scrollHeight;
+}
+
+function icShowTyping() {
+    var area = document.getElementById('ic-chat-area');
+    var div = document.createElement('div');
+    div.className = 'ic-msg ic-msg-bot';
+    div.id = 'ic-typing';
+    div.innerHTML = '<div class="ic-msg-content"><div class="ic-typing"><div class="ic-typing-dot"></div><div class="ic-typing-dot"></div><div class="ic-typing-dot"></div></div></div>';
+    area.appendChild(div);
+    area.scrollTop = area.scrollHeight;
+}
+
+function icHideTyping() {
+    var el = document.getElementById('ic-typing');
+    if (el) el.remove();
+}
+
+function icResetChat() {
+    var area = document.getElementById('ic-chat-area');
+    area.innerHTML = '';
+    var welcome = document.createElement('div');
+    welcome.className = 'ic-msg ic-msg-bot';
+    welcome.innerHTML = '<div class="ic-msg-content"><div class="ic-msg-text">안녕하세요! 보험상품 비교 AI입니다.<br>궁금한 보험 상품을 자유롭게 질문해 주세요.</div><div class="ic-sample-questions" id="ic-samples"><div class="ic-sample-label">이런 질문을 해보세요</div><button class="ic-sample-btn" onclick="icAskSample(this)">40세 남성 암진단비 보험사별 비교</button><button class="ic-sample-btn" onclick="icAskSample(this)">암보험 보험료 가장 저렴한 곳은?</button><button class="ic-sample-btn" onclick="icAskSample(this)">유사암 납입면제 되는 보험사 알려줘</button><button class="ic-sample-btn" onclick="icAskSample(this)">삼성화재 vs DB손보 암보험 비교</button></div></div>';
+    area.appendChild(welcome);
+    icFilters = {};
+    document.querySelectorAll('.ic-filter-chip').forEach(function(c){ c.classList.remove('active'); });
+}
+
+function icEscape(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+// ===== 질문 파서 (인라인) =====
+var IC_INSURER_PATTERNS = [
+    {re:/삼성화재|삼성\s*화재|삼화/,name:'삼성화재'},
+    {re:/DB\s*손해|DB\s*손보|동부/,name:'DB손해보험'},
+    {re:/KB\s*손해|KB\s*손보/,name:'KB손해보험'},
+    {re:/현대\s*해상|현해/,name:'현대해상'},
+    {re:/메리츠\s*화재|메리츠\s*손보|메리츠/,name:'메리츠화재'},
+    {re:/한화\s*손해|한화\s*손보/,name:'한화손해보험'},
+    {re:/롯데\s*손해|롯데\s*손보/,name:'롯데손해보험'},
+    {re:/흥국\s*화재|흥국/,name:'흥국화재'},
+    {re:/삼성\s*생명|삼생/,name:'삼성생명'},
+    {re:/한화\s*생명|한생/,name:'한화생명'},
+    {re:/교보\s*생명|교보/,name:'교보생명'},
+    {re:/신한\s*라이프|신한\s*생명/,name:'신한라이프'},
+    {re:/NH\s*농협|농협\s*생명/,name:'NH농협생명'}
+];
+
+var IC_SECTION_PATTERNS = [
+    {re:/암\s*진단\s*비|암\s*진단\s*금/,name:'암진단비'},
+    {re:/유사암|소액암|갑상선|기타\s*피부/,name:'유사암진단비'},
+    {re:/항암|항암\s*치료|방사선|표적\s*항암|면역\s*항암/,name:'항암치료비'},
+    {re:/수술\s*비/,name:'수술비'},
+    {re:/입원\s*비|입원\s*일당/,name:'입원비'},
+    {re:/납입\s*면제|납면|P\s*면제/,name:'납입면제'},
+    {re:/보험료|월\s*보험료/,name:'보험료'},
+    {re:/가입\s*나이|가입\s*연령|가입\s*가능/,name:'가입나이'},
+    {re:/환급\s*률|해약\s*환급/,name:'환급률'}
+];
+
+function icParseQuestion(q) {
+    var r = {productCategory:null,gender:null,age:null,insuranceType:null,insurers:[],sections:[],paymentPeriod:null,coveragePeriod:null,missing:[],confidence:0};
+    // 상품군
+    if(/장기\s*종합|장종/.test(q)) r.productCategory='장기종합보험';
+    else if(/종신/.test(q)) r.productCategory='종신보험';
+    else if(/연금/.test(q)) r.productCategory='연금보험';
+    else if(/실손/.test(q)) r.productCategory='실손보험';
+    else if(/암\s*보험|암\s*진단|유사암|항암|수술비|입원비|납입면제/.test(q)) r.productCategory='장기종합보험';
+    // 성별
+    if(/남성|남자|남\s*\d+\s*세/.test(q)) r.gender='남';
+    else if(/여성|여자|여\s*\d+\s*세/.test(q)) r.gender='여';
+    // 나이
+    var am=q.match(/(?:만\s*)?(\d{1,3})\s*세/);
+    if(am) r.age=parseInt(am[1]);
+    else { var am2=q.match(/(?:나이|연령)\s*(\d{1,3})/); if(am2) r.age=parseInt(am2[1]); }
+    // 보험형태
+    if(/무해약/.test(q)) r.insuranceType='무해약형';
+    else if(/건강\s*고지/.test(q)) r.insuranceType='건강고지';
+    else if(/간편/.test(q)) r.insuranceType='간편가입';
+    else if(/일반형/.test(q)) r.insuranceType='일반형';
+    // 보험사
+    IC_INSURER_PATTERNS.forEach(function(p){ if(p.re.test(q)) r.insurers.push(p.name); });
+    r.insurers = Array.from(new Set(r.insurers));
+    // 섹션
+    IC_SECTION_PATTERNS.forEach(function(p){ if(p.re.test(q)) r.sections.push(p.name); });
+    r.sections = Array.from(new Set(r.sections));
+    // 납입/보장
+    var pm=q.match(/(\d+)\s*년\s*납/); if(pm) r.paymentPeriod=pm[1]+'년납';
+    if(/전기납/.test(q)) r.paymentPeriod='전기납';
+    var cm=q.match(/(\d+)\s*세\s*만기/); if(cm) r.coveragePeriod=cm[1]+'세만기';
+    // 기본값
+    if(!r.productCategory && r.sections.length>0) r.productCategory='장기종합보험';
+    if(!r.coveragePeriod && r.productCategory==='장기종합보험') r.coveragePeriod='100세만기';
+    // 누락
+    if(!r.productCategory) r.missing.push('상품군');
+    if(!r.gender) r.missing.push('성별');
+    if(!r.age) r.missing.push('나이');
+    // 신뢰도
+    var s=0;
+    if(r.productCategory) s+=0.25; if(r.gender) s+=0.15; if(r.age) s+=0.15;
+    if(r.sections.length>0) s+=0.2; if(r.insuranceType) s+=0.1;
+    if(r.insurers.length>0) s+=0.05; if(r.paymentPeriod) s+=0.05; if(r.coveragePeriod) s+=0.05;
+    r.confidence=Math.round(s*100)/100;
+    return r;
+}
+
+// ===== 비교 엔진 (인라인) =====
+async function icProcessQuestion(question) {
+    var conditions = icParseQuestion(question);
+    // 필터 병합
+    if(icFilters.gender) conditions.gender=icFilters.gender;
+    if(icFilters.age) conditions.age=icFilters.age;
+    if(icFilters.insuranceType) conditions.insuranceType=icFilters.insuranceType;
+    // 상품군 없으면 추가정보 요청
+    if(!conditions.productCategory) {
+        return {success:false,type:'clarification',message:'어떤 보험을 비교하시나요?',interpretation:{summary:'상품군을 특정할 수 없습니다.',details:[],missing:conditions.missing},chips:[
+            {label:'암보험',field:'productCategory',value:'장기종합보험'},
+            {label:'종신보험',field:'productCategory',value:'종신보험'}
+        ]};
+    }
+    if(!icSupabase) return {success:false,error:'Supabase가 연결되지 않았습니다. IC_CONFIG를 확인하세요.'};
+    // 최신 월차
+    var ymRes = await icSupabase.from('documents').select('year_month').eq('product_category',conditions.productCategory).eq('status','active').order('year_month',{ascending:false}).limit(1).single();
+    var yearMonth = ymRes.data ? ymRes.data.year_month : null;
+    if(!yearMonth) return {success:false,error:'"'+conditions.productCategory+'" 데이터가 없습니다.'};
+    // 쿼리 구성
+    var query = icSupabase.from('comparison_rows').select('*').eq('year_month',yearMonth).eq('product_category',conditions.productCategory);
+    if(conditions.sections.length>0) query=query.in('section_name',conditions.sections);
+    if(conditions.insurers.length>0) query=query.in('insurer',conditions.insurers);
+    if(conditions.gender) query=query.or('gender.eq.'+conditions.gender+',gender.eq.공통,gender.is.null');
+    if(conditions.age) query=query.or('age.eq.'+conditions.age+',age.is.null');
+    if(conditions.insuranceType) query=query.or('insurance_type.eq.'+conditions.insuranceType+',insurance_type.is.null');
+    query=query.order('section_name').order('insurer').order('row_order');
+    var res = await query;
+    if(res.error) return {success:false,error:'검색 오류: '+res.error.message};
+    var rows = res.data || [];
+    if(rows.length===0) return {success:false,error:'조건에 맞는 데이터가 없습니다. 조건을 변경해 보세요.',conditions:conditions};
+    // 구조화
+    var structured = {};
+    rows.forEach(function(row){
+        if(!structured[row.section_name]) structured[row.section_name]={};
+        if(!structured[row.section_name][row.insurer]) structured[row.section_name][row.insurer]={productName:row.product_name,items:[]};
+        structured[row.section_name][row.insurer].items.push({itemName:row.item_name,value:row.item_value,numeric:row.item_value_numeric,unit:row.item_unit});
+    });
+    // 분석
+    var analysis = icAnalyze(structured);
+    // 출처
+    var pages = Array.from(new Set(rows.filter(function(r){return r.page_number;}).map(function(r){return r.page_number;}))).sort(function(a,b){return a-b;});
+    // 비교표 데이터
+    var tables = [];
+    Object.keys(structured).forEach(function(secName){
+        var insurerData = structured[secName];
+        var insurers = Object.keys(insurerData);
+        var allItems = [];
+        insurers.forEach(function(ins){
+            insurerData[ins].items.forEach(function(item){
+                if(allItems.indexOf(item.itemName)===-1) allItems.push(item.itemName);
+            });
+        });
+        var tRows = allItems.map(function(itemName){
+            var row = {itemName:itemName};
+            insurers.forEach(function(ins){
+                var found = insurerData[ins].items.find(function(i){return i.itemName===itemName;});
+                row[ins] = found ? found.value : '-';
+            });
+            return row;
+        });
+        var productRow = {itemName:'상품명'};
+        insurers.forEach(function(ins){ productRow[ins]=insurerData[ins].productName||'-'; });
+        var highlights = icFindHighlights(secName, tRows, insurers);
+        tables.push({sectionName:secName,insurers:insurers,productRow:productRow,rows:tRows,highlights:highlights});
+    });
+    // 해석 텍스트
+    var interpParts = [];
+    if(conditions.productCategory) interpParts.push('상품군: '+conditions.productCategory);
+    if(conditions.gender) interpParts.push('성별: '+(conditions.gender==='남'?'남성':'여성'));
+    if(conditions.age) interpParts.push('나이: '+conditions.age+'세');
+    if(conditions.insuranceType) interpParts.push('보험형태: '+conditions.insuranceType);
+    if(conditions.insurers.length>0) interpParts.push('보험사: '+conditions.insurers.join(', '));
+    if(conditions.sections.length>0) interpParts.push('비교항목: '+conditions.sections.join(', '));
+    return {
+        success:true,
+        interpretation:{summary:interpParts.join(' / '),details:interpParts,missing:conditions.missing},
+        conclusion:analysis.recommendations.length>0?analysis.recommendations[0]:(analysis.summary.length>0?analysis.summary[0]:'아래 비교표를 확인하세요.'),
+        tables:tables,
+        highlights:analysis.highlights,
+        warnings:analysis.warnings,
+        sources:{yearMonth:yearMonth,pages:pages,note:yearMonth+' 기준 데이터입니다.'},
+        totalRows:rows.length
+    };
+}
+
+function icAnalyze(structured) {
+    var summary=[],recommendations=[],warnings=[],highlights=[];
+    var bestCounts={};
+    Object.keys(structured).forEach(function(secName){
+        var insurerData=structured[secName];
+        var entries=Object.entries(insurerData);
+        if(entries.length<2) { warnings.push(secName+': '+entries.length+'개 보험사 데이터만 있습니다.'); return; }
+        if(/보험료/.test(secName)){
+            var premiums=entries.map(function(e){
+                var p=e[1].items.find(function(i){return /월보험료|보험료/.test(i.itemName);});
+                return {insurer:e[0],val:p?p.numeric:Infinity,disp:p?p.value:'-'};
+            }).filter(function(p){return p.val!==Infinity;}).sort(function(a,b){return a.val-b.val;});
+            if(premiums.length>0){
+                summary.push(secName+': '+premiums[0].insurer+' 최저 ('+premiums[0].disp+')');
+                bestCounts[premiums[0].insurer]=(bestCounts[premiums[0].insurer]||0)+1;
+                highlights.push({section:secName,type:'best',insurer:premiums[0].insurer,reason:'최저 보험료 '+premiums[0].disp});
+                if(premiums.length>=2){
+                    var diff=premiums[premiums.length-1].val-premiums[0].val;
+                    highlights.push({section:secName,type:'diff',text:'보험료 차이: 최대 '+diff.toLocaleString()+'원'});
+                }
+            }
+        } else if(/진단비|치료비|수술비/.test(secName)){
+            var allItems={};
+            entries.forEach(function(e){ e[1].items.forEach(function(item){
+                if(!allItems[item.itemName]) allItems[item.itemName]=[];
+                allItems[item.itemName].push({insurer:e[0],val:item.numeric,disp:item.value});
+            });});
+            var mainKey=Object.keys(allItems)[0];
+            if(mainKey){
+                var sorted=allItems[mainKey].filter(function(v){return v.val!=null;}).sort(function(a,b){return b.val-a.val;});
+                if(sorted.length>0){
+                    summary.push(secName+': '+sorted[0].insurer+' 최고 ('+sorted[0].disp+')');
+                    bestCounts[sorted[0].insurer]=(bestCounts[sorted[0].insurer]||0)+1;
+                    highlights.push({section:secName,type:'best',insurer:sorted[0].insurer,reason:mainKey+' '+sorted[0].disp});
+                }
+            }
+            Object.keys(allItems).forEach(function(itemName){
+                var vals=allItems[itemName];
+                var uv=Array.from(new Set(vals.map(function(v){return v.disp;})));
+                if(uv.length>1) highlights.push({section:secName,type:'diff',text:itemName+': '+vals.map(function(v){return v.insurer+' '+v.disp;}).join(' / ')});
+            });
+        } else if(/납입면제/.test(secName)){
+            entries.forEach(function(e){
+                e[1].items.forEach(function(item){
+                    if(item.value==='O'||item.value==='○'){
+                        highlights.push({section:secName,type:'diff',text:item.itemName+': '+e[0]+' 가능'});
+                    }
+                });
+            });
+            var oCounts=entries.map(function(e){return{insurer:e[0],cnt:e[1].items.filter(function(i){return i.value==='O'||i.value==='○';}).length};}).sort(function(a,b){return b.cnt-a.cnt;});
+            if(oCounts.length>0&&oCounts[0].cnt>0){
+                bestCounts[oCounts[0].insurer]=(bestCounts[oCounts[0].insurer]||0)+1;
+                highlights.push({section:secName,type:'best',insurer:oCounts[0].insurer,reason:'납입면제 범위 가장 넓음'});
+            }
+        }
+    });
+    var sortedBest=Object.entries(bestCounts).sort(function(a,b){return b[1]-a[1];});
+    if(sortedBest.length>0) recommendations.push('종합적으로 '+sortedBest[0][0]+'이(가) '+sortedBest[0][1]+'개 항목에서 가장 유리합니다.');
+    return {summary:summary,recommendations:recommendations,warnings:warnings,highlights:highlights};
+}
+
+function icFindHighlights(secName, rows, insurers) {
+    var hl={};
+    rows.forEach(function(row){
+        var nums={};
+        insurers.forEach(function(ins){
+            var v=parseFloat(String(row[ins]||'').replace(/[,\s원만%]/g,''));
+            if(!isNaN(v)) nums[ins]=v;
+        });
+        var ne=Object.entries(nums);
+        if(ne.length>=2){
+            if(/보험료/.test(secName)){
+                ne.sort(function(a,b){return a[1]-b[1];});
+                hl[row.itemName+'_'+ne[0][0]]='best';
+                hl[row.itemName+'_'+ne[ne.length-1][0]]='worst';
+            } else if(/진단비|치료비|수술비/.test(secName)||/진단비|치료비|수술비/.test(row.itemName)){
+                ne.sort(function(a,b){return b[1]-a[1];});
+                hl[row.itemName+'_'+ne[0][0]]='best';
+            }
+        }
+        insurers.forEach(function(ins){
+            if(row[ins]==='O'||row[ins]==='○') hl[row.itemName+'_'+ins]='best';
+            else if(row[ins]==='X'||row[ins]==='×') hl[row.itemName+'_'+ins]='worst';
+        });
+    });
+    return hl;
+}
+
+// ===== 응답 렌더링 =====
+function icRenderResponse(resp) {
+    var area = document.getElementById('ic-chat-area');
+
+    // 에러 처리
+    if (!resp.success && resp.type !== 'clarification') {
+        var errMsg = resp.error || '알 수 없는 오류가 발생했습니다.';
+        if (resp.conditions && resp.conditions.missing && resp.conditions.missing.length > 0) {
+            errMsg += '\n추가 정보가 필요합니다: ' + resp.conditions.missing.join(', ');
+        }
+        icAddMessage('bot', errMsg);
+        return;
+    }
+
+    // 추가정보 요청
+    if (resp.type === 'clarification') {
+        icRenderClarification(resp);
+        return;
+    }
+
+    // 성공 - 결과 카드 생성
+    var card = document.createElement('div');
+    card.className = 'ic-msg ic-msg-bot';
+    var html = '<div class="ic-msg-content"><div class="ic-result-card">';
+
+    // 1. 질문 해석
+    if (resp.interpretation) {
+        html += '<div class="ic-interpretation"><strong>검색 조건:</strong> ' + icEscape(resp.interpretation.summary);
+        if (resp.interpretation.missing && resp.interpretation.missing.length > 0) {
+            html += '<br><span style="color:var(--ic-orange)">미지정: ' + resp.interpretation.missing.join(', ') + '</span>';
+        }
+        html += '</div>';
+    }
+
+    // 2. 한줄 결론
+    if (resp.conclusion) {
+        html += '<div class="ic-conclusion">' + icEscape(resp.conclusion) + '</div>';
+    }
+
+    // 3. 비교표
+    if (resp.tables && resp.tables.length > 0) {
+        resp.tables.forEach(function(table) {
+            html += '<div class="ic-table-section">';
+            html += '<div class="ic-table-title">' + icEscape(table.sectionName) + '</div>';
+            html += '<div class="ic-table-wrap"><table class="ic-compare-table">';
+            // 헤더
+            html += '<thead><tr><th>항목</th>';
+            table.insurers.forEach(function(ins) {
+                html += '<th>' + icEscape(ins) + '</th>';
+            });
+            html += '</tr></thead><tbody>';
+            // 상품명 행
+            html += '<tr class="ic-product-row"><td>상품명</td>';
+            table.insurers.forEach(function(ins) {
+                html += '<td>' + icEscape(table.productRow[ins] || '-') + '</td>';
+            });
+            html += '</tr>';
+            // 데이터 행
+            table.rows.forEach(function(row) {
+                html += '<tr><td>' + icEscape(row.itemName) + '</td>';
+                table.insurers.forEach(function(ins) {
+                    var val = row[ins] || '-';
+                    var hlKey = row.itemName + '_' + ins;
+                    var cls = '';
+                    if (table.highlights && table.highlights[hlKey] === 'best') cls = ' class="ic-cell-best"';
+                    else if (table.highlights && table.highlights[hlKey] === 'worst') cls = ' class="ic-cell-worst"';
+                    html += '<td' + cls + '>' + icEscape(val) + '</td>';
+                });
+                html += '</tr>';
+            });
+            html += '</tbody></table></div></div>';
+        });
+    }
+
+    // 4. 하이라이트
+    if (resp.highlights && resp.highlights.length > 0) {
+        html += '<div class="ic-highlights">';
+        resp.highlights.forEach(function(hl) {
+            if (hl.type === 'recommendation') {
+                html += '<div class="ic-highlight-item rec"><div class="ic-highlight-label">추천</div>' + icEscape(hl.text) + '</div>';
+            } else if (hl.type === 'best') {
+                html += '<div class="ic-highlight-item best"><div class="ic-highlight-label">' + icEscape(hl.section) + ' 최고</div>' + icEscape(hl.insurer) + ' - ' + icEscape(hl.reason) + '</div>';
+            } else if (hl.type === 'diff') {
+                html += '<div class="ic-highlight-item diff"><div class="ic-highlight-label">' + icEscape(hl.section || '차이점') + '</div>' + icEscape(hl.text) + '</div>';
+            }
+        });
+        html += '</div>';
+    }
+
+    // 5. 주의사항
+    if (resp.warnings && resp.warnings.length > 0) {
+        html += '<div class="ic-warnings">';
+        resp.warnings.forEach(function(w) {
+            html += '<div class="ic-warning-item">[주의] ' + icEscape(w) + '</div>';
+        });
+        html += '</div>';
+    }
+
+    // 6. 출처
+    if (resp.sources) {
+        html += '<div class="ic-sources">';
+        html += '출처: ' + icEscape(resp.sources.yearMonth) + ' 기준';
+        if (resp.sources.pages && resp.sources.pages.length > 0) {
+            html += ' | 페이지: ' + resp.sources.pages.join(', ');
+        }
+        if (resp.sources.note) {
+            html += '<br>' + icEscape(resp.sources.note);
+        }
+        html += '</div>';
+    }
+
+    html += '</div></div>';
+    card.innerHTML = html;
+    area.appendChild(card);
+    area.scrollTop = area.scrollHeight;
+}
+
+function icRenderClarification(resp) {
+    var area = document.getElementById('ic-chat-area');
+    var div = document.createElement('div');
+    div.className = 'ic-msg ic-msg-bot';
+    var html = '<div class="ic-msg-content"><div class="ic-msg-text">' + icEscape(resp.message || '추가 정보가 필요합니다.') + '</div>';
+    if (resp.chips && resp.chips.length > 0) {
+        html += '<div class="ic-chips-row">';
+        resp.chips.forEach(function(chip) {
+            html += '<button class="ic-quick-chip" onclick="icApplyChip(\'' + chip.field + '\',\'' + chip.value + '\',\'' + icEscape(chip.label) + '\')">' + icEscape(chip.label) + '</button>';
+        });
+        html += '</div>';
+    }
+    if (resp.suggestions && resp.suggestions.length > 0) {
+        html += '<div style="margin-top:8px;font-size:.8rem;color:var(--ic-gray-500);">';
+        resp.suggestions.forEach(function(s) { html += icEscape(s) + '<br>'; });
+        html += '</div>';
+    }
+    html += '</div>';
+    div.innerHTML = html;
+    area.appendChild(div);
+    area.scrollTop = area.scrollHeight;
+}
+
+function icApplyChip(field, value, label) {
+    icFilters[field] = field === 'age' ? parseInt(value) : value;
+    // 해당 필터칩 UI 활성화
+    document.querySelectorAll('.ic-filter-chip[data-field="'+field+'"]').forEach(function(c){
+        c.classList.toggle('active', c.getAttribute('data-value') === value);
+    });
+    icAddMessage('user', label + ' 선택');
+    icShowTyping();
+    icIsProcessing = true;
+    // 이전 질문 재실행
+    var msgs = document.querySelectorAll('.ic-msg-user .ic-msg-text');
+    var lastQ = '';
+    for (var i = msgs.length - 2; i >= 0; i--) {
+        var t = msgs[i].textContent.trim();
+        if (t && t !== label + ' 선택') { lastQ = t; break; }
+    }
+    if (!lastQ) lastQ = '보험 비교';
+    icProcessQuestion(lastQ).then(function(resp) {
+        icHideTyping();
+        icRenderResponse(resp);
+        icIsProcessing = false;
+    }).catch(function(err){
+        icHideTyping();
+        icAddMessage('bot', '오류: ' + err.message);
+        icIsProcessing = false;
+    });
+}
+</script>
