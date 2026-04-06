@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>지에이월드[GA World] - 대한민국 GA의 모든 정보</title>
+<meta name="description" content="대한민국 GA의 모든 정보 지에이월드 입니다.">
+<meta name="google-site-verification" content="d_7xU8cHbTlmVcUM-LD9AGM3fQvfrk3NEqodvaxEFRk">
+<meta property="og:title" content="지에이월드[GA World]">
+<meta property="og:description" content="대한민국 GA의 모든 정보 지에이월드 입니다.">
+<meta property="og:image" content="https://cdn.imweb.me/upload/S2016083157c63a62163fa/e5a25a2f2e12f.png">
+<link rel="icon" href="https://cdn.imweb.me/thumbnail/20230904/0716aae313e95.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--brand:#3a5df4;--brand-dark:#2d50e9;--dark:#080026;--black:#000;--white:#fff;--gray:#f8f8f8;--cream:#fffaef;--light-blue:#f6faff;--text:#212121;--text-light:#717171;--max-w:1280px;--header-h:90px}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans KR',sans-serif;color:var(--text);line-height:1.6;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+img{max-width:100%;display:block}
+.container{max-width:var(--max-w);margin:0 auto;padding:0 30px}
+
+/* HEADER */
+.site-header{position:fixed;top:0;left:0;width:100%;z-index:100;transition:background .3s,box-shadow .3s}
+.site-header.transparent{background:transparent}
+.site-header.scrolled{background:var(--white);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:var(--header-h)}
+.logo img{height:36px;transition:opacity .3s}
+.logo .logo-white{display:block}
+.logo .logo-dark{display:none}
+.scrolled .logo .logo-white{display:none}
+.scrolled .logo .logo-dark{display:block}
+.nav-links{display:flex;gap:8px;list-style:none}
+.nav-links a{font-size:13px;font-weight:700;padding:8px 12px;color:rgba(255,255,255,.75);transition:color .3s;white-space:nowrap}
+.nav-links a:hover{color:#fff}
+.scrolled .nav-links a{color:var(--text-light)}
+.scrolled .nav-links a:hover{color:var(--brand)}
+.header-right .btn-login{font-size:13px;font-weight:700;color:rgba(255,255,255,.75);transition:color .3s}
+.scrolled .header-right .btn-login{color:var(--text-light)}
+.mobile-toggle{display:none;background:none;border:none;font-size:22px;color:#fff;cursor:pointer}
+.scrolled .mobile-toggle{color:var(--text)}
+
+/* HERO */
+.hero{position:relative;height:100vh;overflow:hidden;background:var(--black)}
+.hero-slide{position:absolute;inset:0;opacity:0;transition:opacity 1s ease-in-out}
+.hero-slide.active{opacity:1}
+.hero-slide::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:1}
+.hero-slide-bg{width:100%;height:100%;object-fit:cover;background:linear-gradient(135deg,#1a1a3e,#0d0d2b,#1a0a2e);display:flex;align-items:center;justify-content:center}
+.hero-content{position:absolute;bottom:170px;left:0;right:0;z-index:2}
+.hero-content h2{font-size:48px;font-weight:900;color:#fff;letter-spacing:-2px;line-height:1.2;margin-bottom:20px}
+.hero-content h2 span{display:block}
+.hero-btn{display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;color:#000;background:#fff;border:none;cursor:pointer;transition:background .3s,transform .3s}
+.hero-btn:hover{background:var(--brand);color:#fff;transform:translateY(-2px)}
+.scroll-arrow{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);z-index:2;width:24px;height:24px;border-right:3px solid #fff;border-bottom:3px solid #fff;transform:translateX(-50%) rotate(45deg);animation:bounce 2s infinite}
+@keyframes bounce{0%,100%{transform:translateX(-50%) rotate(45deg) translateY(-8px);opacity:0}50%{transform:translateX(-50%) rotate(45deg) translateY(8px);opacity:1}}
+.hero-dots{position:absolute;bottom:100px;left:50%;transform:translateX(-50%);z-index:2;display:flex;gap:12px}
+.hero-dots span{width:10px;height:10px;border-radius:50%;border:1.5px solid #fff;cursor:pointer;transition:background .3s}
+.hero-dots span.active{background:#fff}
+
+/* MARQUEE */
+.marquee-section{padding:30px 0;background:#fff;overflow:hidden}
+.marquee-track{display:flex;animation:marquee 30s linear infinite;width:max-content}
+.marquee-item{flex-shrink:0;padding:10px 30px;font-size:14px;font-weight:700;color:#999;white-space:nowrap;border:1px solid #eee;border-radius:6px;margin-right:16px}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* SECTION COMMON */
+.section-title{font-size:36px;font-weight:900;letter-spacing:-1.5px;line-height:1.3}
+.section-sub{font-size:18px;color:#555;margin-top:16px;line-height:1.7}
+.btn-primary{display:inline-block;padding:14px 28px;background:var(--brand);color:#fff;font-size:14px;font-weight:700;border-radius:9px;transition:background .3s}
+.btn-primary:hover{background:var(--brand-dark)}
+
+/* ABOUT */
+.about{padding:120px 0;background:var(--light-blue)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.about-label{font-size:16px;color:#3e3e3e;margin-bottom:12px}
+.about-title{font-size:36px;font-weight:900;letter-spacing:-1.5px;line-height:1.3;background:linear-gradient(245deg,#1AA3FF,#B090F5);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.about-desc{font-size:18px;color:#333;margin-top:20px;letter-spacing:-.5px;line-height:1.7}
+.about-mockup{background:linear-gradient(135deg,var(--brand),#7c5cf5);border-radius:20px;height:400px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:80px;opacity:.8}
+
+/* SERVICES */
+.services{padding:120px 0;background:var(--dark);color:#fff}
+.services .section-title{color:#fff;text-align:center;margin-bottom:12px}
+.services .section-sub{color:rgba(255,255,255,.6);text-align:center;margin-bottom:60px}
+.srv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.srv-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:40px 30px;transition:transform .3s,background .3s}
+.srv-card:hover{transform:translateY(-6px);background:rgba(255,255,255,.1)}
+.srv-icon{font-size:28px;color:var(--brand);margin-bottom:16px}
+.srv-card h3{font-size:20px;font-weight:700;margin-bottom:10px}
+.srv-card p{font-size:14px;color:rgba(255,255,255,.5);line-height:1.6}
+.srv-card .arrow{display:inline-block;margin-top:16px;color:var(--brand);font-size:13px;font-weight:700;transition:transform .3s}
+.srv-card:hover .arrow{transform:translateX(6px)}
+
+/* FEE CHECK */
+.fee-check{padding:120px 0;background:var(--cream)}
+.fee-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px;align-items:center}
+.fee-left{text-align:right}
+.fee-left .section-title{font-size:36px}
+.fee-center{background:linear-gradient(135deg,#ffd700,#ff9500);border-radius:20px;height:350px;display:flex;align-items:center;justify-content:center;font-size:64px}
+.fee-right .section-title{font-size:36px;margin-bottom:16px}
+.fee-right p{color:#555;line-height:1.8;margin-bottom:24px}
+
+/* TESTIMONIALS */
+.testimonials{padding:100px 0;background:var(--gray)}
+.test-header{text-align:center;margin-bottom:60px}
+.test-header .section-title{font-size:30px}
+.test-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.test-card{background:#fff;border-radius:12px;padding:40px;text-align:center}
+.test-stars{color:#ffa500;font-size:20px;margin-bottom:16px}
+.test-card h3{font-size:22px;font-weight:700;margin-bottom:12px}
+.test-card p{font-size:15px;color:#6a6a6a;line-height:1.7;margin-bottom:16px}
+.test-card small{font-size:13px;color:#999}
+
+/* FOOTER */
+.site-footer{background:var(--black);color:rgba(255,255,255,.4);padding:60px 0;text-align:center;font-size:13px}
+.footer-logo{margin:0 auto 20px;height:28px;filter:brightness(0) invert(1);opacity:.5}
+.footer-info p{margin-bottom:4px}
+.footer-links{margin-top:16px;display:flex;justify-content:center;gap:16px}
+.footer-links a{color:rgba(255,255,255,.4);transition:color .3s}
+.footer-links a:hover{color:#fff}
+.footer-copy{margin-top:20px;opacity:.6}
+
+/* ANIMATIONS */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+ .nav-links{display:none}
+ .mobile-toggle{display:block}
+ .header-inner{height:58px}
+ .hero-content h2{font-size:32px}
+ .about-grid,.fee-grid{grid-template-columns:1fr}
+ .fee-left{text-align:left}
+ .fee-center{height:200px}
+ .srv-grid{grid-template-columns:1fr 1fr}
+ .test-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+ .hero-content h2{font-size:26px}
+ .hero-content{bottom:120px;padding:0 20px}
+ .srv-grid{grid-template-columns:1fr}
+ .section-title{font-size:28px}
+ .about-title{font-size:28px}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header transparent" id="siteHeader">
+<div class="container">
+<div class="header-inner">
+ <a href="/" class="logo">
+  <img src="https://cdn.imweb.me/thumbnail/20240425/364017f8513e6.png" alt="GA World" class="logo-white">
+  <img src="https://cdn.imweb.me/thumbnail/20260405/c5c5e71220119.png" alt="GA World" class="logo-dark">
+ </a>
+ <nav>
+  <ul class="nav-links">
+   <li><a href="/spc">설계톡</a></li>
+   <li><a href="/infra">모두의전산</a></li>
+   <li><a href="/modoo">모두의리쿨</a></li>
+   <li><a href="/Terms">GA용어집</a></li>
+   <li><a href="/study">어쩌다 보험인</a></li>
+   <li><a href="/xfile2023">GA X파일</a></li>
+   <li><a href="/FactCheck">팩트체크</a></li>
+   <li><a href="/500ga">GA바로가기</a></li>
+   <li><a href="/scheduling">GA매칭</a></li>
+   <li><a href="/calculator">금융계산기</a></li>
+  </ul>
+ </nav>
+ <div class="header-right">
+  <a href="/login" class="btn-login"><i class="fas fa-user-circle"></i></a>
+  <button class="mobile-toggle" onclick="document.body.classList.toggle('menu-open')"><i class="fas fa-bars"></i></button>
+ </div>
+</div>
+</div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+<div class="hero-slide active" data-index="0">
+ <div class="hero-slide-bg" style="background:linear-gradient(135deg,#0f0c29,#302b63,#24243e)"></div>
+ <div class="container hero-content">
+  <h2><span>당신에게 맞는</span><span style="font-weight:900">GA를 알려드립니다.</span></h2>
+  <a href="/xfile2023" class="hero-btn">자세히보기 →</a>
+ </div>
+</div>
+<div class="hero-slide" data-index="1">
+ <div class="hero-slide-bg" style="background:linear-gradient(135deg,#1a0a2e,#3a1c71,#d76d77)"></div>
+ <div class="container hero-content">
+  <h2><span>대한민국 GA의</span><span style="font-weight:900">모든 리쿠르팅 정보</span></h2>
+  <a href="/modoo" class="hero-btn">자세히보기 →</a>
+ </div>
+</div>
+<div class="hero-slide" data-index="2">
+ <div class="hero-slide-bg" style="background:linear-gradient(135deg,#0f2027,#203a43,#2c5364)"></div>
+ <div class="container hero-content">
+  <h2><span>GA대표와 미팅,</span><span style="font-weight:900">철저한 보안을 유지합니다.</span></h2>
+  <a href="/scheduling" class="hero-btn">자세히보기 →</a>
+ </div>
+</div>
+<div class="hero-slide" data-index="3">
+ <div class="hero-slide-bg" style="background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)"></div>
+ <div class="container hero-content">
+  <h2><span>보험사 기준 진짜</span><span style="font-weight:900">총량을 공개합니다.</span></h2>
+  <a href="/FactCheck" class="hero-btn">자세히보기 →</a>
+ </div>
+</div>
+<div class="hero-dots">
+ <span class="active" data-slide="0"></span>
+ <span data-slide="1"></span>
+ <span data-slide="2"></span>
+ <span data-slide="3"></span>
+</div>
+<div class="scroll-arrow"></div>
+</section>
+
+<!-- MARQUEE -->
+<section class="marquee-section">
+<div class="marquee-track">
+ <div class="marquee-item">IFA</div><div class="marquee-item">굿리치</div><div class="marquee-item">인카금융서비스</div><div class="marquee-item">메가</div><div class="marquee-item">삼성생명FS</div><div class="marquee-item">한화라이프FS</div><div class="marquee-item">미래에셋FP</div><div class="marquee-item">메트라이프FS</div><div class="marquee-item">KB라이프파트너스</div><div class="marquee-item">ABA자산</div><div class="marquee-item">키움보험금융</div><div class="marquee-item">에이플러스에셋</div><div class="marquee-item">글로벌금융판매</div>
+ <div class="marquee-item">IFA</div><div class="marquee-item">굿리치</div><div class="marquee-item">인카금융서비스</div><div class="marquee-item">메가</div><div class="marquee-item">삼성생명FS</div><div class="marquee-item">한화라이프FS</div><div class="marquee-item">미래에셋FP</div><div class="marquee-item">메트라이프FS</div><div class="marquee-item">KB라이프파트너스</div><div class="marquee-item">ABA자산</div><div class="marquee-item">키움보험금융</div><div class="marquee-item">에이플러스에셋</div><div class="marquee-item">글로벌금융판매</div>
+</div>
+</section>
+
+<!-- ABOUT -->
+<section class="about">
+<div class="container">
+<div class="about-grid">
+ <div class="reveal">
+  <p class="about-label">since 2015</p>
+  <h2 class="about-title">지에이월드는 이직 시 정보의 비대칭을 최소화할 수 있도록 도와드리고 있습니다.</h2>
+  <p class="about-desc">모두가 최고라고 말하는 리쿠르팅 광고... 이제, GA World를 통해 신뢰할 수 있는 GA 정보만 비교하세요. 보험사 또는 GA 소속 개인, 조직 모두 무료로 사용할 수 있습니다.</p>
+  <br><a href="/xfile2023" class="btn-primary">자세히 보기</a>
+ </div>
+ <div class="reveal about-mockup"><i class="fas fa-chart-bar"></i></div>
+</div>
+</div>
+</section>
+
+<!-- SERVICES -->
+<section class="services">
+<div class="container">
+ <h2 class="section-title reveal">GA World Services</h2>
+ <p class="section-sub reveal">지에이월드가 제공하는 핵심 서비스</p>
+ <div class="srv-grid">
+  <a href="/xfile2023" class="srv-card reveal"><div class="srv-icon"><i class="fas fa-file-shield"></i></div><h3>GA X파일</h3><p>이직 시 필수정보 · 개인/조직 맞춤정보를 가감없이 제공합니다.</p><span class="arrow">자세히 →</span></a>
+  <a href="/modoo" class="srv-card reveal"><div class="srv-icon"><i class="fas fa-users"></i></div><h3>모두의리쿨</h3><p>법인·개인·하이브리드·보험샵 등 대한민국 모든 GA 리쿠르팅 정보.</p><span class="arrow">자세히 →</span></a>
+  <a href="/FactCheck" class="srv-card reveal"><div class="srv-icon"><i class="fas fa-magnifying-glass-chart"></i></div><h3>팩트체크</h3><p>수수료 원장 공개 · GA 실적 데이터 · 보험사 기준 정보방.</p><span class="arrow">자세히 →</span></a>
+  <a href="/scheduling" class="srv-card reveal"><div class="srv-icon"><i class="fas fa-handshake"></i></div><h3>GA매칭</h3><p>철저한 보안 유지 · GA 대표와 블라인드 직접 미팅 지원.</p><span class="arrow">자세히 →</span></a>
+  <a href="/infra" class="srv-card reveal"><div class="srv-icon"><i class="fas fa-network-wired"></i></div><h3>모두의전산</h3><p>모든 보험사 네트워크 · 전산 문제를 한번에 해결합니다.</p><span class="arrow">자세히 →</span></a>
+  <a href="/calculator" class="srv-card reveal"><div class="srv-icon"><i class="fas fa-calculator"></i></div><h3>금융계산기</h3><p>대출이자 · 상속세 · 양도세 · 부동산 관련 간편 계산기.</p><span class="arrow">자세히 →</span></a>
+ </div>
+</div>
+</section>
+
+<!-- FEE CHECK -->
+<section class="fee-check">
+<div class="container">
+<div class="fee-grid">
+ <div class="fee-left reveal">
+  <h2 class="section-title">진짜 보험사 원장이<br>궁금하세요?</h2>
+ </div>
+ <div class="fee-center reveal">📊</div>
+ <div class="fee-right reveal">
+  <h2 class="section-title">공개합니다.<br>100% 보험사 원장</h2>
+  <p>지에이월드가 수수료 원장을 공개하는 이유는 단순히 수수료의 높고 낮음을 얘기하는 것이 아니라 계약시 약속받은 수수료율을 제대로 지급 받고 있는지 확인이 필요한 분들을 위함입니다.</p>
+  <a href="/FactCheck" class="btn-primary">자세히 보기</a>
+ </div>
+</div>
+</div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+<div class="container">
+<div class="test-header reveal">
+ <h2 class="section-title">대한민국 GA의 모든 정보<br>지에이월드에 오신것을 환영합니다.</h2>
+ <p class="section-sub">지난 8년간 지에이월드의 객관적인 정보는 이직 후 매우 높은 정착률과 더 많은 업적을 이루는데 도움을 주고있습니다.</p>
+</div>
+<div class="test-grid">
+ <div class="test-card reveal"><div class="test-stars">★★★★★</div><h3>GA별 정보를 가감없이 비교</h3><p>객관적이고 풍부한 경험으로 각 GA별 정보를 가감없이 상세하게 설명해 주셔서 이직을 결정하는데 큰 도움이 되었습니다.</p><small>A사 김** 지점장</small></div>
+ <div class="test-card reveal"><div class="test-stars">★★★★<span style="color:#d7d7d7">★</span></div><h3>약속 받은 수수료율 팩트체크</h3><p>수수료 원장이 공개 된 것을 보고 깜짝놀랐습니다. 계약시 약속된 수수료률과 차이가 나서 문의했더니 친절하게 안내해주셨습니다.</p><small>ㄷ에셋 홍** 팀장</small></div>
+ <div class="test-card reveal"><div class="test-stars">★★★★★</div><h3>가장 현명한 방법</h3><p>진짜 그냥 문의해 보시면 압니다. 이직시 지에이월드 통해서 GA미팅을 하는게 가장 현명한 방법 입니다.</p><small>H서비스 위** 단장</small></div>
+ <div class="test-card reveal"><div class="test-stars">★★★★★</div><h3>이직시 민감한 부분을 먼저 해결</h3><p>우리 조직이 필요한 부분을 먼저 물어봐주시고 알아봐주셔서 각 GA 담당자 미팅시 보다 편안하고 깊이 있는 미팅이 되었습니다.</p><small>G서비스 이** 지점장</small></div>
+</div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+<div class="container">
+ <img src="https://cdn.imweb.me/thumbnail/20260405/c5c5e71220119.png" alt="GA World" class="footer-logo">
+ <div class="footer-info">
+  <p>주식회사 지에이월드</p>
+  <p>서울특별시 중구 한강대로 416 서울스퀘어 13층</p>
+  <p>전화 070-4205-0905 / 010-2690-2222</p>
+ </div>
+ <div class="footer-links">
+  <a href="/?mode=policy">이용약관</a>
+  <a href="/?mode=privacy" style="font-weight:700">개인정보처리방침</a>
+ </div>
+ <p class="footer-copy">ⓒ GA World. All rights reserved.</p>
+</div>
+</footer>
+
+<script>
+// Header scroll
+const header=document.getElementById('siteHeader');
+window.addEventListener('scroll',()=>{header.classList.toggle('scrolled',window.scrollY>50);header.classList.toggle('transparent',window.scrollY<=50)});
+
+// Hero slideshow
+const slides=document.querySelectorAll('.hero-slide');
+const dots=document.querySelectorAll('.hero-dots span');
+let current=0;
+function goSlide(n){slides[current].classList.remove('active');dots[current].classList.remove('active');current=n;slides[current].classList.add('active');dots[current].classList.add('active')}
+dots.forEach(d=>d.addEventListener('click',()=>goSlide(+d.dataset.slide)));
+setInterval(()=>goSlide((current+1)%slides.length),5000);
+
+// Scroll reveal
+const reveals=document.querySelectorAll('.reveal');
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:.15});
+reveals.forEach(r=>obs.observe(r));
+</script>
+</body>
+</html>
