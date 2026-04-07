@@ -1,0 +1,1488 @@
+<!-- GAWORLD AI v6.1 — ChatGPT Style UI -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/toss/tossface/dist/tossface.css">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   GAWORLD AI — ChatGPT-Style Theme
+   ============================================ */
+:root{
+  --bg:#f7f7f8;--bg2:#ececf1;--card:#fff;--card-hover:#fafafa;
+  --border:#d9d9e3;--border-light:#e5e5e5;
+  --text:#353740;--sub:#6e6e80;--muted:#8e8ea0;--dim:#c5c5d2;
+  --accent:#10a37f;--accent2:#0d8a6a;--accent-light:#e6f7f2;--accent-border:#a3e0cd;--accent-glow:rgba(16,163,127,.12);
+  --green:#059669;--green-bg:#ecfdf5;--green-border:#a7f3d0;
+  --amber:#d97706;--amber-bg:#fffbeb;--amber-border:#fde68a;
+  --red:#dc2626;--red-bg:#fef2f2;--red-border:#fecaca;
+  --sidebar-bg:#202123;--sidebar-hover:#2A2B32;--sidebar-active:#343541;
+  --radius:12px;--radius-sm:10px;--radius-xs:8px;
+  --shadow:0 1px 3px rgba(0,0,0,.05);
+  --shadow-md:0 2px 8px rgba(0,0,0,.08);
+  --shadow-lg:0 4px 16px rgba(0,0,0,.1);
+  --font:'Pretendard Variable',Pretendard,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',monospace;
+  --transition:.2s ease;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg)}
+
+/* === LAYOUT WRAPPER === */
+.uw-bg{
+  background:var(--bg);
+  margin:0;padding:0;
+  min-height:100vh;position:relative;
+  display:flex;
+}
+
+/* === SIDEBAR === */
+.uw-sidebar{
+  width:260px;flex-shrink:0;
+  background:var(--sidebar-bg);
+  display:flex;flex-direction:column;
+  height:100vh;position:fixed;left:0;top:0;z-index:200;
+  transition:transform .3s ease;
+}
+.uw-sidebar-toggle{
+  display:none;position:fixed;top:12px;left:12px;z-index:300;
+  width:40px;height:40px;border-radius:10px;border:1px solid var(--border);
+  background:var(--card);color:var(--text);font-size:20px;cursor:pointer;
+  align-items:center;justify-content:center;box-shadow:var(--shadow-md);
+}
+.uw-sidebar-inner{
+  display:flex;flex-direction:column;height:100%;padding:10px 8px;overflow-y:auto;
+}
+.uw-sidebar-header{
+  padding:14px 16px;font-size:15px;font-weight:700;color:#fff;
+  letter-spacing:-.3px;display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:8px;
+}
+.uw-sidebar-header::before{
+  content:'🛡️';font-family:'Tossface',sans-serif;font-size:20px;
+}
+.uw-sidebar-footer{
+  margin-top:auto;padding:14px 16px;font-size:11px;color:rgba(255,255,255,.35);
+  border-top:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;gap:6px;
+}
+
+/* === TABS in sidebar === */
+.uw-tabs{
+  display:flex;flex-direction:column;gap:2px;
+}
+.uw-tb{
+  width:100%;padding:12px 16px;text-align:left;font-size:14px;font-weight:500;
+  border-radius:8px;cursor:pointer;transition:all .15s;
+  color:rgba(255,255,255,.7);border:none;background:none;
+  font-family:var(--font);display:flex;align-items:center;gap:10px;white-space:nowrap;
+}
+.uw-tb .tf{font-size:16px}
+.uw-tb.on{background:var(--sidebar-active);color:#fff}
+.uw-tb:hover:not(.on){background:var(--sidebar-hover);color:rgba(255,255,255,.9)}
+
+/* === MAIN CONTENT === */
+.uw{
+  font-family:var(--font);flex:1;margin-left:260px;
+  min-height:100vh;color:var(--text);position:relative;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;
+  display:flex;flex-direction:column;
+}
+.uw-content{
+  flex:1;display:flex;flex-direction:column;
+  max-width:100%;min-height:0;
+}
+.tf{font-family:'Tossface',sans-serif}
+
+/* === SEARCH === */
+.uw-sb{position:relative;margin-bottom:14px}
+.uw-si{width:100%;padding:12px 16px 12px 44px;font-size:15px;border:1px solid var(--border);
+  border-radius:var(--radius);outline:none;font-family:var(--font);background:var(--card);
+  color:var(--text);transition:all var(--transition)}
+.uw-si:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.uw-si::placeholder{color:var(--dim)}
+.uw-si-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none}
+
+/* === CARDS === */
+.uw-rs{display:flex;flex-direction:column;gap:8px}
+@keyframes uwCardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.uw-cd{background:var(--card);border:1px solid var(--border-light);border-radius:var(--radius);
+  padding:16px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+  animation:uwCardIn .3s ease both;transition:border-color .15s}
+.uw-cd:nth-child(1){animation-delay:0s}.uw-cd:nth-child(2){animation-delay:.03s}
+.uw-cd:nth-child(3){animation-delay:.06s}.uw-cd:nth-child(4){animation-delay:.09s}
+.uw-cd:nth-child(5){animation-delay:.12s}
+.uw-cd:hover{border-color:var(--accent-border)}
+.uw-cd::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:0 3px 3px 0}
+.uw-cd.s-ok::before{background:var(--green)}.uw-cd.s-lim::before{background:var(--amber)}
+.uw-cd.s-no::before{background:var(--red)}.uw-cd.s-chk::before{background:var(--accent)}
+.uw-cd-ins{font-size:11px;font-weight:700;color:var(--accent);margin-bottom:5px;letter-spacing:.3px;
+  display:flex;align-items:center;gap:6px}
+.uw-cd-ins-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.uw-cd-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:10px}
+.uw-cd-name{font-size:15px;font-weight:700;line-height:1.3;letter-spacing:-.2px}
+.uw-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:var(--radius-xs);
+  white-space:nowrap;letter-spacing:.3px;flex-shrink:0}
+.b-ok{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.b-lim{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+.b-no{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.b-chk{background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-border)}
+.uw-cd-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px}
+.uw-cd-row{display:flex;gap:6px;font-size:12.5px;line-height:1.7}
+.uw-cd-lb{font-weight:600;color:var(--text);min-width:56px;flex-shrink:0;opacity:.7}
+.uw-cd-vl{color:var(--sub)}
+.uw-cd-note{font-size:11px;color:var(--amber);margin-top:8px;padding:8px 12px;
+  background:var(--amber-bg);border-radius:var(--radius-xs);line-height:1.6;border:1px solid var(--amber-border)}
+
+/* === TABLE === */
+.uw-tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:10px;
+  border-radius:var(--radius);border:1px solid var(--border-light);background:var(--card)}
+.uw-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.uw-tbl th{background:var(--bg);padding:10px 14px;text-align:left;font-weight:700;
+  font-size:11px;color:var(--sub);border-bottom:1px solid var(--border-light);letter-spacing:.3px;white-space:nowrap}
+.uw-tbl td{padding:10px 14px;border-bottom:1px solid var(--border-light);vertical-align:top}
+.uw-tbl tr:last-child td{border-bottom:none}
+.uw-tbl .i-name{font-weight:700;color:var(--accent);white-space:nowrap;font-size:12px}
+.uw-tbl tr:hover td{background:var(--card-hover)}
+
+/* === INFO / RULES === */
+.uw-info{background:var(--card);border:1px solid var(--border-light);border-radius:var(--radius);
+  padding:16px 18px;margin-bottom:10px;transition:border-color .15s}
+.uw-info:hover{border-color:var(--accent-border)}
+.uw-info-title{font-size:14px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.uw-info-list{font-size:12px;color:var(--sub);line-height:1.9}
+.uw-info-item{display:flex;gap:6px}
+.uw-info-item::before{content:'·';color:var(--accent);font-weight:700;flex-shrink:0}
+
+/* === FAQ === */
+.uw-faq{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.uw-fq{padding:12px 14px;font-size:12px;text-align:left;border:1px solid var(--border-light);
+  border-radius:var(--radius);background:var(--card);cursor:pointer;transition:all .15s;
+  font-family:var(--font);color:var(--text);line-height:1.4}
+.uw-fq:hover{border-color:var(--accent);background:var(--accent-light)}
+
+/* === PANEL === */
+.uw-pn{display:none;padding:20px 24px 120px;max-width:768px;margin:0 auto;width:100%}
+.uw-pn.on{display:block}
+
+/* === SELECT === */
+.uw-select-wrap{margin-bottom:14px}
+.uw-select{width:100%;padding:10px 16px;font-size:13px;font-weight:600;font-family:var(--font);
+  border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--card);
+  color:var(--text);cursor:pointer;outline:none;transition:all .15s;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236e6e80' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center}
+.uw-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+
+/* === MISC === */
+.uw-cnt{font-size:12px;color:var(--muted);margin-bottom:8px;font-family:var(--mono)}
+.uw-emp{text-align:center;padding:48px 20px;color:var(--sub)}
+.uw-emp-ic{font-size:42px;margin-bottom:10px;font-family:'Tossface',sans-serif;opacity:.5}
+.uw-emp-tx{font-size:13px;line-height:1.7}
+.uw-warn{font-size:11px;color:var(--sub);padding:12px 16px;background:var(--card);
+  border-radius:var(--radius-sm);margin-top:14px;line-height:1.7;border:1px solid var(--border-light)}
+.uw-warn b{color:var(--text)}
+
+/* === AUTOCOMPLETE === */
+.uw-ac{position:absolute;top:100%;left:0;right:0;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--radius-sm);margin-top:4px;max-height:240px;
+  overflow-y:auto;z-index:100;box-shadow:var(--shadow-lg);display:none}
+.uw-ac.show{display:block;animation:uwCardIn .15s ease}
+.uw-ac-i{padding:10px 16px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border-light);
+  display:flex;align-items:center;gap:8px;transition:background .1s}
+.uw-ac-i:hover{background:var(--accent-light);color:var(--accent)}
+.uw-ac-i:last-child{border-bottom:none}
+.uw-ac-src{font-size:9px;color:var(--muted);background:var(--bg);padding:2px 6px;border-radius:4px;
+  font-weight:600;flex-shrink:0;border:1px solid var(--border-light)}
+
+/* === RULES === */
+.uw-rules-toggle{padding:8px 14px;font-size:12px;font-weight:600;color:var(--accent);
+  background:var(--accent-light);border:1px solid var(--accent-border);border-radius:8px;
+  cursor:pointer;margin-bottom:14px;font-family:var(--font);display:flex;align-items:center;gap:5px;
+  transition:all .15s}
+.uw-rules-toggle:hover{box-shadow:0 0 0 3px var(--accent-glow)}
+.uw-rules-panel{display:none;margin-bottom:14px}
+.uw-rules-panel.show{display:block;animation:uwCardIn .25s ease}
+#pnR .uw-rules-panel{display:block;max-height:none;padding:0;border:none;margin:0;background:transparent}
+.uw-common-rules{margin-bottom:14px}
+.uw-rules-arrow{transition:transform .2s;display:inline-block}
+
+/* === LOADING === */
+@keyframes uwSpin{to{transform:rotate(360deg)}}
+@keyframes uwPulse{0%,100%{opacity:.5}50%{opacity:1}}
+.uw-loading{text-align:center;padding:32px;color:var(--sub);font-size:13px}
+.uw-loading::before{content:'';display:inline-block;width:18px;height:18px;
+  border:2.5px solid var(--border);border-top-color:var(--accent);border-radius:50%;
+  animation:uwSpin .6s linear infinite;vertical-align:middle;margin-right:10px}
+
+/* === TYPING SPINNER === */
+.uw-typing{display:flex;align-items:center;gap:12px;padding:20px 0}
+.uw-typing-spinner{width:28px;height:28px;border:2.5px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;animation:uwSpin .7s linear infinite;flex-shrink:0}
+.uw-typing-text{font-size:14px;color:var(--sub);font-weight:500}
+.uw-typing-text::after{content:'';animation:uwDots 1.5s infinite}
+@keyframes uwDots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}100%{content:''}}
+
+/* === FADE IN === */
+.uw-msg-fadein{animation:uwFadeUp .4s ease-out both}
+@keyframes uwFadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* === SCROLLBAR === */
+.uw-ac::-webkit-scrollbar,.uw-tbl-wrap::-webkit-scrollbar,.uw-chat-msgs::-webkit-scrollbar{height:4px;width:4px}
+.uw-ac::-webkit-scrollbar-thumb,.uw-tbl-wrap::-webkit-scrollbar-thumb,.uw-chat-msgs::-webkit-scrollbar-thumb{background:var(--dim);border-radius:4px}
+.uw-ac::-webkit-scrollbar-track,.uw-chat-msgs::-webkit-scrollbar-track{background:transparent}
+
+/* ============================================
+   CHAT — ChatGPT Style
+   ============================================ */
+.uw-chat{display:flex;flex-direction:column;height:100%;min-height:calc(100vh - 40px)}
+.uw-chat-msgs{display:flex;flex-direction:column;gap:0;flex:1;
+  overflow-y:auto;padding:0 0 24px;max-width:768px;width:100%;margin:0 auto}
+
+/* --- Messages --- */
+.uw-msg{max-width:100%;animation:uwCardIn .25s ease both;padding:16px 24px}
+.uw-msg-user{align-self:flex-end;max-width:75%;
+  background:#e4e4e7;color:var(--text);
+  padding:12px 18px;border-radius:20px 20px 4px 20px;font-size:14px;line-height:1.55;
+  margin:8px 24px 8px auto}
+.uw-msg-bot{align-self:flex-start;width:100%;
+  border-bottom:1px solid var(--border-light);padding:20px 0}
+.uw-msg-bot-inner{background:transparent;border:none;
+  padding:0 24px;max-width:768px;margin:0 auto;width:100%;box-shadow:none;position:relative;
+  padding-left:52px}
+.uw-msg-bot-inner::before{
+  content:'🛡️';font-family:'Tossface',sans-serif;font-size:18px;
+  position:absolute;left:24px;top:2px;
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  background:var(--accent-light);border-radius:50%;font-size:14px;
+}
+.uw-msg-title{font-size:15px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:7px}
+.uw-msg-summary{font-size:13.5px;color:var(--sub);margin-bottom:12px;line-height:1.65}
+.uw-msg-stats{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.uw-msg-stat{padding:5px 10px;border-radius:6px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px}
+.uw-msg-stat.ok{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.uw-msg-stat.lim{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+.uw-msg-stat.no{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.uw-msg-parsed{font-size:11px;color:var(--muted);margin-bottom:10px;padding:8px 10px;
+  background:var(--bg);border-radius:var(--radius-xs);font-family:var(--mono)}
+.uw-msg-notes{margin-top:12px;padding:10px 14px;background:var(--bg);border-radius:var(--radius-xs);border:1px solid var(--border-light)}
+.uw-msg-notes-title{font-size:11px;font-weight:700;color:var(--amber);margin-bottom:5px}
+.uw-msg-notes-item{font-size:11px;color:var(--sub);line-height:1.7;display:flex;gap:4px}
+.uw-msg-notes-item::before{content:'·';color:var(--amber);font-weight:700}
+.uw-chat-suggest{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+
+/* === HERO WELCOME === */
+.uw-chat-welcome{text-align:center;padding:80px 24px 40px;max-width:768px;margin:0 auto;width:100%}
+.uw-hero-icon{font-size:48px;margin-bottom:16px;
+  animation:uwHeroFloat 3s ease-in-out infinite}
+@keyframes uwHeroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.uw-hero-greeting{font-size:28px;font-weight:700;letter-spacing:-.5px;
+  color:var(--text);line-height:1.3;margin-bottom:10px}
+.uw-hero-greeting .uw-name{font-weight:800;color:var(--accent)}
+.uw-chat-welcome p{font-size:14px;color:var(--sub);margin-bottom:8px;line-height:1.7}
+.uw-chat-welcome p b{color:var(--accent)}
+.uw-chat-welcome p+.uw-chat-examples{margin-top:28px}
+
+/* === EXAMPLE CARDS — Clean ChatGPT style === */
+.uw-chat-examples{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:600px;margin:0 auto}
+.uw-chat-sug{padding:16px 18px;font-size:13px;text-align:left;border-radius:var(--radius);
+  border:1px solid var(--border-light);background:var(--card);
+  color:var(--text);font-weight:500;line-height:1.6;transition:all .15s;
+  cursor:pointer;font-family:var(--font);box-shadow:none;min-height:auto;display:flex;align-items:flex-start}
+.uw-chat-sug:hover{border-color:var(--border);box-shadow:var(--shadow-md)}
+
+/* === FLOATING INPUT === */
+.uw-chat-input{
+  position:sticky;bottom:0;z-index:100;
+  padding:16px 24px 20px;
+  background:linear-gradient(to top,var(--bg) 70%,transparent);
+  max-width:816px;width:100%;margin:0 auto;
+}
+.uw-input-wrap{
+  display:flex;align-items:center;position:relative;width:100%;
+  background:var(--card);border:1px solid var(--border);border-radius:24px;
+  box-shadow:0 0 15px rgba(0,0,0,.08);transition:all .15s;overflow:hidden}
+.uw-input-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 15px rgba(16,163,127,.15)}
+.uw-input-wrap .uw-si{border:none;background:transparent;border-radius:0;
+  box-shadow:none;padding:14px 52px 14px 20px;font-size:15px;flex:1;min-width:0}
+.uw-input-wrap .uw-si:focus{box-shadow:none;border-color:transparent}
+.uw-input-wrap .uw-chat-send{position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  width:36px;height:36px;border-radius:8px;
+  background:var(--sidebar-bg);border:none;
+  color:#fff;font-size:14px;cursor:pointer;transition:all .15s;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center}
+.uw-input-wrap .uw-chat-send:hover{background:#353540}
+.uw-input-wrap .uw-chat-send:active{transform:translateY(-50%) scale(.92)}
+
+/* === AI RESPONSE STYLES === */
+.uw-ai-toggle{width:40px;height:40px;border-radius:10px;border:1px solid var(--border);
+  background:var(--card);color:var(--sub);font-size:12px;cursor:pointer;transition:all .12s;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--font);font-weight:700}
+.uw-ai-toggle.on{border-color:var(--accent);background:var(--accent);color:#fff}
+.uw-ai-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;
+  padding:3px 10px;border-radius:6px;background:var(--accent);
+  color:#fff;letter-spacing:.3px;margin-bottom:10px}
+.uw-ai-section{margin-top:12px;padding:12px 14px;background:var(--bg);border-radius:var(--radius-xs);border:1px solid var(--border-light)}
+.uw-ai-section-title{font-size:11px;font-weight:700;color:var(--accent);margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.uw-ai-insurer-row{display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border-light);font-size:12px}
+.uw-ai-insurer-row:last-child{border-bottom:none}
+.uw-ai-insurer-name{font-weight:700;min-width:72px;flex-shrink:0}
+.uw-ai-insurer-cond{color:var(--sub);flex:1;line-height:1.5}
+.uw-ai-conf{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600}
+.uw-ai-conf.high{background:var(--green-bg);color:var(--green)}
+.uw-ai-conf.medium{background:var(--amber-bg);color:var(--amber)}
+.uw-ai-conf.low{background:var(--red-bg);color:var(--red)}
+.uw-ai-prob-wrap{display:flex;align-items:center;gap:12px;margin:12px 0;padding:14px 16px;
+  background:var(--bg);border-radius:var(--radius-sm);border:1px solid var(--border-light)}
+.uw-ai-prob-gauge{position:relative;width:52px;height:52px;flex-shrink:0}
+.uw-ai-prob-gauge svg{transform:rotate(-90deg)}
+.uw-ai-prob-gauge circle{fill:none;stroke-width:5}
+.uw-ai-prob-gauge .bg{stroke:var(--border)}
+.uw-ai-prob-gauge .fg{stroke-linecap:round;transition:stroke-dashoffset .8s ease}
+.uw-ai-prob-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:14px;font-weight:700}
+.uw-ai-prob-info{flex:1}
+.uw-ai-prob-label{font-size:11px;color:var(--muted);margin-bottom:2px}
+.uw-ai-prob-cond{font-size:13px;font-weight:600;line-height:1.4}
+.uw-ai-strategy{margin:10px 0;padding:12px 14px;background:var(--accent-light);
+  border:1px solid var(--accent-border);border-radius:var(--radius-xs);font-size:12.5px;line-height:1.6;color:var(--text)}
+.uw-ai-strategy-title{font-size:11px;font-weight:700;color:var(--accent);margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.uw-ai-basis{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}
+.uw-ai-basis-tag{padding:3px 10px;font-size:11px;font-weight:600;border-radius:20px;
+  background:var(--bg);color:var(--sub);border:1px solid var(--border-light)}
+.uw-ai-action{margin:10px 0;padding:12px 14px;background:var(--green-bg);
+  border:1px solid var(--green-border);border-radius:var(--radius-xs)}
+.uw-ai-action-title{font-size:11px;font-weight:700;color:var(--green);margin-bottom:4px;display:flex;align-items:center;gap:4px}
+.uw-ai-action-text{font-size:12.5px;line-height:1.6;color:var(--text);font-weight:500}
+.uw-ai-insurer-prob{font-family:var(--mono);font-size:11px;font-weight:700;
+  padding:2px 6px;border-radius:4px;margin-left:auto;flex-shrink:0}
+
+/* === Turn notice === */
+.uw-turn-notice{text-align:center;font-size:12px;color:var(--muted);padding:8px 16px;
+  margin:4px auto;max-width:500px;background:var(--bg);border-radius:20px;font-weight:500;
+  animation:uwFadeUp .3s ease-out both}
+
+/* === Chat scroll fade === */
+.uw-chat{position:relative}
+.uw-chat::before{content:'';position:absolute;top:0;left:0;right:0;height:40px;
+  background:linear-gradient(to bottom,var(--bg),transparent);z-index:5;pointer-events:none;opacity:0;transition:opacity .15s}
+.uw-chat.scrolled::before{opacity:1}
+
+/* ============================================
+   MOBILE RESPONSIVE
+   ============================================ */
+@media(max-width:768px){
+  .uw-sidebar{transform:translateX(-100%);width:280px}
+  .uw-sidebar.open{transform:translateX(0);box-shadow:4px 0 24px rgba(0,0,0,.3)}
+  .uw-sidebar-toggle{display:flex}
+  .uw{margin-left:0;padding-top:0}
+  .uw-pn{padding:16px 16px 130px}
+  .uw-faq{grid-template-columns:1fr}
+  .uw-cd-grid{grid-template-columns:1fr}
+  .uw-cd{padding:14px 16px}.uw-cd-name{font-size:14px}
+  .uw-chat-examples{grid-template-columns:1fr}
+  .uw-hero-greeting{font-size:22px}
+  .uw-chat-welcome{padding:60px 16px 28px}
+  .uw-chat-sug{padding:12px 14px}
+  .uw-chat-input{padding:10px 16px 16px}
+  .uw-msg-user{margin-right:16px;max-width:85%}
+  .uw-msg-bot-inner{padding:0 16px 0 44px}
+  .uw-msg-bot-inner::before{left:16px}
+  /* Mobile header bar with hamburger */
+  .uw::before{
+    content:'';display:block;height:56px;width:100%;
+    border-bottom:1px solid var(--border-light);flex-shrink:0;
+  }
+}
+
+/* Mobile overlay */
+.uw-sidebar-overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:150;
+}
+.uw-sidebar.open ~ .uw-sidebar-overlay{display:block}
+</style>
+
+<!-- ============================================
+     HTML STRUCTURE — ChatGPT Layout
+     ============================================ -->
+<div class="uw-bg">
+  <!-- Sidebar -->
+  <div class="uw-sidebar" id="uwSidebar">
+    <button class="uw-sidebar-toggle" id="sidebarToggle"><span class="tf">☰</span></button>
+    <div class="uw-sidebar-inner">
+      <div class="uw-sidebar-header">GAWORLD AI</div>
+      <nav class="uw-tabs">
+        <button class="uw-tb on" data-t="b"><span class="tf">🤖</span> GAWORLD AI</button>
+        <button class="uw-tb" data-t="s"><span class="tf">🔍</span> 질병검색</button>
+        <button class="uw-tb" data-t="c"><span class="tf">⚖️</span> 비교</button>
+        <button class="uw-tb" data-t="r"><span class="tf">📌</span> 공통기준</button>
+        <button class="uw-tb" data-t="f"><span class="tf">💬</span> FAQ</button>
+      </nav>
+      <div class="uw-sidebar-footer"><span class="tf">🛡️</span> GAWORLD AI v6.1</div>
+    </div>
+  </div>
+  <div class="uw-sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Main Content -->
+  <div class="uw" id="uwApp">
+    <span id="totalCnt" style="display:none"></span>
+    <div class="uw-content">
+
+      <!-- Panel: Search -->
+      <div class="uw-pn" id="pnS">
+        <div class="uw-sb">
+          <span class="uw-si-icon tf">🔎</span>
+          <input type="text" class="uw-si" id="sI" placeholder="질병명 입력 (예: 대상포진, 골절, 용종, 디스크)" autocomplete="off">
+          <div class="uw-ac" id="sAC"></div>
+        </div>
+        <div class="uw-select-wrap">
+          <select class="uw-select" id="insSelect"><option value="all">전체 보험사</option></select>
+        </div>
+        <div class="uw-cnt" id="sCnt"></div>
+        <div class="uw-rs" id="sR">
+          <div class="uw-emp"><div class="uw-emp-ic">📋</div><div class="uw-emp-tx">질병명을 검색하면<br>보험사별 인수조건이 표시됩니다</div></div>
+        </div>
+        <div class="uw-warn"><b><span class="tf">⚠️</span> 유의사항</b><br>
+          · 본 정보는 설계사 참고용이며, 최종 인수는 개인 병력 및 심사결과에 따라 달라질 수 있습니다<br>
+          · 현재 치료 중인 경우 심사가 연기될 수 있습니다 · 재발/후유증/합병증 시 조건 변동</div>
+      </div>
+
+      <!-- Panel: Compare -->
+      <div class="uw-pn" id="pnC">
+        <div class="uw-sb">
+          <span class="uw-si-icon tf">🔎</span>
+          <input type="text" class="uw-si" id="cI" placeholder="비교할 질병명 입력" autocomplete="off">
+          <div class="uw-ac" id="cAC"></div>
+        </div>
+        <div class="uw-rs" id="cR">
+          <div class="uw-emp"><div class="uw-emp-ic">⚖️</div><div class="uw-emp-tx">질병명을 입력하면<br>보험사별 비교표가 표시됩니다</div></div>
+        </div>
+        <div class="uw-warn"><b><span class="tf">⚠️</span> 유의사항</b><br>· 최종 인수여부는 개인 병력 및 심사결과에 따라 달라질 수 있습니다</div>
+      </div>
+
+      <!-- Panel: Chat (Bot) -->
+      <div class="uw-pn on" id="pnB" style="padding-bottom:0;max-width:100%">
+        <div class="uw-chat">
+          <div class="uw-chat-msgs" id="chatMsgs">
+            <div class="uw-chat-welcome">
+              <div class="uw-hero-icon tf">🛡️</div>
+              <h3 class="uw-hero-greeting">무엇이든 물어보세요</h3>
+              <p>질병명 · 보험사 · 입원일수 · 수술여부를 자연어로 질문하면<br><b>AI가 11개 보험사 인수기준을 분석</b>해서 가능성을 알려드립니다</p>
+              <div class="uw-chat-examples" id="chatExamples"></div>
+            </div>
+          </div>
+          <div class="uw-chat-input">
+            <div class="uw-input-wrap">
+              <input type="text" class="uw-si" id="chatInput" placeholder="질병명과 상황을 입력하세요 (예: 고혈압 약 복용 2년, 수치 안정)" autocomplete="off">
+              <button class="uw-chat-send" id="chatSend"><span class="tf">➤</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel: Rules -->
+      <div class="uw-pn" id="pnR">
+        <div class="uw-rules-panel show" id="rulesPanel" style="display:block"></div>
+      </div>
+
+      <!-- Panel: FAQ -->
+      <div class="uw-pn" id="pnF">
+        <div class="uw-faq" id="faqG"></div>
+        <div class="uw-rs" id="fR">
+          <div class="uw-emp"><div class="uw-emp-ic">💬</div><div class="uw-emp-tx">자주 묻는 질문을 선택하세요</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Sidebar toggle script -->
+<script>
+(function(){
+  var sidebar = document.getElementById('uwSidebar');
+  var toggle = document.getElementById('sidebarToggle');
+  var overlay = document.getElementById('sidebarOverlay');
+  if(toggle) toggle.onclick = function(e){ e.stopPropagation(); sidebar.classList.toggle('open'); };
+  if(overlay) overlay.onclick = function(){ sidebar.classList.remove('open'); };
+  // Close sidebar when main content clicked on mobile
+  document.querySelector('.uw').addEventListener('click', function(){ sidebar.classList.remove('open'); });
+  // Close sidebar when tab clicked on mobile
+  document.querySelectorAll('.uw-tb').forEach(function(t){ t.addEventListener('click', function(){ sidebar.classList.remove('open'); }); });
+})();
+</script>
+
+<script>
+(function(){
+'use strict';
+const SB_URL='https://qmqpupfvlptbaggobpoc.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFtcXB1cGZ2bHB0YmFnZ29icG9jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg4MzQ3NTgsImV4cCI6MjA4NDQxMDc1OH0.adfXrSal0Q5QEnorqYF1H1nyTYDjs1fBYxt7LhzwLRE';
+const H={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json'};
+
+async function sb(tbl,q=''){const r=await fetch(`${SB_URL}/rest/v1/${tbl}?${q}`,{headers:{...H,'Prefer':'return=representation'}});if(!r.ok)throw new Error(r.statusText);return r.json();}
+
+let INS={},curFilter='all';
+const SYNS={
+  '대상포진':['대상포진','포진','띠헤르페스','대상헤르페스'],
+  '단순포진':['단순포진','헤르페스','구순포진','입술포진'],
+  '수두':['수두'],'코로나':['코로나','코로나19','코로나바이러스'],
+  '결핵':['결핵','폐결핵'],'식중독':['식중독','세균성장감염'],
+  '장염':['장염','감염성장염','위장염','결장염'],
+  '수막염':['수막염','뇌수막염','뇌막염'],
+  '볼거리':['볼거리','유행성이하선염','이하선염'],
+  '골절':['골절','부러','금이'],
+  '디스크':['추간판탈출증','추간판','디스크','허리디스크','목디스크','추간판장애','추간판변성'],
+  '오십견':['오십견','동결견','유착성관절낭염'],
+  '회전근개':['회전근개','어깨파열','어깨힘줄','회전근개증후군'],
+  '척추':['척추','요추','경추','흉추','척추증','척추협착','척추관협착'],
+  '척추분리증':['척추분리증','척추전방전위증','전방전위'],
+  '관절':['골관절염','관절염','퇴행성관절','관절증'],
+  '무릎':['무릎','슬관절','반월상','반월상연골','무릎인대'],
+  '어깨':['어깨','견관절','어깨병변','어깨병터'],
+  '손목터널':['손목터널','수근관','수근관증후군','팔목터널'],
+  '족저근막염':['족저근막','발바닥','발바닥통증'],
+  '염좌':['염좌','삐었','접질렀','인대손상'],
+  '타박상':['타박상','멍','찰과상','타박'],
+  '결절종':['결절종','결절','물혹손목'],
+  '맹장':['충수염','충수돌기염','맹장','맹장염','급성충수염'],
+  '용종':['용종','폴립','대장용종','위용종','담낭용종','직장용종'],
+  '치질':['치질','치핵','치루','치열','항문','항문질환'],
+  '위염':['위염','급성위염','만성위염','위궤양','십이지장궤양'],
+  '식도염':['식도염','역류','위식도역류','역류성식도염'],
+  '탈장':['탈장','헤르니아','사타구니탈장','서혜부탈장','배꼽탈장','복벽탈장'],
+  '담낭':['담낭','담석','담낭용종','담낭염','담석증','쓸개'],
+  '간염':['간염','A형간염','B형간염','급성간염'],
+  '장폐색':['장폐색','장중첩','장염전'],
+  '과민성장':['과민성','과민성대장','과민성장증후군'],
+  '게실':['게실','게실염','게실병'],
+  '폐렴':['폐렴','기관지폐렴','세균성폐렴'],
+  '편도':['편도','편도염','편도비대','편도절제'],
+  '비염':['비염','부비동염','비중격','비중격만곡','알레르기비염'],
+  '천식':['천식','기관지천식'],
+  '기흉':['기흉','자연기흉'],
+  '기관지염':['기관지염','급성기관지염','세기관지염'],
+  '감기':['감기','상기도감염','급성비인두염','인두염','후두염'],
+  '갑상선':['갑상선','갑상샘','갑상선기능','갑상선결절','갑상선낭종'],
+  '갑상선기능저하':['갑상선기능저하','갑상선저하','갑기저'],
+  '갑상선기능항진':['갑상선기능항진','갑상선항진','갑기항'],
+  '갑상선염':['갑상선염','하시모토','자가면역갑상선'],
+  '결석':['결석','요로결석','신장결석','요관결석'],
+  '방광염':['방광염','급성방광염'],
+  '신우신염':['신우신염','급성신우신염','신장염'],
+  '요실금':['요실금','소변실금'],
+  '전립선':['전립선','전립선비대','전립선염','전립선증식'],
+  '근종':['자궁근종','근종','자궁용종','평활근종'],
+  '낭종':['난소낭종','낭종','물혹','난소물혹','황체낭'],
+  '자궁내막증':['자궁내막증','자궁내막','내막증'],
+  '질염':['질염','자궁경부염','외음염'],
+  '골반염':['골반염','난관염','난소염'],
+  '백내장':['백내장','수정체','백내장수술'],
+  '녹내장':['녹내장','안압'],
+  '사시':['사시'],
+  '중이염':['중이염','급성중이염','만성중이염','삼출성중이염'],
+  '이석증':['이석증','양성발작성현훈','양성발작성현기증','어지러움','BPPV'],
+  '메니에르':['메니에르','메니에르병'],
+  '외이염':['외이염','외이도염','귀염증'],
+  '망막':['망막박리','망막열공','망막출혈'],
+  '탈모':['탈모','원형탈모'],
+  '사마귀':['사마귀','바이러스사마귀','곤지름'],
+  '아토피':['아토피','아토피피부염'],
+  '두드러기':['두드러기','알레르기두드러기'],
+  '지방종':['지방종','양성지방종'],
+  '화상':['화상','1도화상','2도화상','표재성화상'],
+  '정맥류':['하지정맥류','정맥류'],
+  '벨마비':['벨마비','안면마비','안면신경마비','얼굴마비'],
+  '두통':['두통','편두통','긴장형두통'],
+  '어지럼':['어지럼','현훈','현기증'],
+  '제왕절개':['제왕절개','시저'],
+  '유산':['유산','자연유산','임신종절','절박유산'],
+  '자궁외임신':['자궁외임신'],
+  '임플란트':['임플란트','치조골'],
+  '치주염':['치주염','치은염','치주질환','잇몸','잇몸질환'],
+  '봉소염':['봉소염','연조직염','연조직'],
+  '림프절염':['림프절염','림프절','림프절비대'],
+  '성홍열':['성홍열'],'발진티푸스':['발진티푸스','쯔쯔가무시']
+};
+
+const RULES=[
+  {icon:'🔵',c:'#2563eb',title:'DB손보',sub:'예외질환 333개 (즉시인수 215개)',
+    products:'315/325/335/345/355/385 간편건강보험',
+    rules:['치료종료(완치) 후 인수','315~325→3개, 335~385→5개 허용','●: 일부 담보제한']},
+  {icon:'🔴',c:'#dc2626',title:'삼성화재',sub:'3N5-5 / 삼텐오-5 / 마이핏3종',
+    products:'3N5-5 간편건강보험, 삼텐오-5, 마이핏 3종',
+    rules:['치료종결 + 후유합병증 없을 필수','5년내 중증질환 "아니오" 필수']},
+  {icon:'🟢',c:'#059669',title:'NH 간편심사',sub:'NH335굿패스, NH헤아림355 등',
+    products:'NH335굿패스, NH헤아림355간편건강, NH3N5간편건강보험2506',
+    rules:['상병 5개까지 가능','입원 15일이내(갑상선 5일)']},
+  {icon:'🟡',c:'#d97706',title:'NH 건굿플',sub:'5년초과~10년이하 예외질환',
+    products:'NH 건굿플 5.10.5 간편건강보험',
+    rules:['예외질환 4개까지','동일질환 5년이내 치료시 불가']},
+  {icon:'🟣',c:'#7c3aed',title:'메리츠',sub:'3.N.5/3.5.5 간편심사형 146건 (4플랜)',
+    products:'일반 / 어무디 / 3대진단 / 유병자실손(5.10.5)',
+    rules:['치료종료 7일경과 + 최대 5개','재발/합병증 없음 필수','일반/어무디/3대진단/5.10.5 플랜별 구분']},
+  {icon:'🔷',c:'#0891b2',title:'AIG손보',sub:'경증예외질환 103건',
+    products:'올인원3N5간편건강보험2506, 내심바라던간편암보험2504, 올인원간편보험Ⅱ2504',
+    rules:['3N5상품: 알릴의무 3가지 중 1개 이상 해당시 예외질환만 심의','고위험Risk(중대질환/지급이력다수) 시 인수제한']},
+  {icon:'🟠',c:'#ea580c',title:'KB손보',sub:'3.1.5/3.2.5/3.3.5~3.10.5 (25.08)',
+    products:'KB 325플랜/입원만플랜 경증예외질환 (경증 3개/5개)',
+    rules:['315: 입원1~15일, 경과 3~6개월','325: 입원3~30일, 경과 1~3개월','335: 입원3~30일, 즉시~6개월','경증 3개 또는 5개 상품별 구분']},
+  {icon:'🩷',c:'#ec4899',title:'롯데손보',sub:'3.5.5 / 3.10.10 예외질환 746건',
+    products:'롯데 355 간편건강보험, 3.10.10 간편건강보험',
+    rules:['KCD코드 기반 예외질환','입원일수/수술여부/담보제한 조건','상품유형(355/3.10.10)별 구분']},
+  {icon:'💜',c:'#8b5cf6',title:'하나손보',sub:'유병자 간편심사 3.N.5 (25.04.23)',
+    products:'하나 3N5 간편건강보험 (유병자상품 간편심사형)',
+    rules:['예외질환 5개까지 인수가능','1회 입원 30일 초과시 인수불가','재발/후유/합병증 시 인수불가 (2회 가능 별도표기)','경과기간/입원일수/수술여부/담보 구분']},
+  {icon:'💛',c:'#ca8a04',title:'한화손보',sub:'간편고지 심사가이드 565건 (25.5.12)',
+    products:'311간편건강, 3N5더간편, 시그니처여성3N5, RICH간병/치매, 더경증간편, 유병자실손',
+    rules:['고지질병 4개이하 (유병자실손 2년내 2개이하)','합산 입원 30일이하','완치 후 경과 1개월~2년','재발력 제한: 지방종/이석증/하지정맥류/요로결석 등']},
+  {icon:'🧡',c:'#f97316',title:'흥국화재',sub:'유병자보험 KCD 3,515개 (업계 최대)',
+    products:'유병자보험 3.2.5/3.3.5/3.5.5/6090 + 신상품 3.10.5',
+    rules:['완치 후 1~3개월 경과 인수가능','예외질환 최대 5개 (6개이상 사고다발 불가)','양성종양: 완전 제거 시 심사가능']}
+];
+
+const INS_COLORS={};
+
+/* ===== INIT ===== */
+async function init(){
+  try{
+    const insurers=await sb('insubot_insurers','select=id,name,code&order=display_order');
+    const chipsEl=document.getElementById('insSelect');
+    const colors=['#2563eb','#dc2626','#059669','#d97706','#7c3aed','#0891b2','#4f46e5','#c026d3','#ea580c','#0d9488','#6366f1'];
+    insurers.forEach((ins,idx)=>{
+      INS[ins.id]=ins;
+      INS_COLORS[ins.id]=colors[idx%colors.length];
+      const o=document.createElement('option');
+      o.value=ins.id;o.textContent=ins.name;
+      chipsEl.appendChild(o);
+    });
+    chipsEl.onchange=function(){
+      curFilter=this.value;
+      const q=document.getElementById('sI').value.trim();if(q)doSearch(q);
+    };
+    const cr=await fetch(`${SB_URL}/rest/v1/insubot_rules?select=id`,{headers:{...H,'Prefer':'count=exact','Range':'0-0'}});
+    const total=cr.headers.get('content-range')?.split('/')[1];
+    if(total){document.getElementById('totalCnt').innerHTML='<b>'+Number(total).toLocaleString()+'</b> 질환';
+      var ht=document.getElementById('heroTotal');if(ht)ht.textContent=Number(total).toLocaleString()+' 질환';}
+    const faqs=await sb('insubot_faq','select=question,search_keyword&order=display_order&is_active=eq.true');
+    buildFAQ(faqs);
+    buildRules();
+  }catch(e){console.error(e);}
+}
+
+/* ===== SEARCH ===== */
+async function apiSearch(q,fid){
+  const terms=[q];
+  for(const[k,vs] of Object.entries(SYNS)){if(vs.some(v=>v.includes(q))||k.includes(q))vs.forEach(v=>terms.push(v));}
+  const uniq=[...new Set(terms)];
+  const orParts=uniq.map(t=>`disease_name.ilike.*${encodeURIComponent(t)}*`);
+  if(/^[A-Z]\d/i.test(q)){
+    orParts.push(`kcd_code.ilike.${encodeURIComponent(q)}*`);
+    orParts.push(`extra_conditions.ilike.*${encodeURIComponent(q)}*`);
+  }
+  const or=orParts.join(',');
+  let qry=`select=*&or=(${or})&order=disease_name&limit=80`;
+  if(fid&&fid!=='all') qry+=`&insurer_id=eq.${fid}`;
+  return sb('insubot_rules',qry);
+}
+
+async function apiAC(q){
+  const terms=[q];
+  for(const[k,vs] of Object.entries(SYNS)){if(vs.some(v=>v.includes(q))||k.includes(q))vs.forEach(v=>terms.push(v));}
+  const uniq=[...new Set(terms)];
+  const orParts=uniq.map(t=>`disease_name.ilike.*${encodeURIComponent(t)}*`);
+  if(/^[A-Z]\d/i.test(q)){
+    orParts.push(`kcd_code.ilike.${encodeURIComponent(q)}*`);
+    orParts.push(`extra_conditions.ilike.*${encodeURIComponent(q)}*`);
+  }
+  const or=orParts.join(',');
+  const rows=await sb('insubot_rules',`select=disease_name,insurer_id,kcd_code&or=(${or})&order=disease_name&limit=100`);
+  const m=new Map();
+  rows.forEach(r=>{if(!m.has(r.disease_name))m.set(r.disease_name,[]);m.get(r.disease_name).push(r.insurer_id);});
+  return[...m.entries()].slice(0,10).map(([n,ids])=>({name:n,ins:[...new Set(ids)].map(id=>INS[id]?.name||'').filter(Boolean)}));
+}
+
+/* ===== BADGE ===== */
+function badge(r){
+  const map={immediate:{c:'b-ok',s:'s-ok'},ok:{c:'b-ok',s:'s-ok'},limit:{c:'b-lim',s:'s-lim'},no:{c:'b-no',s:'s-no'},check:{c:'b-chk',s:'s-chk'}};
+  const m=map[r.judgment]||map.check;
+  return{...m,t:r.judgment_label||'확인필요'};
+}
+
+/* ===== CARD ===== */
+function card(r){
+  const b=badge(r);
+  const ins=INS[r.insurer_id];
+  const color=INS_COLORS[r.insurer_id]||'var(--accent)';
+  let d='<div class="uw-cd-grid">';
+  if(r.kcd_code)d+='<div class="uw-cd-row"><span class="uw-cd-lb">KCD</span><span class="uw-cd-vl" style="font-family:var(--mono);font-weight:600">'+r.kcd_code+'</span></div>';
+  if(r.treatment_type)d+='<div class="uw-cd-row"><span class="uw-cd-lb">치료방법</span><span class="uw-cd-vl">'+r.treatment_type+'</span></div>';
+  if(r.hospitalization_max_days)d+='<div class="uw-cd-row"><span class="uw-cd-lb">입원</span><span class="uw-cd-vl">'+r.hospitalization_max_days+'일 이내</span></div>';
+  if(r.waiting_period)d+='<div class="uw-cd-row"><span class="uw-cd-lb">대기기간</span><span class="uw-cd-vl">'+r.waiting_period+'</span></div>';
+  if(r.immediate_accept)d+='<div class="uw-cd-row"><span class="uw-cd-lb">즉시인수</span><span class="uw-cd-vl">가능</span></div>';
+  if(r.immediate_accept_stage)d+='<div class="uw-cd-row"><span class="uw-cd-lb">단계</span><span class="uw-cd-vl">'+r.immediate_accept_stage+'</span></div>';
+  d+='</div>';
+  if(r.extra_conditions)d+='<div class="uw-cd-note">'+r.extra_conditions+'</div>';
+  return'<div class="uw-cd '+b.s+'">'+
+    '<div class="uw-cd-ins"><span class="uw-cd-ins-dot" style="background:'+color+'"></span>'+(ins?ins.name:'')+'</div>'+
+    '<div class="uw-cd-top"><div class="uw-cd-name">'+r.disease_name+'</div>'+
+    '<span class="uw-badge '+b.c+'">'+b.t+'</span></div>'+d+'</div>';
+}
+
+/* ===== COMPARE ===== */
+function renderCmp(rows){
+  if(!rows.length)return'<div class="uw-emp"><div class="uw-emp-ic">😕</div><div class="uw-emp-tx">검색 결과가 없습니다</div></div>';
+  let h='<div class="uw-tbl-wrap"><table class="uw-tbl"><thead><tr><th>보험사</th><th>질병명</th><th>주요 조건</th><th>판정</th></tr></thead><tbody>';
+  rows.forEach(r=>{
+    const b=badge(r);const ins=INS[r.insurer_id];
+    const cond=[r.treatment_type,r.hospitalization_max_days?r.hospitalization_max_days+'일이내':'',r.waiting_period].filter(Boolean).join(' · ');
+    h+='<tr><td class="i-name">'+(ins?ins.name:'')+'</td><td>'+r.disease_name+'</td><td>'+(cond||r.extra_conditions||'–')+'</td>'+
+      '<td><span class="uw-badge '+b.c+'">'+b.t+'</span></td></tr>';
+  });
+  return h+'</tbody></table></div><div style="font-size:11px;color:var(--muted);margin-top:6px">총 '+rows.length+'건</div>';
+}
+
+/* ===== AC ===== */
+function showAC(items,elId,inpId,cb){
+  const el=document.getElementById(elId);
+  if(!items.length){el.classList.remove('show');return;}
+  el.innerHTML=items.map(it=>
+    '<div class="uw-ac-i" data-v="'+it.name+'"><span>'+it.name+'</span>'+
+    it.ins.slice(0,3).map(n=>'<span class="uw-ac-src">'+n+'</span>').join('')+'</div>'
+  ).join('');
+  el.classList.add('show');
+  el.querySelectorAll('.uw-ac-i').forEach(i=>{i.onclick=()=>{
+    document.getElementById(inpId).value=i.dataset.v;el.classList.remove('show');cb(i.dataset.v);
+  };});
+}
+
+/* ===== RULES ===== */
+function buildRules(){
+  document.getElementById('rulesPanel').innerHTML=RULES.map(r=>
+    '<div class="uw-info"><div class="uw-info-title"><span class="tf">'+r.icon+'</span> '+r.title+'</div>'+
+    '<div style="font-size:11px;color:var(--muted);margin-bottom:4px">'+r.sub+'</div>'+
+    (r.products?'<div style="font-size:11px;color:var(--accent);margin-bottom:6px;font-weight:600">대상상품: '+r.products+'</div>':'')+
+    '<div class="uw-info-list">'+r.rules.map(rl=>'<div class="uw-info-item">'+rl+'</div>').join('')+'</div></div>'
+  ).join('');
+}
+
+/* ===== FAQ ===== */
+function buildFAQ(faqs){
+  const fg=document.getElementById('faqG');
+  faqs.forEach(f=>{
+    const b=document.createElement('button');b.className='uw-fq';b.textContent=f.question;
+    b.onclick=async()=>{
+      const con=document.getElementById('fR');
+      con.innerHTML='<div class="uw-loading">검색 중...</div>';
+      try{
+        const rows=await apiSearch(f.search_keyword);
+        if(!rows.length){con.innerHTML='<div class="uw-emp"><div class="uw-emp-ic">😕</div><div class="uw-emp-tx">관련 데이터 없음</div></div>';return;}
+        con.innerHTML='<div style="margin-bottom:12px;font-size:14px;font-weight:700;color:var(--accent)"><span class="tf">💬</span> '+f.question+'</div>'+
+          rows.slice(0,20).map(r=>card(r)).join('')+
+          '<div class="uw-warn"><b>⚠️ 참고</b><br>최종 인수는 개인 병력 및 심사결과에 따라 달라질 수 있습니다.</div>';
+      }catch(e){con.innerHTML='<div class="uw-emp"><div class="uw-emp-ic">⚠️</div><div class="uw-emp-tx">오류 발생</div></div>';}
+    };
+    fg.appendChild(b);
+  });
+}
+
+/* ===== HANDLERS ===== */
+async function doSearch(q){
+  const con=document.getElementById('sR'),cnt=document.getElementById('sCnt');
+  con.innerHTML='<div class="uw-loading">검색 중...</div>';
+  try{
+    const rows=await apiSearch(q,curFilter);
+    if(!rows.length){con.innerHTML='<div class="uw-emp"><div class="uw-emp-ic">😕</div><div class="uw-emp-tx">"'+q+'" 검색결과가 없습니다</div></div>';cnt.textContent='';return;}
+    cnt.textContent=rows.length+'건'+(rows.length>=80?' (상위 80건)':'');
+    con.innerHTML=rows.map(r=>card(r)).join('');
+  }catch(e){con.innerHTML='<div class="uw-emp"><div class="uw-emp-ic">⚠️</div><div class="uw-emp-tx">검색 오류</div></div>';cnt.textContent='';}
+}
+
+async function doCmp(q){
+  const con=document.getElementById('cR');
+  con.innerHTML='<div class="uw-loading">비교 중...</div>';
+  try{con.innerHTML=renderCmp(await apiSearch(q));}
+  catch(e){con.innerHTML='<div class="uw-emp"><div class="uw-emp-ic">⚠️</div><div class="uw-emp-tx">오류</div></div>';}
+}
+
+// Tabs
+document.querySelectorAll('.uw-tb').forEach(t=>{t.onclick=()=>{
+  document.querySelectorAll('.uw-tb').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.uw-pn').forEach(x=>x.classList.remove('on'));
+  t.classList.add('on');
+  var panelMap={s:'pnS',c:'pnC',b:'pnB',f:'pnF',r:'pnR'};
+  document.getElementById(panelMap[t.dataset.t]).classList.add('on');
+  if(t.dataset.t==='b'){
+    var msgs=document.getElementById('chatMsgs');
+    msgs.innerHTML='';
+    var welc=document.createElement('div');welc.className='uw-chat-welcome';
+    welc.innerHTML='<div class="uw-hero-icon tf">🛡️</div>'
+      +'<h3 class="uw-hero-greeting">무엇이든 물어보세요</h3>'
+      +'<p>질병명 · 보험사 · 입원일수 · 수술여부를 자연어로 질문하면<br><b>AI가 11개 보험사 인수기준을 분석</b>해서 가능성을 알려드립니다</p>'
+      +'<div class="uw-chat-examples" id="chatExamples2"></div>';
+    msgs.appendChild(welc);
+    buildChatExamples('chatExamples2');
+    document.getElementById('chatInput').value='';
+    chatHistory=[];
+    fetch('/dialog/join.cm',{credentials:'include'})
+      .then(function(r){return r.text();})
+      .then(function(h){
+        var doc=new DOMParser().parseFromString(h,'text/html');
+        var inp=doc.querySelector('#join_name');
+        var name=(inp&&inp.value.trim())?inp.value.trim():'';
+        var el=document.querySelector('.uw-hero-greeting');
+        if(el){if(name)el.innerHTML='<span class="uw-name">'+name+'</span>님, 무엇이든 물어보세요';else el.textContent='무엇이든 물어보세요';}
+      }).catch(function(){});
+  }
+};});
+
+// Search
+let st,acT;
+document.getElementById('sI').oninput=function(){
+  clearTimeout(st);clearTimeout(acT);const q=this.value.trim();
+  if(q.length>=1){acT=setTimeout(async()=>{try{showAC(await apiAC(q),'sAC','sI',doSearch);}catch(e){}},200);}
+  else document.getElementById('sAC').classList.remove('show');
+  st=setTimeout(()=>{if(q.length>=1)doSearch(q);else{
+    document.getElementById('sR').innerHTML='<div class="uw-emp"><div class="uw-emp-ic">📋</div><div class="uw-emp-tx">질병명을 검색하면<br>보험사별 인수조건이 표시됩니다</div></div>';
+    document.getElementById('sCnt').textContent='';
+  }},400);
+};
+document.getElementById('sI').onkeydown=function(e){if(e.key==='Enter'&&!e.isComposing){document.getElementById('sAC').classList.remove('show');doSearch(this.value.trim());}};
+
+// Compare
+document.getElementById('cI').oninput=function(){clearTimeout(acT);const q=this.value.trim();
+  if(q.length>=1){acT=setTimeout(async()=>{try{showAC(await apiAC(q),'cAC','cI',doCmp);}catch(e){}},200);}
+  else document.getElementById('cAC').classList.remove('show');
+};
+document.getElementById('cI').onkeydown=function(e){if(e.key==='Enter'&&!e.isComposing){document.getElementById('cAC').classList.remove('show');doCmp(this.value.trim());}};
+
+// Close AC
+document.addEventListener('click',e=>{if(!e.target.closest('.uw-sb'))document.querySelectorAll('.uw-ac').forEach(a=>a.classList.remove('show'));});
+
+// Security
+document.querySelector('.uw').oncontextmenu=e=>e.preventDefault();
+
+
+/* ===== CHATBOT MODULE v1.0 ===== */
+
+/* ── 질문 파서 ── */
+const INSURER_KEYWORDS = {
+  'db손보':['db손보','db','디비'],
+  '삼성화재':['삼성화재','삼성','삼화'],
+  'nh농협 간편심사':['nh','농협','엔에이치','간편심사','간편'],
+  'nh농협 건굿플':['건굿플','굿플','건굿'],
+  '메리츠':['메리츠','meritz'],
+  'aig손보':['aig','에이아이지'],
+  'kb손보':['kb','케이비'],
+  '롯데손보':['롯데','lotte'],
+  '하나손보':['하나'],
+  '한화손보':['한화'],
+  '흥국화재':['흥국']
+};
+
+const DISEASE_SYNONYMS = SYNS;
+
+function parseQuestion(text) {
+  const t = text.toLowerCase().replace(/\s+/g, ' ').trim();
+  const result = {
+    diseases: [],
+    insurers: [],
+    hospDays: null,
+    months: null,
+    surgery: null,
+    recurrence: null,
+    currentTreatment: null,
+    count: null,
+    compare: false,
+    rawText: text
+  };
+
+  const compareWords = ['제일','가장','최고','좋은','좋아','유리','추천','비교','어디가','어느','낫','나은','베스트','best','어디서'];
+  if (compareWords.some(w => t.includes(w))) result.compare = true;
+
+  for (const [name, keys] of Object.entries(INSURER_KEYWORDS)) {
+    if (keys.some(k => t.includes(k))) {
+      result.insurers.push(name);
+    }
+  }
+
+  for (const [canonical, keys] of Object.entries(DISEASE_SYNONYMS)) {
+    if (keys.some(k => t.includes(k))) {
+      result.diseases.push(canonical);
+    }
+  }
+
+  if (result.diseases.length === 0) {
+    const words = t.match(/[가-힣]{2,}/g) || [];
+    const stopWords = ['가능','불가','어디','어떤','어떻게','얼마','보험','담보','인수','심사','제한',
+      '수술','입원','치료','경과','이후','이전','현재','질문','가입','해당','조건','기준',
+      '했는데','했어','했고','인데','이면','이야','인가','할까','돼요','되나','되는','하면',
+      '개월','지났','넘으면','이하','이상','이내','일내','까지','에서','하고','없으면','있으면',
+      '후에','전에','지나','경우','때문','관련','가능한','유리한','좋은','나은','최선',
+      '알려','궁금','문의','상담','확인','검색','비교','추천','어느','어떨','몇개',
+      '예외','경증','유병자','간편','고지','플랜','상품','회사','보험사','손보','화재'];
+    const filtered = words.filter(w => !stopWords.some(s => w.includes(s)) && w.length >= 2);
+    if (filtered.length > 0) {
+      result.diseases.push(filtered[0]);
+    }
+  }
+
+  const hospMatch = t.match(/입원\s*(\d+)\s*일/)||t.match(/(\d+)\s*일\s*입원/);
+  if (hospMatch) result.hospDays = parseInt(hospMatch[1]);
+
+  const monthMatch = t.match(/(\d+)\s*개월/)||t.match(/(\d+)\s*달/);
+  if (monthMatch) result.months = parseInt(monthMatch[1]);
+  const yearMatch = t.match(/(\d+)\s*년/);
+  if (yearMatch && !t.includes('5년내') && !t.includes('n년')) result.months = parseInt(yearMatch[1]) * 12;
+
+  if (t.includes('수술했') || t.includes('수술 했') || t.includes('수술함') || t.includes('수술 후') || t.includes('절제')) {
+    result.surgery = true;
+  } else if (t.includes('수술 안') || t.includes('비수술') || t.includes('수술없')) {
+    result.surgery = false;
+  }
+
+  if (t.includes('재발')) result.recurrence = true;
+  if (t.includes('치료 중') || t.includes('치료중') || t.includes('현재 치료')) result.currentTreatment = true;
+
+  const countMatch = t.match(/(\d+)\s*개/)||t.match(/(\d+)\s*회/);
+  if (countMatch) result.count = parseInt(countMatch[1]);
+
+  return result;
+}
+
+/* ── 답변 생성 ── */
+function generateAnswer(parsed, searchResults, insurerMap) {
+  const msgs = [];
+
+  if (parsed.diseases.length === 0 && parsed.insurers.length === 0) {
+    return {
+      type: 'guide',
+      title: '질문을 좀 더 구체적으로 해주세요',
+      message: '질병명을 포함해서 질문해주세요.',
+      suggestions: [
+        '대상포진 3개월 지났는데 가능한 곳?',
+        '골절 입원 7일이면 어디 돼?',
+        '갑상선 기능저하증 경증예외?',
+        '대장용종 절제 후 가능한 회사?'
+      ]
+    };
+  }
+
+  if (parsed.currentTreatment) {
+    return {
+      type: 'warning',
+      title: '현재 치료 중',
+      message: '현재 치료 중인 경우 대부분의 보험사에서 심사가 연기됩니다. 치료 완료 후 다시 확인해주세요.',
+      icon: '🚫',
+      results: [],
+      notes: ['모든 보험사 공통: 치료 종결 후 심사 가능', '치료 종결 = 약 처방 포함 모든 치료 완료']
+    };
+  }
+
+  if (searchResults.length === 0) {
+    return {
+      type: 'empty',
+      title: `"${parsed.diseases.join(', ')}" 검색 결과 없음`,
+      message: '해당 질병에 대한 데이터가 없습니다. 다른 질병명으로 검색하거나 관리자에게 문의하세요.',
+      suggestions: parsed.diseases.map(d => d + ' 관련 다른 질병명으로 검색해보세요')
+    };
+  }
+
+  const okResults = searchResults.filter(r => r.judgment === 'immediate' || r.judgment === 'ok');
+  const limitResults = searchResults.filter(r => r.judgment === 'limit');
+  const noResults = searchResults.filter(r => r.judgment === 'no');
+
+  if (parsed.compare && parsed.insurers.length === 0) {
+    const SCORE = {immediate:4, ok:3, limit:2, check:1, no:0};
+    const insMap = {};
+    searchResults.forEach(r => {
+      const name = insurerMap[r.insurer_id]?.name;
+      if (!name) return;
+      if (!insMap[name]) insMap[name] = {name, score:0, results:[], ok:0, limit:0, no:0, id:r.insurer_id};
+      const s = SCORE[r.judgment] ?? 1;
+      insMap[name].score += s;
+      insMap[name].results.push(r);
+      if (r.judgment==='immediate'||r.judgment==='ok') insMap[name].ok++;
+      else if (r.judgment==='limit') insMap[name].limit++;
+      else if (r.judgment==='no') insMap[name].no++;
+    });
+    const ranked = Object.values(insMap).sort((a,b) => {
+      if (b.ok !== a.ok) return b.ok - a.ok;
+      if (a.no !== b.no) return a.no - b.no;
+      return b.score - a.score;
+    });
+
+    if (ranked.length === 0) {
+      return {type:'empty', title:`"${parsed.diseases.join(', ')}" 비교 결과 없음`, message:'해당 질병 데이터가 없습니다.'};
+    }
+
+    const best = ranked[0];
+    const diseaseName = parsed.diseases.join(', ');
+    let summary = `${best.name}이(가) 가장 유리합니다`;
+    if (best.ok > 0) {
+      const cond = best.results.find(r=>r.judgment==='immediate'||r.judgment==='ok');
+      if (cond && cond.waiting_period) summary += ` (${cond.waiting_period} 경과 시)`;
+    }
+    summary += '.';
+    if (ranked.length > 1) {
+      const others = ranked.slice(1).filter(r=>r.ok>0).map(r=>r.name);
+      if (others.length) summary += ` ${others.join(', ')}도 가능합니다.`;
+    }
+
+    const notes = ['최종 인수는 개인 병력 및 심사결과에 따라 달라질 수 있습니다'];
+    if (parsed.hospDays && parsed.hospDays > 15) notes.push('입원 15일 초과 시 일부 보험사에서 제한될 수 있습니다');
+
+    return {
+      type: 'compare',
+      title: `${diseaseName} — 보험사 비교`,
+      summary,
+      ranked,
+      results: searchResults.slice(0, 15),
+      okCount: okResults.length,
+      limitCount: limitResults.length,
+      noCount: noResults.length,
+      notes,
+      suggestions: [],
+      parsed
+    };
+  }
+
+  let title = '';
+  let summary = '';
+
+  if (parsed.insurers.length > 0) {
+    const insName = parsed.insurers[0];
+    const insResults = searchResults;
+    if (okResults.length > 0) {
+      title = `${insName} — 인수 가능`;
+      summary = `${parsed.diseases.join(', ')}은(는) ${insName}에서 인수 가능합니다.`;
+    } else if (limitResults.length > 0) {
+      title = `${insName} — 조건부 가능`;
+      summary = `일부 담보 제한이 있을 수 있습니다.`;
+    } else if (noResults.length > 0) {
+      title = `${insName} — 인수 불가`;
+      summary = `해당 조건으로는 인수가 어렵습니다.`;
+    } else {
+      title = `${insName} — 확인 필요`;
+      summary = `추가 심사가 필요합니다.`;
+    }
+  } else {
+    const okInsurers = [...new Set(okResults.map(r => insurerMap[r.insurer_id]?.name).filter(Boolean))];
+    const limitInsurers = [...new Set(limitResults.map(r => insurerMap[r.insurer_id]?.name).filter(Boolean))];
+
+    if (okInsurers.length > 0) {
+      title = `${okInsurers.length}개사 인수 가능`;
+      summary = `${okInsurers.join(', ')}에서 가능합니다.`;
+    } else if (limitInsurers.length > 0) {
+      title = '조건부 가능';
+      summary = `${limitInsurers.join(', ')}에서 일부 제한 조건으로 가능합니다.`;
+    } else {
+      title = '추가 확인 필요';
+      summary = '구체적인 조건 확인이 필요합니다.';
+    }
+  }
+
+  const notes = ['최종 인수는 개인 병력 및 심사결과에 따라 달라질 수 있습니다'];
+  if (parsed.recurrence) notes.push('재발 이력이 있는 경우 인수조건이 달라질 수 있습니다');
+  if (parsed.hospDays && parsed.hospDays > 15) notes.push('입원 15일 초과 시 일부 보험사에서 제한될 수 있습니다');
+  if (parsed.surgery) notes.push('수술 이력에 따라 담보 제한이 발생할 수 있습니다');
+
+  const suggestions = [];
+  if (!parsed.surgery && parsed.surgery !== false) suggestions.push('수술을 했나요?');
+  if (!parsed.hospDays) suggestions.push('입원은 며칠이었나요?');
+  if (!parsed.months) suggestions.push('치료 후 몇 개월 지났나요?');
+  if (!parsed.recurrence) suggestions.push('재발 이력이 있나요?');
+
+  return {
+    type: 'result',
+    title,
+    summary,
+    results: searchResults.slice(0, 15),
+    okCount: okResults.length,
+    limitCount: limitResults.length,
+    noCount: noResults.length,
+    notes,
+    suggestions: suggestions.slice(0, 3),
+    parsed
+  };
+}
+
+
+const CHAT_EXAMPLES=[
+  "76세 남성이신데요, 인공관절 수술 무릎 양쪽을 24년에 하시고, 지금은 무릎 물리치료를 통원치료 주 1~2회씩 꾸준히 가고 있으신 분입니다.",
+  "52세 여성, 갑상선암으로 24년 11월 수술, 26년 2월에 자궁적출하신분 인수가능한 곳이 있을까요?"
+];
+
+function buildChatExamples(){
+  const el=document.getElementById('chatExamples');
+  CHAT_EXAMPLES.forEach(ex=>{
+    const b=document.createElement('button');
+    b.className='uw-chat-sug';
+    b.textContent=ex;
+    b.title=ex;
+    b.onclick=()=>{document.getElementById('chatInput').value=ex;window.handleChat();};
+    el.appendChild(b);
+  });
+}
+
+function renderBotMessage(answer){
+  let h='<div class="uw-msg uw-msg-bot"><div class="uw-msg-bot-inner">';
+
+  if(answer.type==='guide'){
+    h+='<div class="uw-msg-title"><span class="tf">💡</span> '+answer.title+'</div>';
+    h+='<div class="uw-msg-summary">'+answer.message+'</div>';
+    if(answer.suggestions){
+      h+='<div class="uw-chat-suggest">';
+      answer.suggestions.forEach(s=>{
+        h+='<button class="uw-chat-sug" data-ask="'+s.replace(/"/g,'&quot;')+'">'+s+'</button>';
+      });
+      h+='</div>';
+    }
+    h+='</div></div>';
+    return h;
+  }
+
+  if(answer.type==='warning'){
+    h+='<div class="uw-msg-title"><span class="tf">'+answer.icon+'</span> '+answer.title+'</div>';
+    h+='<div class="uw-msg-summary">'+answer.message+'</div>';
+    if(answer.notes){
+      h+='<div class="uw-msg-notes"><div class="uw-msg-notes-title">참고사항</div>';
+      answer.notes.forEach(n=>{h+='<div class="uw-msg-notes-item">'+n+'</div>';});
+      h+='</div>';
+    }
+    h+='</div></div>';
+    return h;
+  }
+
+  if(answer.type==='compare'){
+    h+='<div class="uw-msg-title"><span class="tf">⚖️</span> '+answer.title+'</div>';
+    h+='<div class="uw-msg-summary">'+answer.summary+'</div>';
+
+    if(answer.okCount||answer.limitCount||answer.noCount){
+      h+='<div class="uw-msg-stats">';
+      if(answer.okCount) h+='<div class="uw-msg-stat ok">인수가능 '+answer.okCount+'건</div>';
+      if(answer.limitCount) h+='<div class="uw-msg-stat lim">일부제한 '+answer.limitCount+'건</div>';
+      if(answer.noCount) h+='<div class="uw-msg-stat no">불가 '+answer.noCount+'건</div>';
+      h+='</div>';
+    }
+
+    const cp=answer.parsed;
+    const cpParts=[];
+    if(cp.diseases.length) cpParts.push('질병: '+cp.diseases.join(', '));
+    if(cp.hospDays) cpParts.push('입원: '+cp.hospDays+'일');
+    if(cp.months) cpParts.push('경과: '+cp.months+'개월');
+    if(cp.surgery===true) cpParts.push('수술: 있음');
+    if(cp.surgery===false) cpParts.push('수술: 없음');
+    if(cpParts.length) h+='<div class="uw-msg-parsed">분석: '+cpParts.join(' · ')+'</div>';
+
+    h+='<div class="uw-tbl-wrap"><table class="uw-tbl"><thead><tr><th>순위</th><th>보험사</th><th>인수가능</th><th>일부제한</th><th>불가</th></tr></thead><tbody>';
+    answer.ranked.forEach(function(r,i){
+      var bc=r.ok>0?'b-ok':r.limit>0?'b-lim':'b-no';
+      h+='<tr><td style="font-family:var(--mono);font-weight:700;color:var(--accent)">'+(i+1)+'</td>';
+      h+='<td class="i-name">'+r.name+'</td>';
+      h+='<td>'+(r.ok?'<span class="uw-badge b-ok">'+r.ok+'건</span>':'–')+'</td>';
+      h+='<td>'+(r.limit?'<span class="uw-badge b-lim">'+r.limit+'건</span>':'–')+'</td>';
+      h+='<td>'+(r.no?'<span class="uw-badge b-no">'+r.no+'건</span>':'–')+'</td></tr>';
+    });
+    h+='</tbody></table></div>';
+
+    if(answer.notes&&answer.notes.length){
+      h+='<div class="uw-msg-notes"><div class="uw-msg-notes-title">⚠️ 주의사항</div>';
+      answer.notes.forEach(function(n){h+='<div class="uw-msg-notes-item">'+n+'</div>';});
+      h+='</div>';
+    }
+
+    h+='</div></div>';
+    return h;
+  }
+
+  if(answer.type==='empty'){
+    h+='<div class="uw-msg-title"><span class="tf">😕</span> '+answer.title+'</div>';
+    h+='<div class="uw-msg-summary">'+answer.message+'</div>';
+    h+='</div></div>';
+    return h;
+  }
+
+  // type === 'result'
+  h+='<div class="uw-msg-title"><span class="tf">✅</span> '+answer.title+'</div>';
+  h+='<div class="uw-msg-summary">'+answer.summary+'</div>';
+
+  if(answer.okCount||answer.limitCount||answer.noCount){
+    h+='<div class="uw-msg-stats">';
+    if(answer.okCount) h+='<div class="uw-msg-stat ok">인수가능 '+answer.okCount+'건</div>';
+    if(answer.limitCount) h+='<div class="uw-msg-stat lim">일부제한 '+answer.limitCount+'건</div>';
+    if(answer.noCount) h+='<div class="uw-msg-stat no">불가 '+answer.noCount+'건</div>';
+    h+='</div>';
+  }
+
+  const p=answer.parsed;
+  const parsedParts=[];
+  if(p.diseases.length) parsedParts.push('질병: '+p.diseases.join(', '));
+  if(p.insurers.length) parsedParts.push('보험사: '+p.insurers.join(', '));
+  if(p.hospDays) parsedParts.push('입원: '+p.hospDays+'일');
+  if(p.months) parsedParts.push('경과: '+p.months+'개월');
+  if(p.surgery===true) parsedParts.push('수술: 있음');
+  if(p.surgery===false) parsedParts.push('수술: 없음');
+  if(p.recurrence) parsedParts.push('재발: 있음');
+  if(parsedParts.length) h+='<div class="uw-msg-parsed">분석: '+parsedParts.join(' · ')+'</div>';
+
+  if(answer.results.length){
+    h+=answer.results.map(r=>card(r)).join('');
+  }
+
+  if(answer.notes&&answer.notes.length){
+    h+='<div class="uw-msg-notes"><div class="uw-msg-notes-title">⚠️ 주의사항</div>';
+    answer.notes.forEach(n=>{h+='<div class="uw-msg-notes-item">'+n+'</div>';});
+    h+='</div>';
+  }
+
+  if(answer.suggestions&&answer.suggestions.length){
+    h+='<div style="margin-top:10px;font-size:11px;color:var(--sub);font-weight:600">추가로 확인하면 좋은 것:</div>';
+    h+='<div class="uw-chat-suggest">';
+    answer.suggestions.forEach(s=>{
+      const full=p.diseases[0]?(p.diseases[0]+' '+s):s;
+      h+='<button class="uw-chat-sug" data-ask="'+full.replace(/"/g,'&quot;')+'">'+s+'</button>';
+    });
+    h+='</div>';
+  }
+
+  h+='</div></div>';
+  return h;
+}
+
+/* ===== AI MODE ===== */
+let aiMode=true;
+let chatHistory=[];
+var _ait=document.getElementById('aiToggle');
+if(_ait) _ait.onclick=function(){
+  aiMode=!aiMode;this.classList.toggle('on',aiMode);
+  document.getElementById('chatInput').placeholder=aiMode
+    ?'GAWORLD AI 상담 모드: 자연어로 질문하세요'
+    :'예: 대상포진 3개월 지났고 입원 7일이면 어디 가능해?';
+};
+
+async function callAI(question, dbResults, parsedInfo){
+  const recentHistory=chatHistory.slice(-10);
+  const res=await fetch(SB_URL+'/functions/v1/ai-chat',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+SB_KEY},
+    body:JSON.stringify({
+      question,
+      dbResults:dbResults.map(r=>({
+        insurer_name:INS[r.insurer_id]?.name||'',
+        disease_name:r.disease_name,
+        judgment_label:r.judgment_label,
+        waiting_period:r.waiting_period,
+        hospitalization_max_days:r.hospitalization_max_days,
+        treatment_type:r.treatment_type,
+        extra_conditions:r.extra_conditions
+      })),
+      parsedInfo,
+      conversationHistory:recentHistory
+    })
+  });
+  if(!res.ok) throw new Error('AI 호출 실패: '+res.status);
+  return res.json();
+}
+
+function renderAIMessage(aiData,dbCount){
+  function cleanDB(s){if(!s)return s;return s.replace(/DB\s*미등록\s*[\(\(].*?[\)\)]/g,'').replace(/DB\s*미등록/g,'').replace(/DB\s*등록/g,'데이터 등록').replace(/DB\s*기준/g,'인수기준 데이터 기반').replace(/DB에/g,'인수기준 데이터에');}
+  if(aiData.summary)aiData.summary=cleanDB(aiData.summary);
+  if(aiData.expectedConditions)aiData.expectedConditions=cleanDB(aiData.expectedConditions);
+  if(aiData.recommendedStrategy)aiData.recommendedStrategy=cleanDB(aiData.recommendedStrategy);
+  if(aiData.actionGuide)aiData.actionGuide=cleanDB(aiData.actionGuide);
+  if(aiData.insurerResults)aiData.insurerResults.forEach(function(ir){ir.judgment=cleanDB(ir.judgment);if(ir.judgment)ir.judgment=ir.judgment.trim()||'';ir.conditions=cleanDB(ir.conditions);ir.notes=cleanDB(ir.notes);ir.product=cleanDB(ir.product);});
+  if(aiData.cautions)aiData.cautions=aiData.cautions.map(cleanDB).filter(function(x){return x&&x.trim();});
+  if(aiData.judgmentBasis)aiData.judgmentBasis=aiData.judgmentBasis.map(cleanDB).filter(function(x){return x&&x.trim();});
+  if(aiData.missingInfo)aiData.missingInfo=aiData.missingInfo.map(cleanDB).filter(function(x){return x&&x.trim();});
+  let h='<div class="uw-msg uw-msg-bot"><div class="uw-msg-bot-inner">';
+  h+='<div class="uw-ai-badge"><span class="tf" style="font-size:11px">🤖</span> GAWORLD AI ver.2.3</div>';
+
+  h+='<div class="uw-msg-title"><span class="tf">✨</span> GAWORLD AI ver.2.3 분석 결과</div>';
+  h+='<div class="uw-msg-summary">'+((aiData.summary||'').replace(/</g,'&lt;'))+'</div>';
+
+  var prob=parseInt(aiData.acceptanceProbability)||0;
+  var probColor=prob>=70?'var(--green)':prob>=40?'var(--amber)':'var(--red)';
+  var circumference=2*Math.PI*23;
+  var offset=circumference-(prob/100)*circumference;
+  h+='<div class="uw-ai-prob-wrap">';
+  h+='<div class="uw-ai-prob-gauge">';
+  h+='<svg width="56" height="56" viewBox="0 0 56 56"><circle class="bg" cx="28" cy="28" r="23"/>';
+  h+='<circle class="fg" cx="28" cy="28" r="23" stroke="'+probColor+'" stroke-dasharray="'+circumference+'" stroke-dashoffset="'+offset+'"/></svg>';
+  h+='<div class="uw-ai-prob-num" style="color:'+probColor+'">'+prob+'%</div></div>';
+  h+='<div class="uw-ai-prob-info"><div class="uw-ai-prob-label">인수 가능성</div>';
+  h+='<div class="uw-ai-prob-cond">'+(aiData.expectedConditions||'확인 필요')+'</div></div>';
+  if(aiData.confidence){h+='<span class="uw-ai-conf '+aiData.confidence+'">';
+    h+={high:'높음',medium:'보통',low:'낮음'}[aiData.confidence]||'';h+='</span>';}
+  h+='</div>';
+
+  if(aiData.insurerResults&&aiData.insurerResults.length){
+    h+='<div class="uw-ai-section"><div class="uw-ai-section-title"><span class="tf" style="font-size:11px">🏢</span> 보험사별 판단</div>';
+    aiData.insurerResults.forEach(function(ir){
+      var jc=(ir.judgment||'').toLowerCase();
+      var bc='b-chk';
+      if(jc.includes('즉시')||jc.includes('가능'))bc='b-ok';
+      else if(jc.includes('조건부'))bc='b-lim';
+      else if(jc.includes('제한'))bc='b-lim';
+      else if(jc.includes('불가'))bc='b-no';
+      var irProb=ir.probability?parseInt(ir.probability):0;
+      var irProbColor=irProb>=70?'var(--green)':irProb>=40?'var(--amber)':'var(--red)';
+      h+='<div class="uw-ai-insurer-row">';
+      h+='<div class="uw-ai-insurer-name">'+ir.insurer+'</div>';
+      h+='<div class="uw-ai-insurer-cond">';
+      if(ir.judgment&&ir.judgment.trim())h+='<span class="uw-badge '+bc+'" style="margin-right:6px">'+ir.judgment+'</span>';
+      h+=(ir.conditions||'');
+      if(ir.product)h+='<div style="margin-top:3px;font-size:10px;color:var(--accent)">→ '+ir.product+'</div>';
+      if(ir.notes)h+='<div style="margin-top:3px;font-size:10px;color:var(--amber)">'+ir.notes+'</div>';
+      h+='</div>';
+      if(irProb)h+='<div class="uw-ai-insurer-prob" style="color:'+irProbColor+'">'+irProb+'%</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+
+  if(aiData.recommendedStrategy){
+    h+='<div class="uw-ai-strategy"><div class="uw-ai-strategy-title"><span class="tf" style="font-size:11px">🎯</span> 추천 전략</div>';
+    h+=aiData.recommendedStrategy+'</div>';
+  }
+
+  if(aiData.judgmentBasis&&aiData.judgmentBasis.length){
+    h+='<div style="font-size:11px;font-weight:600;color:var(--sub);margin-top:8px">판단 근거</div>';
+    h+='<div class="uw-ai-basis">';
+    aiData.judgmentBasis.forEach(function(b){h+='<span class="uw-ai-basis-tag">'+b+'</span>';});
+    h+='</div>';
+  }
+
+  if(aiData.actionGuide){
+    h+='<div class="uw-ai-action"><div class="uw-ai-action-title"><span class="tf" style="font-size:11px">🚀</span> 설계사 액션 가이드</div>';
+    h+='<div class="uw-ai-action-text">'+aiData.actionGuide+'</div></div>';
+  }
+
+  if(aiData.cautions&&aiData.cautions.length){
+    h+='<div class="uw-msg-notes"><div class="uw-msg-notes-title">⚠️ 주의사항</div>';
+    aiData.cautions.forEach(function(c){h+='<div class="uw-msg-notes-item">'+c+'</div>';});
+    h+='</div>';
+  }
+
+  if(aiData.missingInfo&&aiData.missingInfo.length){
+    h+='<div style="margin-top:8px;font-size:11px;color:var(--sub)">';
+    h+='추가 확인 필요: '+aiData.missingInfo.join(', ')+'</div>';
+  }
+
+  h+='<div style="margin-top:10px;font-size:10px;color:var(--muted)">참고: 보험사 제공 인수기준 '+dbCount+'건 분석 · 예외질환 데이터 기반</div>';
+
+
+  h+='</div></div>';
+
+
+  return h;
+}
+
+window.handleChat=async function(){
+  const input=document.getElementById('chatInput');
+  const q=input.value.trim();
+  if(!q)return;
+
+  const msgs=document.getElementById('chatMsgs');
+
+  const welcome=msgs.querySelector('.uw-chat-welcome');
+  if(welcome)welcome.remove();
+
+  var _umId='um'+Date.now();
+  msgs.innerHTML+='<div class="uw-msg uw-msg-user" id="'+_umId+'">'+q+'</div>';
+  input.value='';
+
+  msgs.innerHTML+='<div class="uw-msg uw-msg-bot" id="chatLoading"><div class="uw-msg-bot-inner"><div class="uw-typing"><div class="uw-typing-spinner"></div><div class="uw-typing-text">GAWORLD AI 분석 중</div></div></div></div>';
+  var _umEl=document.getElementById(_umId);if(_umEl)_umEl.scrollIntoView({behavior:'smooth',block:'start'});
+
+  try{
+    const parsed=parseQuestion(q);
+
+    let searchQ=parsed.diseases.join(' ');
+    if(!searchQ&&parsed.insurers.length) searchQ='';
+
+    let results=[];
+    if(searchQ){
+      results=await apiSearch(searchQ,null);
+    }
+
+    if(parsed.insurers.length&&results.length){
+      const insIds=Object.entries(INS).filter(([id,ins])=>
+        parsed.insurers.some(pi=>ins.name.toLowerCase().includes(pi))
+      ).map(([id])=>id);
+      if(insIds.length){
+        results=results.filter(r=>insIds.includes(r.insurer_id));
+      }
+    }
+
+    if(aiMode){
+      try{
+        const aiData=await callAI(q,results,parsed);
+        document.getElementById('chatLoading')?.remove();
+        var _aiHtml=renderAIMessage(aiData,results.length);msgs.innerHTML+=_aiHtml.replace('uw-msg uw-msg-bot','uw-msg uw-msg-bot uw-msg-fadein');
+        chatHistory.push({role:'user',content:q});
+        chatHistory.push({role:'assistant',content:aiData.summary||JSON.stringify(aiData)});
+        if(chatHistory.length===10){
+          msgs.innerHTML+='<div class="uw-turn-notice"><span class="tf">💡</span> 이전 대화 맥락이 초기화됩니다. 이후 질문은 독립적으로 분석됩니다.</div>';
+        }
+      }catch(ae){
+        console.error('AI error:',ae);
+        document.getElementById('chatLoading')?.remove();
+        const answer=generateAnswer(parsed,results,INS);
+        var _fbHtml=renderBotMessage(answer);msgs.innerHTML+=_fbHtml.replace('uw-msg uw-msg-bot','uw-msg uw-msg-bot uw-msg-fadein');
+        msgs.innerHTML+='<div style="font-size:11px;color:var(--amber);padding:6px 12px">⚠️ GAWORLD AI 응답을 불러오지 못해 기본 답변으로 대체했습니다.</div>';
+      }
+    }else{
+      document.getElementById('chatLoading')?.remove();
+      const answer=generateAnswer(parsed,results,INS);
+      var _bHtml=renderBotMessage(answer);msgs.innerHTML+=_bHtml.replace('uw-msg uw-msg-bot','uw-msg uw-msg-bot uw-msg-fadein');
+    }
+
+    if(_umEl)_umEl.scrollIntoView({behavior:'smooth',block:'start'});
+
+  }catch(e){
+    document.getElementById('chatLoading')?.remove();
+    msgs.innerHTML+='<div class="uw-msg uw-msg-bot"><div class="uw-msg-bot-inner"><div class="uw-msg-title"><span class="tf">⚠️</span> 오류</div><div class="uw-msg-summary">검색 중 오류가 발생했습니다. 다시 시도해주세요.</div></div></div>';
+  }
+};
+
+// Chat input handlers
+document.getElementById('chatSend').onclick=handleChat;
+document.getElementById('chatInput').onkeydown=function(e){if(e.key==='Enter'&&!e.isComposing)handleChat();};
+buildChatExamples();
+
+// 채팅 스크롤 감지
+var chatMsgsEl=document.getElementById('chatMsgs');
+if(chatMsgsEl){
+  chatMsgsEl.addEventListener('scroll',function(){
+    this.closest('.uw-chat').classList.toggle('scrolled',this.scrollTop>30);
+  });
+}
+
+// 사용자 이름 인사말
+(function(){
+  fetch('/dialog/join.cm',{credentials:'include'})
+    .then(function(r){return r.text();})
+    .then(function(h){
+      var doc=new DOMParser().parseFromString(h,'text/html');
+      var inp=doc.querySelector('#join_name');
+      var name=(inp&&inp.value.trim())?inp.value.trim():'';
+      document.querySelectorAll('.uw-hero-greeting').forEach(function(el){
+        if(name)el.innerHTML='<span class="uw-name">'+name+'</span>님, 무엇이든 물어보세요';
+      });
+    }).catch(function(){});
+})();
+
+// Event delegation for chat suggestion buttons
+document.getElementById('chatMsgs').addEventListener('click',function(e){
+  const btn=e.target.closest('[data-ask]');
+  if(btn){
+    document.getElementById('chatInput').value=btn.dataset.ask;
+    window.handleChat().then(function(){
+      var msgs=document.getElementById('chatMsgs');
+      setTimeout(function(){var lastUm=msgs.querySelector('.uw-msg-user:last-of-type');if(lastUm)lastUm.scrollIntoView({behavior:'smooth',block:'start'});else msgs.scrollTop=msgs.scrollHeight;},100);
+    });
+  }
+});
+
+init();
+})();
+</script>
