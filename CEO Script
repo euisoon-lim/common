@@ -770,7 +770,7 @@
             console.log('✅ CEO 스크립트 초기화 시작');
 
             // GitHub에서 빠르게 로드 (Google Apps Script 대신)
-            const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/euisoon-lim/common/refs/heads/main/script-data.json';
+            const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/euisoon-lim/orojiedu/refs/heads/main/script-data.json';
             const SUPABASE_URL = 'https://pkxgjylcjophznokhlzb.supabase.co';
             const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBreGdqeWxjam9waHpub2tobHpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEwMTI3MTUsImV4cCI6MjA3NjU4ODcxNX0.QkTqAyOmNG0Gy0nWf82TEj3o-YvbeqIa-REgCJSstk8';
             const CACHE_KEY = 'CEO_PLAN_SCRIPT_DATA';
